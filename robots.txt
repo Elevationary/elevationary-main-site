@@ -1,0 +1,15 @@
+# robots.txt for https://elevationary.com/
+# Last updated: 2026-04-22
+
+User-agent: *
+Allow: /
+
+Sitemap: https://elevationary.com/sitemap.xml
+
+Disallow: /drafts/
+Disallow: /private/
+Disallow: /staging/
+Disallow: /admin/
+
+User-agent: GPTBot
+Allow: /

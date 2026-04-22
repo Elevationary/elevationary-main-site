@@ -1,0 +1,15 @@
+{% set _title = title or (page.fileSlug | replace('-', ' ') | title) %}
+{% if description %}<meta name="description" content="{{ description }}">{% endif %}
+
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+{% if robots %}<meta name="robots" content="{{ robots }}">{% endif %}
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Elevationary">
+<meta property="og:title" content="{{ _title }}">
+{% if description %}<meta property="og:description" content="{{ description }}">{% endif %}
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+{% set _og = og_image or '/assets/elevationary-logo-512.png' %}
+<meta property="og:image" content="{{ site.url }}{{ _og }}">
+<meta property="og:image:alt" content="{{ _title }}">

@@ -1,0 +1,58 @@
+/* Phase 1: Minimal functional CSS — replaced in Phase 2 by Elevationary_OS design system */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+a { color: #0066cc; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+.site-nav .nav-brand { font-weight: 700; font-size: 1.2rem; color: #1a1a1a; }
+.site-nav ul { display: flex; gap: 1.5rem; list-style: none; }
+.nav-cta { font-weight: 600; color: #0066cc; }
+
+main { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; }
+
+h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+h2 { font-size: 1.5rem; font-weight: 600; margin: 2rem 0 0.75rem; }
+p { margin-bottom: 1rem; }
+
+.hero { text-align: center; padding: 4rem 0; }
+.hero h1 { font-size: 2.5rem; }
+.hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
+
+.cta-primary, .cta-secondary {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  margin: 0.5rem;
+}
+.cta-primary { background: #0066cc; color: #fff; }
+.cta-primary:hover { background: #0052a3; text-decoration: none; }
+.cta-secondary { border: 2px solid #0066cc; color: #0066cc; }
+
+.page-content { max-width: 720px; }
+.subscribe-cta { background: #f5f8ff; border-radius: 8px; padding: 2rem; margin-top: 3rem; text-align: center; }
+.cta-block { margin-top: 3rem; padding: 2rem; background: #f9f9f9; border-radius: 8px; }
+
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid #e5e5e5;
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 4rem;
+}

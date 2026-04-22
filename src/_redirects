@@ -1,0 +1,6 @@
+# Cloudflare Pages _redirects
+# www → apex handled at Cloudflare dashboard level (Bulk Redirects)
+
+# Fix legacy Google Sites typo URL
+/newletter-stories /newsletter-stories 301
+/newletter-stories/ /newsletter-stories/ 301

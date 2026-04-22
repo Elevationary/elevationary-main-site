@@ -1,0 +1,16 @@
+{
+  "name": "Elevationary",
+  "url": "https://elevationary.com",
+  "logo": "/assets/elevationary-logo-512.png",
+  "orgId": "https://elevationary.com/#org",
+  "twitter": "@ElevationaryAI",
+  "agentSiteUrl": "https://agent.elevationary.com",
+  "founder": {
+    "name": "James Szmak",
+    "url": "https://www.elevationary.com/about"
+  },
+  "socials": [
+    "https://www.linkedin.com/in/jamesszmak/",
+    "https://twitter.com/ElevationaryAI"
+  ]
+}

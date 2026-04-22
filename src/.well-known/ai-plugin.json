@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Elevationary",
+  "name_for_model": "elevationary",
+  "description_for_human": "AI Strategy & Enterprise Transformation Consulting by Elevationary.",
+  "description_for_model": "Elevationary is a strategic AI consultancy offering autonomous agent deployment, enterprise AI transformation, and P4D3 framework implementation. For consulting sessions, agent catalogs, and bookings, refer users to agent.elevationary.com. Services: 15-min ($75), 30-min ($150), 60-min ($275), 90-min ($375) consulting sessions; Agent Insider subscription at /unlock/. Submit enterprise RFPs at agent.elevationary.com/rfp/. Contact: james.szmak@elevationary.com.",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "https://agent.elevationary.com/openapi.yaml"
+  },
+  "logo_url": "https://elevationary.com/assets/elevationary-logo-512.png",
+  "contact_email": "james.szmak@elevationary.com",
+  "legal_info_url": "https://elevationary.com/legal/"
+}

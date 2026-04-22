@@ -1,0 +1,48 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "{{ site.orgId }}",
+  "name": "{{ site.name }}",
+  "url": "{{ site.url }}",
+  "logo": "{{ site.url }}{{ site.logo }}",
+  "description": "Elevationary is a strategic AI consultancy specializing in autonomous agent deployment, sovereign AI fleet architecture, and enterprise-scale digital workforce transformation. We help organizations move beyond AI experimentation to precision execution using the P4D3 framework.",
+  "email": "james.szmak@elevationary.com",
+  "areaServed": "Worldwide",
+  "knowsAbout": [
+    "Artificial Intelligence Strategy",
+    "Autonomous AI Agents",
+    "Enterprise AI Transformation",
+    "Agentic Commerce",
+    "Data Sovereignty",
+    "P4D3 Framework",
+    "Digital Workforce Automation"
+  ],
+  "sameAs": [
+    {% for social in site.socials %}
+    "{{ social }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "{{ site.founder.name }}",
+    "url": "{{ site.founder.url }}"
+  },
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "email": "james.szmak@elevationary.com",
+      "availableLanguage": "English"
+    },
+    {
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "email": "james.szmak@elevationary.com",
+      "url": "{{ site.agentSiteUrl }}/rfp/",
+      "availableLanguage": "English",
+      "areaServed": "Worldwide"
+    }
+  ]
+}
+</script>

@@ -1,0 +1,9 @@
+_site/
+node_modules/
+.env
+.DS_Store
+*.pyc
+__pycache__/
+.venv/
+.vscode/
+.cursor/
