@@ -11,6 +11,7 @@
   {% if description %}<meta name="twitter:description" content="{{ description }}">{% endif %}
   <meta name="twitter:image" content="{{ (og_image or '/assets/elevationary-logo-512.png') | url }}">
 
+  {% include 'structured-data/organization.njk' %}
   {{ head_jsonld | safe }}
 
   {% include 'seo.njk' %}
