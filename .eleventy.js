@@ -13,7 +13,7 @@ module.exports = function(eleventyConfig) {
   nunjucksEnvironment.addFilter('date', function(dateObj, format) {
     if (!dateObj) return '';
     format = format || 'yyyy-MM-dd';
-    const date = typeof dateObj === 'string' ? new Date(dateObj) : dateObj;
+    const date = dateObj === 'now' ? new Date() : (typeof dateObj === 'string' ? new Date(dateObj) : dateObj);
     return DateTime.fromJSDate(date, { zone: 'utc' }).toFormat(format);
   });
 
