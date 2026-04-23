@@ -56,3 +56,39 @@ p { margin-bottom: 1rem; }
   color: #666;
   margin-top: 4rem;
 }
+
+.content-section { margin-bottom: 3rem; }
+.content-section ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+.content-section li { margin-bottom: 0.4rem; }
+
+.case-study { background: #f9f9f9; border-left: 3px solid #0066cc; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; border-radius: 0 6px 6px 0; }
+
+.focus-areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+.focus-item { background: #f5f8ff; padding: 1.25rem; border-radius: 8px; }
+.focus-item h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+.focus-item ul { padding-left: 1.25rem; margin: 0; }
+
+.expertise-list { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; }
+.expertise-list li { background: #e8f0fe; color: #0052a3; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.875rem; }
+
+.newsletter-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.newsletter-option { background: #f5f8ff; padding: 1.5rem; border-radius: 8px; }
+.newsletter-option h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+
+.service-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+.service-card { border: 1px solid #e5e5e5; padding: 1.5rem; border-radius: 8px; }
+.service-card h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+
+.story-list { margin: 1.5rem 0; }
+.story-card { border: 1px solid #e5e5e5; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; }
+.story-card h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+
+.article-content { max-width: 720px; }
+.article-subtitle { font-size: 1.1rem; color: #444; margin-bottom: 2rem; font-style: italic; }
+.breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+@media (max-width: 600px) {
+  .site-nav ul { gap: 0.75rem; font-size: 0.875rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .focus-areas, .newsletter-options, .service-cards { grid-template-columns: 1fr; }
+}

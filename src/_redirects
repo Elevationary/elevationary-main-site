@@ -1,6 +1,21 @@
 # Cloudflare Pages _redirects
 # www → apex handled at Cloudflare dashboard level (Bulk Redirects)
 
+# Google Sites homepage duplicate
+/elevationary / 301
+
+# Consulting pages → agent-site (booking lives there, no content to migrate)
+/consulting https://agent.elevationary.com 301
+/consulting/ https://agent.elevationary.com 301
+/consulting/15-minute-ai-strategy-introductory-consultation https://agent.elevationary.com/consulting-15/ 301
+/consulting/30-minute-ai-readiness-consultation https://agent.elevationary.com/consulting-30/ 301
+/consulting/60-minute-ai-strategy-consultation https://agent.elevationary.com/consulting-60/ 301
+/consulting/90-minute-ai-strategy-in-depth-consultation https://agent.elevationary.com/consulting-90/ 301
+
 # Fix legacy Google Sites typo URL
-/newletter-stories /newsletter-stories 301
+/newletter-stories /newsletter-stories/ 301
 /newletter-stories/ /newsletter-stories/ 301
+/newletter-stories/story-viewer /newsletter-stories/story-viewer/ 301
+/newletter-stories/story-viewer/ /newsletter-stories/story-viewer/ 301
+/newletter-stories/full-story-viewer /newsletter-stories/ 301
+/newletter-stories/full-story-viewer/ /newsletter-stories/ 301
