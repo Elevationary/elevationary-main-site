@@ -22,18 +22,32 @@
 ## Onboarding Scan (Run Every Session Start)
 1. `cd "~/Antigravity/Website" && python3 ~/.gemini/antigravity/skills/time_keeper/scripts/time_keeper.py START` — begin time tracking
 2. `cat docs/build_handover.md` — where Website work stopped
-3. `ls /Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/` — last verified phase
+3. `ls -lt /Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/ | head -5` then **READ the most recent ORS log file end-to-end** — confirm its final Result is `ORS PASS` (or `ORS FAIL` with a documented disposition). If the most recent log is `PROVISIONAL PASS`, incomplete, or has unchecked Stage 2.6 human live-fire items, **STOP** and resolve it before starting new work. Trust anchor: code after last ORS PASS is unverified; do not build on unverified ground.
 4. Query P4D3 MCP (`elevationary_p4d3`) — Website-relevant deliverables. Proxy: `cat docs/backlog.md`. If P4D3 MCP tools don't appear in deferred tools, type `/mcp` to reconnect.
 5. `$PYTHON $ROUTER status` — memory stack health
 6. `curl -sI https://elevationary.com/ | head -5` — production smoke test (Cloudflare reachable, HTTP 200)
 
 ## Coding Standards
 **Self-Annealing:** Fix root scripts. Never patch around failures. Loop: Create → Verify → Fix Root → Retry. Escalate only on hard blockers.
-**ORS v1.2:** Every change to Website must complete all stages: Build → Verify → Live-Fire → Red-Team → Remediate → Retest. Log to `/Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/[feature].md` using template at `docs/ORS_logs/TEMPLATE.md`.
-- **Stage 2 (Verify):** Test against the LIVE running system — including the Cloudflare Pages preview/production deploy. Local `npm run dev` alone does not satisfy.
-- **Stage 2.6 (Live-Fire):** (a) Agent live-fire — `curl` the deployed URL, observe real HTTP response, headers, content. (b) Human live-fire — James opens the site in a browser (mobile + desktop), confirms visual correctness and brand fidelity.
-- **Stage 3 (Red-Team):** (a) Surface audit — what's reachable on the public URL? (b) Sensitive file check — zero `.env`, key, credentials in repo (`find . -name ".env" ...`). (c) Stripe-specific: confirm webhook signature verification on any payment endpoints.
-- **ORS cannot be declared PASS with unchecked human live-fire items.** Brand-related changes also require Elevationary_Marketing sign-off as a human live-fire item.
+**ORS v1.2 — Non-Negotiable, Inline-First:** Every deliverable opens its ORS log as the **first artifact**, not the last.
+
+**At task start — before any code change — the agent MUST:**
+
+1. **Announce the ORS log filename** in chat. Format: `Opening ORS log: ORS_<feature-slug>_<YYYY_MM_DD>.md`. This is a visible commitment to the CEO that the discipline is active for the work about to be done. No announcement = no work begins.
+2. **Copy** `docs/ORS_logs/TEMPLATE.md` to that filename at `/Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/`.
+3. **Fill in Stage 0 (Blast Radius) and Stage 1 (Build checklist) IN THE LOG FILE** before touching any other file. The log is your worklist.
+4. Only then begin the actual change.
+
+**During the work:** Fill Stages 2, 2.5, 2.6 inline as verifications fire (paste real outputs in real time). Do not batch updates — paste at the moment each check runs.
+
+**Before declaring done:** Stage 3 Red-Team (including the mandatory Sensitive File Presence Check via `find`) + Stage 4 Remediation completed. Stage 5 Retest clean.
+
+**Result must be explicit:** `ORS PASS` (all stages green, human live-fire items checked) or `ORS FAIL` (with documented reason and disposition). `PROVISIONAL PASS` is not a closing state — it means the work isn't done; close the pending items or mark FAIL.
+
+**Wrap-up refuses without it** — `claude_wrap_up.py` is gated on an ORS log dated today (Step 0 of the script, committed 2026-05-20). `--skip-ors` exists for sessions with no deliverable but is audited via warning message.
+
+**Earned 2026-05-20** by Administrator (acting as Fleet COO). Canonical capture: fleet lesson `fleet_lesson_ors_discipline` + auto-memory `feedback_ors_discipline`.
+
 **Skill-First:** Before writing new code, `ls ~/.gemini/antigravity/skills/` — read SKILL.md for any relevant skill. Don't duplicate existing capabilities.
 **Memory-First:** Before non-trivial work, `$PYTHON $ROUTER recall "<topic>"`. If hits, `$PYTHON $ROUTER query <vault> "<question>"`.
 **Blocker-Check:** Before escalating to COO/James, `$PYTHON $ROUTER recall "<error>"`.
