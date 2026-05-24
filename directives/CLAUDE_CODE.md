@@ -101,6 +101,7 @@ Use `memory_router` as the single entry point. Run `status` during onboarding.
 **Telegram pages (required):** Page at end of every response where progress paused. Page BEFORE any tool call producing a terminal approval popup. Use `send_notification.py "Website" "<specific need>"`.
 **Fleet Learning:** Corrections → immediate `.tmp/fleet_lesson_<topic>.md` + `ingest_memory.py --agent FLEET` + verify recall.
 **Auto-memory vs Layer 3:** Personal preferences = auto-memory. Behavior change for any agent = Layer 3.
+**Document Review Protocol:** When presenting any plan, strategy document, or artifact to the CEO for structured review and amendment, use `EnterPlanMode` → write the full content to the plan file → `ExitPlanMode`. This opens a markdown preview panel in Antigravity IDE 2.0 with line-level commenting enabled: the CEO can highlight any passage and attach a comment directly to that line. Comments are returned inline when the CEO approves or rejects. This is the correct channel for structured artifact feedback — more precise than describing changes in chat. Confirmed effective 2026-05-24.
 
 ## Shared State Files
 
