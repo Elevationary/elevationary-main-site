@@ -5,6 +5,8 @@
 
 ## First-Session Priorities (Locked Order — Brand Before Build)
 
+- [ ] **[COO] Extend the Fleet Secret Consumer Registry** — Canonical doc: `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` (created 2026-05-28 after Newsletter's Vercel R2 rotation drift incident). Website-owned rows to fill: **(a) Stripe checkout + webhook on elevationary.com** (`STRIPE_*` — which keys does the live site read?) + smoke test; **(b) Cloudflare DNS / API** (`CLOUDFLARE_API_TOKEN`, `CF_TOKEN_DNS`) if Website directly reads (vs Administrator-owned tunnel); **(c) DATABASE_URL** if Website uses D1 — disambiguate with El_OS; **(d) VERCEL_TOKEN** — whether Website deploys via the token or CLI-cached auth. Read the registry's "What NOT to store" section before extending — names + smoke tests only, NEVER values. Append rows in place. Mark this item complete once your rows are filled.
+
 ### 1. Brand Foundation (FIRST ACTION — blocks all visible-content work)
 - [ ] **[BRAND] Read `~/Antigravity/Elevationary_Marketing/brand/` cover-to-cover** — voice, tone, visual standards, messaging. No skim.
 - [ ] **[BRAND] Audit current site vs brand standard** — inventory of `src/index.njk`, `about.njk`, `services.njk`, `newsletter-stories/`, `contact.njk`, `legal.njk`, `llms.njk`. Score each against brand. File gaps in `docs/brand_audit_2026_05_XX.md`.
