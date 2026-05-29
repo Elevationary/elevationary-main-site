@@ -1,5 +1,6 @@
 # ORS Log: [Feature/Fix Name]
 **Date:** YYYY-MM-DD | **Agent:** [Agent Name] | **Session:** [Session ID]
+**Conversation reference:** [Claude Code session timestamp + IDE link or anchor — single line, no full transcripts. Post-hoc forensics use this to find the thread; the transcript itself stays in Claude Code's session store.]
 
 ---
 
