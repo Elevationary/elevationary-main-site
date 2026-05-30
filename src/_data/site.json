@@ -5,6 +5,11 @@
   "orgId": "https://elevationary.com/#org",
   "twitter": "@ElevationaryAI",
   "agentSiteUrl": "https://agent.elevationary.com",
+  "subscribeUrl": "/subscribe/",
+  "stripeCustomerPortalUrl": "https://billing.stripe.com/p/login/PLACEHOLDER",
+  "stripeCheckoutIndividualUrl": "https://checkout.stripe.com/PLACEHOLDER_INDIVIDUAL",
+  "stripeCheckoutBundleUrl": "https://checkout.stripe.com/PLACEHOLDER_BUNDLE",
+  "stripeCheckoutAllAccessUrl": "https://checkout.stripe.com/PLACEHOLDER_ALL_ACCESS",
   "founder": {
     "name": "James Szmak",
     "url": "https://www.elevationary.com/about"
