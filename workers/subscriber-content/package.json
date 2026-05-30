@@ -1,0 +1,16 @@
+{
+  "name": "subscriber-content",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Entitlement Worker for elevationary.com gated subscriber content. Phase A: deny-by-default scaffold.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260501.0",
+    "typescript": "^5.4.0",
+    "wrangler": "^3.60.0"
+  }
+}

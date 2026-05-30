@@ -1,0 +1,29 @@
+name = "subscriber-content"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+
+# Phase A: routes are commented until James deploys the Worker.
+# Uncomment after `wrangler deploy` succeeds and after the Cloudflare Access
+# Subscriber Content app is configured per cloudflare/access/subscriber_content_app.md.
+#
+# [[routes]]
+# pattern = "elevationary.com/editions/*"
+# zone_name = "elevationary.com"
+#
+# [[routes]]
+# pattern = "elevationary.com/account/*"
+# zone_name = "elevationary.com"
+
+# Phase B will add:
+#   [[r2_buckets]]
+#   binding = "SALES_CRM"
+#   bucket_name = "elevationary-sales"
+#
+#   [[r2_buckets]]
+#   binding = "NEWSLETTER_CONTENT"
+#   bucket_name = "elevationary-newsletter"
+#
+# Secrets (set via `wrangler secret put` — Phase B):
+#   CF_ACCESS_SERVICE_TOKEN_ID
+#   CF_ACCESS_SERVICE_TOKEN_SECRET
+#   STRIPE_SECRET_KEY        (live, read-only on subscriptions)
