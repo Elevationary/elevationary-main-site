@@ -1,0 +1,74 @@
+{
+  "$schema_note": "Machine-readable spec for the Subscriber Content Access app. This is NOT a Cloudflare API import format — it is the reference shape James configures the dashboard from. Field names mirror the Cloudflare Access UI.",
+  "application": {
+    "name": "Subscriber Content",
+    "type": "self_hosted",
+    "session_duration": "720h",
+    "session_duration_human": "30 days",
+    "app_launcher_visible": false,
+    "auto_redirect_to_identity": false,
+    "domains": [
+      "elevationary.com/editions/*",
+      "elevationary.com/account/*"
+    ],
+    "public_paths_not_gated": [
+      "elevationary.com/",
+      "elevationary.com/about/",
+      "elevationary.com/services/",
+      "elevationary.com/contact/",
+      "elevationary.com/legal/",
+      "elevationary.com/subscribe/",
+      "elevationary.com/newsletter-stories/*",
+      "elevationary.com/llms.txt",
+      "elevationary.com/sitemap.xml",
+      "elevationary.com/.well-known/*"
+    ]
+  },
+  "identity_providers": [
+    {
+      "id_slug": "google",
+      "name": "Google",
+      "type": "google_workspace",
+      "apps_domain": "elevationary.com",
+      "purpose": "Staff and Workspace-account subscribers."
+    },
+    {
+      "id_slug": "email_otp",
+      "name": "Email OTP",
+      "type": "one_time_pin",
+      "pin_length": 6,
+      "purpose": "Primary path for individual subscribers without Google Workspace."
+    }
+  ],
+  "policies": [
+    {
+      "name": "Allow any authenticated identity",
+      "action": "allow",
+      "decision_rationale": "Identity-only gate at Access. Entitlement enforced downstream by the Entitlement Worker reading Sales R2 CRM + Stripe live state.",
+      "include": [
+        {
+          "type": "everyone_authenticated",
+          "value": null
+        }
+      ],
+      "require": [],
+      "exclude": []
+    }
+  ],
+  "service_tokens": [
+    {
+      "name": "subscriber-content-worker",
+      "duration_years": 1,
+      "stored_as_worker_secrets": [
+        "CF_ACCESS_SERVICE_TOKEN_ID",
+        "CF_ACCESS_SERVICE_TOKEN_SECRET"
+      ],
+      "registry_entry_required": true,
+      "registry_path": "~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md"
+    }
+  ],
+  "phase_status": {
+    "phase_a_this_session": "spec_written_dashboard_not_yet_configured",
+    "phase_b_blocked_on": "Sales P1 — Subscription schema shipping at sales/subscriptions/<sb_id>.json"
+  }
+}
