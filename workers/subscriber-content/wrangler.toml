@@ -37,5 +37,15 @@ bucket_name = "elevationary-newsletter"
 # Add a row to ~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md after
 # setting the secret. Names + smoke test only; never the value.
 
+# Cloudflare Access JWT verification (production REQUIRES both).
+# When BOTH are set, the Worker verifies the Cf-Access-Jwt-Assertion header
+# against Cloudflare's JWKS endpoint and uses the JWT's `email` claim as the
+# authenticated identity. When either is empty, the Worker falls back to
+# trusting the cf-access-authenticated-user-email header — DEV MODE ONLY.
+# Set both before James does the production `wrangler deploy`.
+[vars]
+CF_ACCESS_TEAM_DOMAIN = ""  # e.g. "elevationary.cloudflareaccess.com"
+CF_ACCESS_AUD = ""          # Access app AUD tag (Cloudflare dashboard -> Access app -> Application Audience)
+
 [observability]
 enabled = true

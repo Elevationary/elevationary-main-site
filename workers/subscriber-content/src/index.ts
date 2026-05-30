@@ -31,7 +31,17 @@ interface Env {
   SALES_CRM: R2Bucket;
   NEWSLETTER_CONTENT: R2Bucket;
   STRIPE_SECRET_KEY: string;
+  // Cloudflare Access JWT verification — both must be set for strict mode.
+  // Leave both unset for dev/local (header trust only; do NOT use in prod).
+  CF_ACCESS_TEAM_DOMAIN?: string;  // e.g. "elevationary.cloudflareaccess.com"
+  CF_ACCESS_AUD?: string;          // Access app AUD tag from Cloudflare dashboard
 }
+
+// JWKS cache — Worker isolate scope; per-instance. 1h TTL matches Cloudflare's
+// rotation cadence guidance. ~5 KB per fetch, infrequent enough to skip Cache API.
+type JwksCache = { keys: Map<string, CryptoKey>; expiresAt: number };
+let jwksCache: { byTeam: Map<string, JwksCache> } = { byTeam: new Map() };
+const JWKS_TTL_MS = 60 * 60 * 1000;
 
 interface Contact {
   ct_id: string;
@@ -95,14 +105,11 @@ const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const email = request.headers.get("cf-access-authenticated-user-email");
-    if (!email) {
-      return text(
-        "Cloudflare Access is not enforced for this route. " +
-          "Configure the Subscriber Content app per cloudflare/access/subscriber_content_app.md.",
-        403
-      );
+    const auth = await resolveAuthenticatedEmail(request, env);
+    if (!auth.ok) {
+      return text(auth.reason, 403);
     }
+    const email = auth.email;
 
     const url = new URL(request.url);
     const path = url.pathname;
@@ -217,6 +224,149 @@ async function handleArchive(env: Env, email: string, url: URL): Promise<Respons
       "cache-control": "private, no-store",
     },
   });
+}
+
+type AuthResult = { ok: true; email: string } | { ok: false; reason: string };
+
+async function resolveAuthenticatedEmail(request: Request, env: Env): Promise<AuthResult> {
+  const headerEmail = request.headers.get("cf-access-authenticated-user-email");
+  const jwt =
+    request.headers.get("Cf-Access-Jwt-Assertion") ||
+    request.headers.get("cf-access-jwt-assertion");
+
+  const strict = !!(env.CF_ACCESS_TEAM_DOMAIN && env.CF_ACCESS_AUD);
+
+  if (strict) {
+    if (!jwt) {
+      return { ok: false, reason: "Cloudflare Access JWT missing (strict mode requires Cf-Access-Jwt-Assertion)." };
+    }
+    const claim = await verifyAccessJwt(jwt, env.CF_ACCESS_AUD!, env.CF_ACCESS_TEAM_DOMAIN!);
+    if (!claim) {
+      return { ok: false, reason: "Cloudflare Access JWT failed verification." };
+    }
+    if (headerEmail && headerEmail.toLowerCase() !== claim.email.toLowerCase()) {
+      return { ok: false, reason: "Cloudflare Access JWT/header email mismatch." };
+    }
+    return { ok: true, email: claim.email };
+  }
+
+  // Dev/local mode — header trust only. NOT for production.
+  if (!headerEmail) {
+    return {
+      ok: false,
+      reason:
+        "Cloudflare Access is not enforced for this route. " +
+        "Configure the Subscriber Content app per cloudflare/access/subscriber_content_app.md, " +
+        "then set CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUD wrangler vars to enable strict JWT verification.",
+    };
+  }
+  return { ok: true, email: headerEmail };
+}
+
+async function verifyAccessJwt(
+  token: string,
+  expectedAud: string,
+  teamDomain: string
+): Promise<{ email: string } | null> {
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const [headerB64, payloadB64, sigB64] = parts;
+
+  let header: { alg?: string; kid?: string };
+  let payload: { aud?: string | string[]; email?: string; exp?: number; iss?: string };
+  try {
+    header = JSON.parse(b64UrlDecodeString(headerB64));
+    payload = JSON.parse(b64UrlDecodeString(payloadB64));
+  } catch {
+    return null;
+  }
+
+  if (header.alg !== "RS256" || !header.kid) return null;
+
+  const auds = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
+  if (!auds.includes(expectedAud)) return null;
+
+  if (payload.iss !== `https://${teamDomain}`) return null;
+
+  if (!payload.exp || Math.floor(Date.now() / 1000) >= payload.exp) return null;
+
+  if (!payload.email) return null;
+
+  const jwks = await loadJwks(teamDomain);
+  const key = jwks.get(header.kid);
+  if (!key) return null;
+
+  const signature = b64UrlDecodeBytes(sigB64);
+  const signed = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
+  let valid: boolean;
+  try {
+    valid = await crypto.subtle.verify(
+      { name: "RSASSA-PKCS1-v1_5" },
+      key,
+      signature.buffer.slice(signature.byteOffset, signature.byteOffset + signature.byteLength) as ArrayBuffer,
+      signed.buffer.slice(signed.byteOffset, signed.byteOffset + signed.byteLength) as ArrayBuffer
+    );
+  } catch {
+    return null;
+  }
+  if (!valid) return null;
+
+  return { email: payload.email };
+}
+
+interface JwkWithKid extends JsonWebKey {
+  kid: string;
+}
+
+async function loadJwks(teamDomain: string): Promise<Map<string, CryptoKey>> {
+  const cached = jwksCache.byTeam.get(teamDomain);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.keys;
+  }
+  const res = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`);
+  if (!res.ok) {
+    throw new Error(`JWKS fetch failed: ${res.status}`);
+  }
+  const data = (await res.json()) as { keys: JwkWithKid[] };
+  const keys = new Map<string, CryptoKey>();
+  for (const jwk of data.keys || []) {
+    if (jwk.kty !== "RSA" || !jwk.kid) continue;
+    if (jwk.use && jwk.use !== "sig") continue;
+    try {
+      const key = await crypto.subtle.importKey(
+        "jwk",
+        jwk,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        false,
+        ["verify"]
+      );
+      keys.set(jwk.kid, key);
+    } catch {
+      // Skip individual key that fails to import; don't poison the whole set.
+      continue;
+    }
+  }
+  jwksCache.byTeam.set(teamDomain, { keys, expiresAt: Date.now() + JWKS_TTL_MS });
+  return keys;
+}
+
+function b64UrlDecodeString(s: string): string {
+  return new TextDecoder().decode(b64UrlDecodeBytes(s));
+}
+
+function b64UrlDecodeBytes(s: string): Uint8Array {
+  const padded = s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice(0, (4 - (s.length % 4)) % 4);
+  const bin = atob(padded);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf;
+}
+
+// Test-only export — lets the test suite reset the per-isolate JWKS cache
+// between cases (real Workers reset between deploys; tests need an explicit
+// hook). NOT used at runtime.
+export function _resetJwksCacheForTests(): void {
+  jwksCache = { byTeam: new Map() };
 }
 
 async function resolveContactByEmail(env: Env, email: string): Promise<Contact | null> {

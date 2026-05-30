@@ -87,6 +87,38 @@ A Cloudflare service token must be provisioned for Worker-to-Access programmatic
 
 After the Worker is deployed (Phase B), add both vars as rows in `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` per the registry's "What NOT to store" rule (names + smoke tests only, never values).
 
+## JWT Verification (Detailed Red-Team Phase — earned 2026-05-30)
+
+Following the Detailed ORS red-team (`ORS_p4_d1_detailed_redteam_2026_05_30.md`), the Worker verifies the `Cf-Access-Jwt-Assertion` header end-to-end before trusting the `cf-access-authenticated-user-email` value. Without this, a request that bypasses Access (e.g. a hypothetical direct `*.workers.dev` URL) with a forged email header would be trusted.
+
+### Worker vars to set on James's `wrangler deploy`
+
+Both vars must be set for strict-mode verification (production). Leave both empty for dev/local (header trust only — NOT for production).
+
+| Var | Source | Example |
+|---|---|---|
+| `CF_ACCESS_TEAM_DOMAIN` | Cloudflare Zero Trust dashboard → Settings → Custom Pages → "Team domain" | `elevationary.cloudflareaccess.com` |
+| `CF_ACCESS_AUD` | Cloudflare Zero Trust dashboard → Access → Applications → `Subscriber Content` → Overview → "Application Audience (AUD) Tag" | 64-character hex string |
+
+Set via `wrangler.toml [vars]` block (these are non-secret public identifiers) OR via `wrangler secret put` if you prefer them as secrets.
+
+### Verification behavior
+
+The Worker accepts a request as authenticated only if all of these hold:
+1. JWT signature verifies against a key from `https://<team-domain>/cdn-cgi/access/certs` (JWKS cached 1h per-isolate).
+2. JWT `alg` is `RS256` (algorithm-confusion attacks via `HS256` / `none` are rejected).
+3. JWT `aud` claim contains the configured `CF_ACCESS_AUD`.
+4. JWT `iss` claim equals `https://<CF_ACCESS_TEAM_DOMAIN>`.
+5. JWT `exp` is in the future.
+6. JWT has an `email` claim.
+7. If both header email and JWT email are present, they match case-insensitively (defense against middleware confusion).
+
+Any failure → HTTP 403 with a non-leaky reason.
+
+### Test coverage
+
+10 JWT-verification cases in `workers/subscriber-content/test/worker.test.ts` (suite "JWT verification (strict Access mode)"). All 55 tests pass under `npx vitest run`.
+
 ---
 
 ## What this Phase A delivers vs Phase B
