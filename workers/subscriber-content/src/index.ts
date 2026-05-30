@@ -1,52 +1,438 @@
-// Subscriber Content Entitlement Worker — Phase A (deny-by-default scaffold).
+// Subscriber Content Entitlement Worker — Phase B.
 //
-// Phase A behavior: respond 403 to every request. Echo the authenticated email
-// (from cf-access-authenticated-user-email) when present so James can verify
-// Cloudflare Access is enforcing in front. No R2 reads. No Stripe calls.
+// Gates elevationary.com/editions/* and /account/* behind Cloudflare Access
+// (identity) AND subscription entitlement (this Worker).
 //
-// Phase B (waits on Sales P1 Subscription schema) will:
-//   1. Read sales/subscriptions/ from R2 (binding SALES_CRM).
-//   2. Resolve contact_id from email via sales/contacts/.
-//   3. Check active subscription entitlement (individual contact_id match OR
-//      enterprise company_id OR-join).
-//   4. Defense-in-depth: call Stripe subscriptions.retrieve to confirm
-//      status=active (+50ms accepted per CEO ratification 2026-05-30).
-//   5. On pass: render content from newsletter/drafts/<date>/ (binding
-//      NEWSLETTER_CONTENT).
-//   6. On fail: 302 to /upgrade?stream=<requested>&edition=<date>.
+// Flow per gated request:
+//   1. Read cf-access-authenticated-user-email (set by Access). Missing → 403.
+//   2. Resolve email → Contact via R2 list on sales/contacts/.
+//   3. Find active subscriptions via sales/index_subscriptions.json,
+//      OR-joining (contact_id = ct) OR (tier=enterprise AND company_id = co).
+//   4. Match against requested stream (URL → R2 frontmatter) and edition date
+//      vs entitlements.historical_access_from (per-sub R2 GET).
+//   5. Stripe defense-in-depth: fetch /v1/subscriptions/<sub_id>; reject if
+//      Stripe says not active. +50ms accepted per CEO ratification 2026-05-30.
+//   6. Pass → render newsletter/drafts/<date>/<topic>.md as HTML.
+//   7. Fail → 302 /upgrade?stream=<requested>&edition=<date>.
 
-export interface Env {
-  // Empty for Phase A. Phase B adds R2 bindings + Stripe secret.
+import { marked } from "marked";
+
+type Stream = "nonprofit" | "commercial";
+type Tier = "individual" | "enterprise";
+type SubStatus = "active" | "past_due" | "cancelled" | "suppressed";
+
+const STREAMS: readonly Stream[] = ["nonprofit", "commercial"] as const;
+
+const ENTITLED_STATUSES: readonly SubStatus[] = ["active", "past_due"] as const;
+
+const STRIPE_ACTIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
+
+interface Env {
+  SALES_CRM: R2Bucket;
+  NEWSLETTER_CONTENT: R2Bucket;
+  STRIPE_SECRET_KEY: string;
 }
 
-export default {
-  async fetch(request: Request, _env: Env, _ctx: ExecutionContext): Promise<Response> {
-    const email = request.headers.get("cf-access-authenticated-user-email");
-    const url = new URL(request.url);
+interface Contact {
+  ct_id: string;
+  email: string | null;
+  company_id: string;
+  first_name?: string;
+  last_name?: string;
+}
 
+interface SubscriptionIndexRow {
+  sb_id: string;
+  contact_id: string;
+  company_id: string | null;
+  stream: Stream;
+  tier: Tier;
+  status: SubStatus;
+  current_period_end: string;
+  streams_accessible: Stream[];
+  stripe_subscription_id: string;
+}
+
+interface SubscriptionIndex {
+  generated_at: string;
+  subscriptions: SubscriptionIndexRow[];
+}
+
+interface SubscriptionEntitlements {
+  streams_accessible: Stream[];
+  historical_access_from: string;
+  deep_content_access: boolean;
+}
+
+interface FullSubscription {
+  sb_id: string;
+  contact_id: string;
+  company_id: string | null;
+  stream: Stream;
+  tier: Tier;
+  status: SubStatus;
+  stripe_customer_id: string;
+  stripe_subscription_id: string;
+  stripe_price_id: string;
+  started_at: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+  cancelled_at: string | null;
+  entitlements: SubscriptionEntitlements;
+  source: string;
+  notes?: string;
+}
+
+interface Frontmatter {
+  stream?: Stream;
+  title?: string;
+  edition_date?: string;
+  topic?: string;
+}
+
+const EDITION_PATH_RE = /^\/editions\/(\d{4}-\d{2}-\d{2})(?:\/([a-z0-9-]+))?\/?$/;
+const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const email = request.headers.get("cf-access-authenticated-user-email");
     if (!email) {
-      return new Response(
-        "Cloudflare Access not enforced for this route.\n\n" +
-          "If you see this in production, the Access policy is missing or " +
-          "the Worker is receiving traffic before Access. Configure the " +
-          "Subscriber Content app per cloudflare/access/subscriber_content_app.md.\n",
-        {
-          status: 403,
-          headers: { "content-type": "text/plain; charset=utf-8" },
-        }
+      return text(
+        "Cloudflare Access is not enforced for this route. " +
+          "Configure the Subscriber Content app per cloudflare/access/subscriber_content_app.md.",
+        403
       );
     }
 
-    return new Response(
-      `Entitlement Worker stub — Phase B logic pending Sales P1 schema.\n\n` +
-        `Authenticated as: ${email}\n` +
-        `Requested path:   ${url.pathname}\n\n` +
-        `Phase A is intentionally deny-by-default. No subscriber content is served ` +
-        `until Sales ships sales/subscriptions/ and Phase B entitlement logic is wired.\n`,
-      {
-        status: 403,
-        headers: { "content-type": "text/plain; charset=utf-8" },
-      }
-    );
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    if (path === "/account" || path === "/account/" || path.startsWith("/account/")) {
+      return handleAccount(env, email, url);
+    }
+
+    const editionMatch = path.match(EDITION_PATH_RE);
+    if (editionMatch) {
+      const editionDate = editionMatch[1];
+      const topic = editionMatch[2] || "index";
+      return handleEdition(env, email, url, editionDate, topic);
+    }
+
+    if (path === "/editions" || path === "/editions/") {
+      return handleArchive(env, email, url);
+    }
+
+    return text("Not found.", 404);
   },
-};
+} satisfies ExportedHandler<Env>;
+
+async function handleEdition(
+  env: Env,
+  email: string,
+  url: URL,
+  editionDate: string,
+  topic: string
+): Promise<Response> {
+  const r2Key = `newsletter/drafts/${editionDate}/${topic}.md`;
+  const obj = await env.NEWSLETTER_CONTENT.get(r2Key);
+  if (!obj) {
+    return text("Edition not found.", 404);
+  }
+  const mdText = await obj.text();
+  const { frontmatter, body } = parseFrontmatter(mdText);
+
+  const stream = frontmatter.stream;
+  if (!stream || !STREAMS.includes(stream)) {
+    return text("Edition missing valid stream frontmatter.", 500);
+  }
+
+  const contact = await resolveContactByEmail(env, email);
+  if (!contact) {
+    return upgradeRedirect(url, stream, editionDate);
+  }
+
+  const candidates = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  if (candidates.length === 0) {
+    return upgradeRedirect(url, stream, editionDate);
+  }
+
+  for (const row of candidates) {
+    if (!row.streams_accessible.includes(stream)) continue;
+
+    const full = await getFullSubscription(env, row.sb_id);
+    if (!full) continue;
+
+    if (editionDate < full.entitlements.historical_access_from) continue;
+    if (!full.entitlements.deep_content_access) continue;
+
+    const stripeOk = await stripeVerifyActive(env.STRIPE_SECRET_KEY, full.stripe_subscription_id);
+    if (!stripeOk) continue;
+
+    const html = renderEditionHtml(body, frontmatter, editionDate, topic);
+    return new Response(html, {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "private, no-store",
+        "x-elevationary-entitlement": `sb=${full.sb_id};tier=${full.tier}`,
+      },
+    });
+  }
+
+  return upgradeRedirect(url, stream, editionDate);
+}
+
+async function handleAccount(env: Env, email: string, url: URL): Promise<Response> {
+  const contact = await resolveContactByEmail(env, email);
+  if (!contact) {
+    return upgradeRedirect(url, null, null);
+  }
+  const subs = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  if (subs.length === 0) {
+    return upgradeRedirect(url, null, null);
+  }
+  return new Response(renderAccountHtml(contact, subs, email), {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "private, no-store",
+    },
+  });
+}
+
+async function handleArchive(env: Env, email: string, url: URL): Promise<Response> {
+  const contact = await resolveContactByEmail(env, email);
+  if (!contact) {
+    return upgradeRedirect(url, null, null);
+  }
+  const subs = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  if (subs.length === 0) {
+    return upgradeRedirect(url, null, null);
+  }
+  const html = renderArchivePlaceholderHtml(email);
+  return new Response(html, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "private, no-store",
+    },
+  });
+}
+
+async function resolveContactByEmail(env: Env, email: string): Promise<Contact | null> {
+  const target = email.toLowerCase();
+  let cursor: string | undefined;
+  do {
+    const listed = await env.SALES_CRM.list({ prefix: "sales/contacts/", cursor });
+    for (const obj of listed.objects) {
+      if (!obj.key.endsWith(".json")) continue;
+      const data = await env.SALES_CRM.get(obj.key);
+      if (!data) continue;
+      try {
+        const c = (await data.json()) as Contact;
+        if (c.email && c.email.toLowerCase() === target) {
+          return c;
+        }
+      } catch {
+        // Malformed contact JSON — skip, do not poison the lookup.
+        continue;
+      }
+    }
+    cursor = listed.truncated ? listed.cursor : undefined;
+  } while (cursor);
+  return null;
+}
+
+async function findActiveSubscriptions(
+  env: Env,
+  contactId: string,
+  companyId: string | null
+): Promise<SubscriptionIndexRow[]> {
+  const obj = await env.SALES_CRM.get("sales/index_subscriptions.json");
+  if (!obj) return [];
+  let idx: SubscriptionIndex;
+  try {
+    idx = (await obj.json()) as SubscriptionIndex;
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(idx.subscriptions)) return [];
+  return idx.subscriptions.filter((s) => {
+    if (!ENTITLED_STATUSES.includes(s.status)) return false;
+    if (s.contact_id === contactId) return true;
+    if (s.tier === "enterprise" && companyId && s.company_id === companyId) return true;
+    return false;
+  });
+}
+
+async function getFullSubscription(env: Env, sbId: string): Promise<FullSubscription | null> {
+  const obj = await env.SALES_CRM.get(`sales/subscriptions/${sbId}.json`);
+  if (!obj) return null;
+  try {
+    return (await obj.json()) as FullSubscription;
+  } catch {
+    return null;
+  }
+}
+
+async function stripeVerifyActive(stripeKey: string, subId: string): Promise<boolean> {
+  if (!stripeKey) return false;
+  try {
+    const res = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subId)}`, {
+      headers: { Authorization: `Bearer ${stripeKey}` },
+    });
+    if (!res.ok) return false;
+    const sub = (await res.json()) as { status?: string };
+    return typeof sub.status === "string" && STRIPE_ACTIVE_STATUSES.has(sub.status);
+  } catch {
+    return false;
+  }
+}
+
+function parseFrontmatter(md: string): { frontmatter: Frontmatter; body: string } {
+  const m = md.match(FRONTMATTER_RE);
+  if (!m) return { frontmatter: {}, body: md };
+  const fmBlock = m[1];
+  const body = m[2];
+  const fm: Frontmatter = {};
+  for (const line of fmBlock.split(/\r?\n/)) {
+    const eq = line.indexOf(":");
+    if (eq < 0) continue;
+    const key = line.slice(0, eq).trim();
+    const raw = line.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+    if (key === "stream" && (raw === "nonprofit" || raw === "commercial")) {
+      fm.stream = raw;
+    } else if (key === "title") {
+      fm.title = raw;
+    } else if (key === "edition_date") {
+      fm.edition_date = raw;
+    } else if (key === "topic") {
+      fm.topic = raw;
+    }
+  }
+  return { frontmatter: fm, body };
+}
+
+function upgradeRedirect(url: URL, stream: Stream | null, date: string | null): Response {
+  const upgrade = new URL("/upgrade/", url.origin);
+  if (stream) upgrade.searchParams.set("stream", stream);
+  if (date) upgrade.searchParams.set("edition", date);
+  return Response.redirect(upgrade.toString(), 302);
+}
+
+function text(body: string, status: number): Response {
+  return new Response(body + "\n", {
+    status,
+    headers: { "content-type": "text/plain; charset=utf-8" },
+  });
+}
+
+function renderEditionHtml(
+  body: string,
+  fm: Frontmatter,
+  editionDate: string,
+  topic: string
+): string {
+  const title = escapeHtml(fm.title || `${editionDate} — ${topic}`);
+  const bodyHtml = String(marked.parse(body, { async: false }));
+  return baseHtml(
+    title,
+    `
+    <article class="page-content article-content">
+      <nav class="breadcrumb">
+        <a href="/editions/">← Editions</a>
+      </nav>
+      <p class="article-subtitle">Edition: ${escapeHtml(editionDate)} · Stream: ${escapeHtml(fm.stream || "")}</p>
+      <h1>${title}</h1>
+      ${bodyHtml}
+    </article>`
+  );
+}
+
+function renderAccountHtml(contact: Contact, subs: SubscriptionIndexRow[], email: string): string {
+  const rows = subs
+    .map(
+      (s) => `
+      <tr>
+        <td>${escapeHtml(s.stream)}</td>
+        <td>${escapeHtml(s.tier)}</td>
+        <td>${escapeHtml(s.status)}</td>
+        <td>${escapeHtml(s.current_period_end)}</td>
+      </tr>`
+    )
+    .join("");
+  const name = [contact.first_name, contact.last_name].filter(Boolean).join(" ").trim() || email;
+  return baseHtml(
+    "Your Account",
+    `
+    <article class="page-content">
+      <h1>Your Account</h1>
+      <p>Signed in as <strong>${escapeHtml(name)}</strong> (${escapeHtml(email)}).</p>
+
+      <h2>Active subscriptions</h2>
+      <table class="account-subs">
+        <thead><tr><th>Stream</th><th>Tier</th><th>Status</th><th>Renews / ends</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      <p>Manage your subscription, update payment details, or change plans through the Stripe Customer Portal.</p>
+      <p><a href="https://billing.stripe.com/p/login/PLACEHOLDER" class="cta-primary" target="_blank" rel="noopener">Open Stripe Customer Portal →</a></p>
+
+      <p class="muted">Need help? <a href="/contact/">Contact us</a>.</p>
+    </article>`
+  );
+}
+
+function renderArchivePlaceholderHtml(email: string): string {
+  return baseHtml(
+    "Your Editions",
+    `
+    <article class="page-content">
+      <h1>Your Editions</h1>
+      <p>Signed in as <strong>${escapeHtml(email)}</strong>.</p>
+      <p>Your edition archive will list every issue your subscription entitles you to. Per-date links arrive as Newsletter ships editions to R2.</p>
+      <p class="muted">If you have a direct link to an edition (e.g. <code>/editions/2026-06-01/your-topic</code>), it will load if you are entitled to that stream and date.</p>
+    </article>`
+  );
+}
+
+function baseHtml(title: string, inner: string): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title} | Elevationary</title>
+  <link rel="icon" href="/assets/elevationary-logo-512.png">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="/" class="nav-brand">Elevationary</a>
+    <ul>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/services/">Services</a></li>
+      <li><a href="/newsletter-stories/">Newsletter</a></li>
+      <li><a href="/account/">Account</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+  </nav>
+  <main>
+${inner}
+  </main>
+  <footer class="site-footer">
+    <p>&copy; Elevationary · <a href="/legal/">Legal &amp; Privacy</a></p>
+  </footer>
+</body>
+</html>`;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}

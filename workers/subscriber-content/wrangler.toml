@@ -1,29 +1,41 @@
 name = "subscriber-content"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
 
-# Phase A: routes are commented until James deploys the Worker.
-# Uncomment after `wrangler deploy` succeeds and after the Cloudflare Access
-# Subscriber Content app is configured per cloudflare/access/subscriber_content_app.md.
-#
-# [[routes]]
-# pattern = "elevationary.com/editions/*"
-# zone_name = "elevationary.com"
-#
-# [[routes]]
-# pattern = "elevationary.com/account/*"
-# zone_name = "elevationary.com"
+# Route claims. ACTIVE — Worker takes over these paths on first `wrangler deploy`.
+# Deployment ordering (per ratified plan + README):
+#   1. Configure the Cloudflare Access Subscriber Content app per
+#      cloudflare/access/subscriber_content_app.md FIRST. Then:
+#   2. Verify the R2 buckets below exist in your account.
+#   3. `wrangler secret put STRIPE_SECRET_KEY` with the live read-only key.
+#   4. `wrangler deploy` — claims the routes and goes live in one shot.
+# Skipping step 1 still works (Worker returns 403 "Access not enforced") but the
+# Eleventy placeholder pages for /editions/ and /account/ stop serving — Worker
+# owns the routes from this point.
+[[routes]]
+pattern = "elevationary.com/editions/*"
+zone_name = "elevationary.com"
 
-# Phase B will add:
-#   [[r2_buckets]]
-#   binding = "SALES_CRM"
-#   bucket_name = "elevationary-sales"
+[[routes]]
+pattern = "elevationary.com/account/*"
+zone_name = "elevationary.com"
+
+# R2 bindings — Worker reads only. Bucket names match Sales / Newsletter conventions.
+# If your account uses different bucket names, edit here BEFORE deploying.
+[[r2_buckets]]
+binding = "SALES_CRM"
+bucket_name = "elevationary-sales"
+
+[[r2_buckets]]
+binding = "NEWSLETTER_CONTENT"
+bucket_name = "elevationary-newsletter"
+
+# Secrets — set via wrangler CLI, never committed:
+#   wrangler secret put STRIPE_SECRET_KEY    # live key, RESTRICTED to read-only subscriptions
 #
-#   [[r2_buckets]]
-#   binding = "NEWSLETTER_CONTENT"
-#   bucket_name = "elevationary-newsletter"
-#
-# Secrets (set via `wrangler secret put` — Phase B):
-#   CF_ACCESS_SERVICE_TOKEN_ID
-#   CF_ACCESS_SERVICE_TOKEN_SECRET
-#   STRIPE_SECRET_KEY        (live, read-only on subscriptions)
+# Add a row to ~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md after
+# setting the secret. Names + smoke test only; never the value.
+
+[observability]
+enabled = true

@@ -1,0 +1,50 @@
+---
+title: "Upgrade your subscription | Elevationary"
+description: "Your current subscription does not include the edition you tried to open. Upgrade to access the full archive."
+layout: base.njk
+eleventyExcludeFromCollections: true
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "{{ site.url }}/upgrade/#page",
+  "name": "Upgrade your subscription",
+  "url": "{{ site.url }}/upgrade/",
+  "description": "{{ description }}"
+}
+</script>
+
+<article class="page-content">
+  <h1>Upgrade for full access</h1>
+
+  <p id="upgrade-context" class="lede">Your subscription does not include this edition.</p>
+
+  <p>Choose a plan that covers the stream and history you need:</p>
+
+  <p>
+    <a href="/subscribe/" class="cta-primary">See subscription plans →</a>
+    <a href="/account/" class="cta-secondary">Manage your current subscription →</a>
+  </p>
+
+  <p class="muted">Need help? <a href="/contact/">Contact us</a>.</p>
+</article>
+
+<script>
+  // Personalize the lede from the ?stream= and ?edition= query params the
+  // Entitlement Worker passes on redirect. No tracking — purely client-side
+  // adjustment to the visible copy.
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var stream = params.get("stream");
+    var edition = params.get("edition");
+    if (!stream && !edition) return;
+    var ctx = document.getElementById("upgrade-context");
+    if (!ctx) return;
+    var parts = [];
+    if (stream) parts.push("the " + stream + " stream");
+    if (edition) parts.push("the edition dated " + edition);
+    ctx.textContent = "Your subscription does not include " + parts.join(" or ") + ".";
+  })();
+</script>

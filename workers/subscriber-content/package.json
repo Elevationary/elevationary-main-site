@@ -1,12 +1,16 @@
 {
   "name": "subscriber-content",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Entitlement Worker for elevationary.com gated subscriber content. Phase A: deny-by-default scaffold.",
+  "description": "Entitlement Worker for elevationary.com gated subscriber content. Reads Sales R2 CRM, calls Stripe for live-state defense-in-depth, serves Newsletter R2 drafts to entitled subscribers.",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "tail": "wrangler tail"
+    "tail": "wrangler tail",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "marked": "^12.0.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260501.0",
