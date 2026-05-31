@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-05-30 (Mid-session, post-Phase-B)
+# Website Build Handover — 2026-05-30 (Wrap-up, post-Detailed-Red-Team)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -8,111 +8,125 @@ Administrator (Fleet COO + Code Pilot)
 
 ## Session Summary
 
-First Website coding session under the new agent identity. Subscription_Revenue_Pipeline Phases A + B both shipped to repo + production this session. The only remaining work to close P3 + P4 end-to-end is James's deploy-side hand-actions (dashboard Access config + `wrangler deploy`). Phase B Worker is the full artifact — R2 reads, Stripe defense-in-depth, OR-join enterprise entitlement, served content + upgrade redirects.
+First Website coding session under the new agent identity. Three ORS PASS logs landed:
+1. **Phase A** — Cloudflare Access spec, gated route Eleventy templates, `/unlock/` dead-link sweep, deny-by-default Worker scaffold.
+2. **Phase B** — Full P4_D1 Entitlement Worker (R2 + Stripe defense-in-depth + OR-join + render/redirect), `/upgrade/` template, wrangler.toml routes uncommented.
+3. **Detailed Red-Team (Rigor: Detailed)** — vitest harness with 55 tests exercising the full entitlement decision matrix; surfaced and fixed a high-severity JWT-verification gap; walkthrough authored + vault uploaded to L4.
 
-Two ORS PASS logs landed this session, both inline-discipline compliant (Stage 0/1 before code, Stages 2–5 paste-in-real-time).
+Only the deploy-side hand-actions (Cloudflare Access dashboard config + `wrangler deploy`) gate the end-to-end subscriber gating from going live.
 
 ## What Got Done
 
-### Phase A (commits `65fe1a6` → `c8ce467`, deployed to elevationary.com)
-- **P3 — Cloudflare Access spec** (`cloudflare/access/subscriber_content_app.md` + `subscriber_content_policy.json`). Locked: Google SSO + Email OTP, 30-day session, identity-only at the gate.
-- **P4_D2 — Gated route templates**:
-  - `/subscribe/` (public) — mirrors agent.elevationary.com/unlock/ tier structure ($29 / $69 / $149). Hero corrected from "behind the paywall" → "Subscribers get access to in-depth research."
-  - `/editions/` (gated, placeholder).
-  - `/account/` (gated, placeholder with Stripe Customer Portal handoff).
-- **`/unlock/` dead-link sweep** — 7 files: `index.njk` (×2), `services.njk`, `newsletter-stories/{index,story-viewer}.njk`, `llms.njk`, `.well-known/ai-plugin.json`. Production verified zero `/unlock/`.
-- **P4_D1 scaffold** — deny-by-default Worker. Superseded by Phase B.
-- **P4D3 ownership** — `P3_D1`, `P4_D1`, `P4_D2` reassigned Owner → Website.
-- **ORS PASS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_subscriptions_phase_a_2026_05_30.md`.
+### Phase A — production-deployed (commits `65fe1a6` → `c8ce467`)
+- P3 Access spec at `cloudflare/access/subscriber_content_app.md` + machine-readable `subscriber_content_policy.json`.
+- P4_D2 gated route Eleventy templates: `/subscribe/`, `/editions/`, `/account/`. `/subscribe/` mirrors the existing `agent.elevationary.com/unlock/` tier structure ($29 / $69 / $149); hero corrected from "behind the paywall" to "Subscribers get access to in-depth research."
+- `/unlock/` dead-link sweep across 7 files. Zero `/unlock/` in production HTML.
+- P4_D1 deny-by-default Worker scaffold (later superseded by Phase B).
+- P4D3 ownership: `P3_D1`, `P4_D1`, `P4_D2` all reassigned Owner → Website.
+- ORS PASS: `~/Antigravity_Data/Website/docs/ORS_logs/ORS_subscriptions_phase_a_2026_05_30.md`.
 
-### Phase B (commits `bf4dd01` → `90083a3`, deployed to elevationary.com)
-- **P4_D1 — Full Entitlement Worker** (`workers/subscriber-content/src/index.ts`):
-    - Email → Contact via R2 `sales/contacts/` (paginated list + GET, case-insensitive, malformed-JSON tolerant).
-    - Active subscriptions via `sales/index_subscriptions.json` with OR-join: `contact_id` match OR `tier=enterprise AND company_id` match. Status filter `(active | past_due)`.
-    - Per-sub R2 GET for `entitlements.{historical_access_from, deep_content_access}` checks (one extra GET — Sales index row doesn't include those fields; backlog optimization filed).
-    - Stripe `subscriptions.retrieve` defense-in-depth on every gated request (+50ms accepted per CEO ratification). Try/catch fails closed → false-deny preferred over false-allow.
-    - Pass: `marked`-rendered HTML from `newsletter/drafts/<date>/<topic>.md` with `cache-control: private, no-store` and `x-elevationary-entitlement` diagnostic header.
-    - Fail: 302 to `/upgrade?stream=...&edition=...`.
-    - `/account/` Worker-side HTML with subs table + Stripe Customer Portal link.
-    - `/editions/` archive placeholder (entitled subscribers only; per-date links arrive as Newsletter ships editions).
-    - Path-traversal guards via strict regex on date + topic.
-- **`wrangler.toml`** — routes uncommented (`elevationary.com/editions/*` + `/account/*`), R2 bindings (`SALES_CRM`, `NEWSLETTER_CONTENT`), `nodejs_compat`, observability enabled.
-- **`marked@^12.0.2`** added as production dep. `npm audit --omit=dev` → 0 vulnerabilities.
-- **`/upgrade/` Eleventy template** — public 302 destination. Reads `?stream=` + `?edition=` from URL via inline JS (`textContent` only, no XSS). Verified live in production.
-- **ORS PASS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_p4_d1_entitlement_worker_2026_05_30.md`.
+### Phase B — production-deployed (commits `bf4dd01` → `90083a3`)
+- Full P4_D1 Worker (`workers/subscriber-content/src/index.ts`):
+    - R2 email → Contact resolution (paginated, case-insensitive, malformed-JSON tolerant)
+    - Active sub lookup via `sales/index_subscriptions.json` with OR-join (contact_id OR enterprise company_id)
+    - Per-sub R2 GET for `entitlements.{historical_access_from, deep_content_access}`
+    - Stripe `subscriptions.retrieve` defense-in-depth (+50ms accepted)
+    - Pass → `marked`-rendered HTML with `cache-control: private, no-store` + `x-elevationary-entitlement` diagnostic header
+    - Fail → 302 `/upgrade?stream=…&edition=…`
+    - `/account/` Worker-side HTML with subs table + Stripe Customer Portal link
+    - `/editions/` archive placeholder
+    - Path-traversal guards via strict regex on date + topic
+- `wrangler.toml` — routes uncommented, R2 bindings, observability enabled.
+- `marked@^12` added as production dep. 0 vulnerabilities.
+- `/upgrade/` Eleventy template — public 302 destination. `?stream=` + `?edition=` personalization via inline JS (textContent only, no XSS).
+- ORS PASS: `~/Antigravity_Data/Website/docs/ORS_logs/ORS_p4_d1_entitlement_worker_2026_05_30.md`.
 
-### Verification snapshot (build `90083a3`)
+### Detailed Red-Team — repo-only (commit `4973625`)
+- vitest harness `workers/subscriber-content/test/worker.test.ts` — 55 tests, 12 describe-blocks, ~600 lines.
+- Full entitlement matrix walked: status × tier × stream × historical edge × deep_content_access — every cell has a real test with paste-real-output evidence in the ORS.
+- Stripe DiD failure surface: timeout, 401, mismatch, throw, unrecognized status, past_due acceptance, bearer auth.
+- Security red-team: 3-form path traversal (literal `..` URL-normalized → archive; URL-encoded `%2E%2E` → regex reject; out-of-tree → 404), malformed R2 payloads, timing-oracle measurement.
+- Performance instrumentation asserts exact R2 + Stripe call counts per entitled request.
+
+**FINDING 1 (security, high) — FIXED in same ORS:** Worker trusted `cf-access-authenticated-user-email` without verifying `Cf-Access-Jwt-Assertion`. Total bypass possible if Access misconfigured. **Fix:** `resolveAuthenticatedEmail` + `verifyAccessJwt` + `loadJwks` helpers; new optional Env fields `CF_ACCESS_TEAM_DOMAIN` + `CF_ACCESS_AUD`; strict-mode enforcement when both set; hard-check `alg=RS256` (defeats HS256 algorithm-confusion); email-mismatch defense; JWKS cached per-isolate 1h. **10 new strict-mode tests pass.**
+
+**FINDING 2 (timing oracle, low):** Documented; mitigated by Cloudflare Access rate-limiting; root-cause closed by the Sales `index_contacts_by_email.json` backlog optimization.
+
+**FINDING 3 (perf, low):** Per-sub R2 GET eliminable if Sales adds two fields to the index-row projection. Already in backlog.
+
+- ORS PASS (Rigor: Detailed): `~/Antigravity_Data/Website/docs/ORS_logs/ORS_p4_d1_detailed_redteam_2026_05_30.md`.
+- Walkthrough: `~/Antigravity_Data/Website/docs/walkthroughs/walkthrough_p4_d1_detailed_redteam_2026_05_30.md`.
+- L4 vault uploads: walkthroughs (`-a2bb60f4`) + ors-logs (`-35310839`), Layer 3 semantic pointers injected.
+
+### Verification snapshot (build `4973625`)
 
 | Check | Result |
 |---|---|
-| `tsc --noEmit` on Worker | exit 0, no errors |
+| `npx vitest run` | 55/55 passing |
+| `tsc --noEmit` | exit 0 |
 | `npm audit --omit=dev` | 0 vulnerabilities |
-| `npm run build` (Eleventy) | 13 files, no warnings |
+| `npm run build` | 13 files, no warnings |
 | Sensitive file scan | 0 hits |
-| Production homepage | HTTP/2 200 |
-| Production `/subscribe/` | HTTP/2 200, hero copy correct |
-| Production `/editions/` placeholder | HTTP/2 200 (Pages still serves; Worker not yet deployed) |
-| Production `/account/` placeholder | HTTP/2 200 (Pages still serves; Worker not yet deployed) |
-| Production `/upgrade/` | HTTP/2 200, query-param personalization renders |
-| Zero `/unlock/` in sampled production HTML | confirmed |
+| Production homepage | HTTP/2 200 (unchanged) |
+
+### P4D3 status
+
+- Three pre-populated Phase B core tasks flipped to 🟢 with Date=2026-05-30 (`task_2f9f945d` R2 OR-join, `task_3d031134` Stripe DiD, `task_2e3c191e` entitlement decision).
+- Four new tasks inserted (work not in pre-populated list): P3 spec authoring (`task_3c66d59c`), /upgrade/ template (`task_3b387f67`), wrangler.toml routes + R2 bindings (`task_496ddd86`), Worker markdown rendering (`task_9d3a73a3`). All 🟢.
+- Three ratified decisions inserted under their respective phases: identity/entitlement separation (P3), Stripe DiD (P4), enterprise OR-join (P4). All 🟢 Date=2026-05-30.
+- New Detailed-ORS milestone task (`task_6e328f9a`) 🟢 — "Code Complete + Detailed ORS PASS — awaiting James deploy chain for Stage 2.6(b) full close."
+- Deliverables `P3_D1`, `P4_D1`, `P4_D2` remain 🔲 until James close-out is done (per CEO directive).
 
 ## Remaining Work
 
-### James hand-actions to fully close P3 + P4
+### James close-out (single workflow, gates everything else)
 
-Single workflow, in order:
+1. Configure Cloudflare Access "Subscriber Content" app per `cloudflare/access/subscriber_content_app.md` checklist.
+2. Verify R2 buckets `elevationary-sales` + `elevationary-newsletter` exist; edit `wrangler.toml` bindings if named differently.
+3. Set strict-mode JWT vars in `wrangler.toml [vars]` (or via wrangler vars CLI):
+    - `CF_ACCESS_TEAM_DOMAIN` (e.g. `elevationary.cloudflareaccess.com`)
+    - `CF_ACCESS_AUD` (Application Audience tag from the Access app dashboard)
+4. `cd workers/subscriber-content && npm install && npx wrangler login && npx wrangler secret put STRIPE_SECRET_KEY` (restricted: `subscriptions:read` only).
+5. `npx wrangler deploy` — claims both routes atomically.
+6. Append `STRIPE_SECRET_KEY` Worker-side consumer row to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md`.
+7. Browser live-fire matrix (subset): no-sub → `/upgrade/`; individual → content; enterprise different-contact OR-join → content; cancelled → `/upgrade/`; stripe-cancelled-r2-active (defense-in-depth) → `/upgrade/`.
 
-1. **Configure Cloudflare Access "Subscriber Content" app** per checklist at the bottom of `cloudflare/access/subscriber_content_app.md`. Locks: Google SSO + Email OTP, 30-day session, two route patterns, identity-only policy.
-2. **Verify R2 buckets** `elevationary-sales` and `elevationary-newsletter` exist in your Cloudflare account. If named differently, edit `workers/subscriber-content/wrangler.toml` before deploy.
-3. **Stripe Worker secret:**
-    ```bash
-    cd ~/Antigravity/Website/workers/subscriber-content
-    npm install
-    npx wrangler login
-    npx wrangler secret put STRIPE_SECRET_KEY
-    # paste a RESTRICTED key with scope `subscriptions:read` only
-    ```
-4. **Deploy:** `npx wrangler deploy` — claims both routes atomically. Worker goes live.
-5. **Update** `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` — add the `STRIPE_SECRET_KEY` Worker-side consumer row (name + smoke test only; never the value).
-6. **Browser live-fire:**
-    - Private window → `https://elevationary.com/editions/2026-XX-XX/<topic>` (any path under `/editions/`) → Access prompt with Google SSO + Email OTP.
-    - Complete OTP. Since no subscriptions exist yet in R2, Worker returns 302 to `/upgrade?stream=...`.
-    - `/account/` → 302 to `/upgrade/` (no active sub).
-    - Once Sales writes the first test subscription via `sales_subscription.py create ...`, repeat the above and confirm content serves.
-    - Cancel that test sub in Stripe (CLI) → next request returns `/upgrade` 302 even before Stripe webhook hits R2 (defense-in-depth validation).
-    - Enterprise OR-join: a second contact at the same company_id can access.
+After Stage 2.6(b) close-out: flip `P4_D1`, `P3_D1`, `P4_D2` deliverable statuses to 🟢.
 
-### Sales-side optimizations (backlog — non-blocking for first live use)
+### Sales-side optimizations (filed; not blocking)
 
-- **Sales adds `historical_access_from` to `_index_row`** projection in `sales_subscription.py` — saves one R2 GET per entitled Worker request.
-- **Sales ships `sales/index_contacts_by_email.json`** — replaces O(N) contacts list + GET with O(1) email lookup. Important as subscriber count grows.
+- Add `historical_access_from` + `deep_content_access` to `_index_row()` projection in `sales_subscription.py` — eliminates per-sub R2 GET in Worker.
+- Ship `sales/index_contacts_by_email.json` — replaces O(N) contacts list with O(1) email lookup; also closes Finding 2 timing oracle.
 
-### Deferred (out of scope for P3 + P4)
+### Phase B+ candidates (Website-owned)
 
-- Real Stripe Checkout Payment Link URLs replace 4 placeholders in `src/_data/site.json` — lands when Sales P2 (Stripe webhook + Checkout session) ships.
-- `/editions/` archive listing (full implementation, not placeholder) — Phase B+ once Newsletter publishes a date manifest convention.
-- Consulting redirects in `_redirects` (5 rules) + footer/nav `agent.elevationary.com` refs in `base.njk` (52 refs total in `_site/`) — wait on agent.elevationary.com archival decision.
-- Brand pass on `/subscribe/`, `/editions/`, `/account/`, `/upgrade/` — blocked on Elevationary_Marketing populating `~/Antigravity/Elevationary_Marketing/brand/` (still empty as of 2026-05-30).
-- Fleet Secret Consumer Registry rows — Stripe (added by James as part of hand-action 5 above), Cloudflare (TBD), VERCEL_TOKEN (TBD), DATABASE_URL/D1 (TBD).
+- Real `/editions/` archive listing — currently placeholder. List R2 `newsletter/drafts/` by date, filter by subscriber's streams + historical, render.
+- Constant-time gating for entitlement decisions (defense against timing-based email enumeration).
+- Replace 4 Stripe Checkout placeholders in `src/_data/site.json` with real Payment Links or Sales-provided Checkout session URLs.
+
+### Deferred
+
+- Brand pass on `/subscribe/`, `/editions/`, `/account/`, `/upgrade/`, Worker-rendered surfaces — blocked on `~/Antigravity/Elevationary_Marketing/brand/` (still empty 2026-05-30).
+- Consulting redirects + footer/nav `agent.elevationary.com` refs (52 refs in `_site/`) — wait on subdomain archival decision.
 
 ## Open Questions
 
-- **Sales side: enterprise tier writes** — does `sales_subscription.py` support `--tier enterprise --company co_x` cleanly, or does the operator need to write the JSON by hand for the first enterprise sub? Confirm before James tests OR-join.
-- **Cloudflare R2 bucket naming** — `elevationary-sales` and `elevationary-newsletter` assumed. If James uses different bucket names, both `wrangler.toml` bindings need to match before `wrangler deploy`.
-- **R2 bucket access for the Worker account** — Worker needs read-only on both buckets. If R2 is in a different Cloudflare account than the Pages project, cross-account R2 setup is needed.
+- **Cloudflare R2 bucket naming** — `elevationary-sales` and `elevationary-newsletter` assumed. James to verify or edit `wrangler.toml` bindings before deploy.
+- **Cross-account R2 access** — if R2 is in a different Cloudflare account than the Pages project, cross-account R2 setup is needed for the Worker bindings.
+- **Sales enterprise tier CLI ergonomics** — `sales_subscription.py --tier enterprise --company co_x` confirmed supported (CLI exists per re-onboarding). First enterprise sub write should validate UX.
 
 ## Do Not Re-Try (Carried Fleet Rules)
 
-- Do NOT publish Elevationary-branded content without brand standard compliance (Phase A/B infrastructure exception accepted with documented compensating controls; do not generalize).
-- Do NOT deploy production Stripe code without a Test Mode green pass. *(Worker calls Stripe `subscriptions.retrieve` only — read, no mutation. The first live request itself IS the test.)*
-- Do NOT trust unsigned Stripe webhook payloads. *(Webhook receiver is Sales-owned, not Website.)*
-- Do NOT split agent home from code repo. One agent, one repo.
-- Do NOT include `STRIPE_SECRET_KEY` in any committed file. Only env-binding references in Worker source; only `wrangler secret put` to set the value.
+- Do NOT publish Elevationary-branded content without brand standard compliance (Phase A/B/Detailed infrastructure exception accepted; do not generalize).
+- Do NOT deploy production Stripe code without a Test Mode green pass. *(Worker calls `subscriptions.retrieve` read-only; the first live request itself IS the test once strict mode is configured.)*
+- Do NOT trust unsigned Stripe webhook payloads. *(Webhook receiver is Sales-owned.)*
+- Do NOT include `STRIPE_SECRET_KEY` in any committed file. Only env-binding references; only `wrangler secret put` for the value.
+- **NEW from this session:** Do NOT trust `cf-access-authenticated-user-email` without `Cf-Access-Jwt-Assertion` verification in production. Worker enforces this when `CF_ACCESS_TEAM_DOMAIN` + `CF_ACCESS_AUD` are set. Setting both is mandatory before `wrangler deploy`.
 
 ## Infrastructure State
 
-- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Build = `npm run build` → publishes `_site/`. Build `90083a3` verified live 2026-05-30 18:04 GMT.
-- **Cloudflare Worker `subscriber-content`** — full Phase B source in repo. NOT deployed.
+- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Build = `npm run build` → publishes `_site/`. Build `4973625` verified live (Pages auto-deployed; no live change to gated routes since Worker not deployed).
+- **Cloudflare Worker `subscriber-content`** — full Phase B + Detailed-Red-Team source in repo. NOT deployed.
 - **Cloudflare Access** — NOT yet configured in dashboard.
 - **R2 buckets** `elevationary-sales` and `elevationary-newsletter` — existence not yet verified from Website context.
 - **DNS:** Cloudflare hosted zone unchanged.
@@ -121,7 +135,7 @@ Single workflow, in order:
 
 ## Branch State
 
-On `main`, in sync with `origin/main`. HEAD: `90083a3`. Commits this session:
+On `main`, in sync with `origin/main`. HEAD: `4973625`. Commits this session:
 
 | Commit | Subject |
 |---|---|
@@ -131,8 +145,10 @@ On `main`, in sync with `origin/main`. HEAD: `90083a3`. Commits this session:
 | `c8ce467` | docs: surface COO Subscription_Revenue_Pipeline dispatch |
 | `bf4dd01` | docs: interim handover + backlog post-Phase-A |
 | `90083a3` | feat: P4_D1 entitlement Worker + /upgrade/ template |
+| `5b80805` | docs: interim handover + backlog post-Phase-B |
+| `4973625` | feat: P4_D1 Detailed Red-Team ORS — vitest harness + JWT verification fix |
 
-Untracked file `directives/CLAUDE_CODE.md.bak.20260520` is pre-existing and unrelated.
+Untracked file `directives/CLAUDE_CODE.md.bak.20260520` is pre-existing.
 
 ## Tech Stack
 
@@ -140,8 +156,8 @@ Untracked file `directives/CLAUDE_CODE.md.bak.20260520` is pre-existing and unre
 - luxon 3.7.2 for date handling
 - Cloudflare Pages deploy + edge
 - Cloudflare Worker (`subscriber-content`) — TypeScript with `@cloudflare/workers-types`
-- Worker prod dep: `marked@^12.0.2` (markdown → HTML)
-- Worker dev deps: `wrangler@^3.60.0`, `typescript@^5.4.0`
-- Source: `src/` (njk templates), `assets/`, `_data/`, `_includes/`, `cloudflare/access/` (Access spec), `workers/subscriber-content/` (Worker)
+- Worker prod deps: `marked@^12.0.2`
+- Worker dev deps: `jose@^5.9` (test JWT fixtures), `vitest@^2.1`, `wrangler@^3.60`, `typescript@^5.4`
+- Source: `src/` (njk templates), `assets/`, `_data/`, `_includes/`, `cloudflare/access/`, `workers/subscriber-content/`
 - Output: `_site/` (gitignored, build artifact)
-- Config: `_headers`, `_redirects`, `.eleventy.js`, `workers/subscriber-content/wrangler.toml`
+- Config: `_headers`, `_redirects`, `.eleventy.js`, `workers/subscriber-content/{wrangler.toml,tsconfig.json,vitest.config.ts}`
