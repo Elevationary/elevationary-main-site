@@ -21,15 +21,17 @@ zone_name = "elevationary.com"
 pattern = "elevationary.com/account/*"
 zone_name = "elevationary.com"
 
-# R2 bindings — Worker reads only. Bucket names match Sales / Newsletter conventions.
-# If your account uses different bucket names, edit here BEFORE deploying.
+# R2 bindings — Worker reads only. Both bindings point at the single
+# `gemini-content-factory` bucket where Sales (sales/ prefix) and Newsletter
+# (newsletter/ prefix) both write. Multi-bucket separation is a future-state
+# decision; today the prefix-based pattern at the key level is canonical.
 [[r2_buckets]]
 binding = "SALES_CRM"
-bucket_name = "elevationary-sales"
+bucket_name = "gemini-content-factory"
 
 [[r2_buckets]]
 binding = "NEWSLETTER_CONTENT"
-bucket_name = "elevationary-newsletter"
+bucket_name = "gemini-content-factory"
 
 # Secrets — set via wrangler CLI, never committed:
 #   wrangler secret put STRIPE_SECRET_KEY    # live key, RESTRICTED to read-only subscriptions
@@ -44,8 +46,8 @@ bucket_name = "elevationary-newsletter"
 # trusting the cf-access-authenticated-user-email header — DEV MODE ONLY.
 # Set both before James does the production `wrangler deploy`.
 [vars]
-CF_ACCESS_TEAM_DOMAIN = ""  # e.g. "elevationary.cloudflareaccess.com"
-CF_ACCESS_AUD = ""          # Access app AUD tag (Cloudflare dashboard -> Access app -> Application Audience)
+CF_ACCESS_TEAM_DOMAIN = "elevationary.cloudflareaccess.com"
+CF_ACCESS_AUD = "3c0a576539c6b42e609b9249f20be259a95f181517052892e077d369624c0bfa"
 
 [observability]
 enabled = true
