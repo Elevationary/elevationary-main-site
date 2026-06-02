@@ -1,4 +1,4 @@
-// Subscriber Content Entitlement Worker — Phase B.
+// Subscriber Content Entitlement Worker — Phase B + P9_D3 (Sales schema v2).
 //
 // Gates elevationary.com/editions/* and /account/* behind Cloudflare Access
 // (identity) AND subscription entitlement (this Worker).
@@ -7,21 +7,74 @@
 //   1. Read cf-access-authenticated-user-email (set by Access). Missing → 403.
 //   2. Resolve email → Contact via R2 list on sales/contacts/.
 //   3. Find active subscriptions via sales/index_subscriptions.json,
-//      OR-joining (contact_id = ct) OR (tier=enterprise AND company_id = co).
-//   4. Match against requested stream (URL → R2 frontmatter) and edition date
-//      vs entitlements.historical_access_from (per-sub R2 GET).
-//   5. Stripe defense-in-depth: fetch /v1/subscriptions/<sub_id>; reject if
+//      OR-joining (contact_id = ct.ct_id) OR (ct.ct_id ∈ shared_contact_ids).
+//      The latter covers All-Access Pass seat sharing (max 4 shared + 1 purchaser
+//      = 5 seats). The retired `enterprise` tier's company_id OR-join is gone.
+//   4. Match the requested edition's `swimlane` frontmatter against the
+//      subscription's entitlements.swimlanes_accessible[] (20-value enum:
+//      10 commercial_* + 10 nonprofit_*). The `stream` field is now Postmark
+//      routing only and does NOT drive entitlement.
+//   5. Edition date vs entitlements.historical_access_from + deep_content_access
+//      (per-sub R2 GET — the two fields not projected into the index row).
+//   6. Stripe defense-in-depth: fetch /v1/subscriptions/<sub_id>; reject if
 //      Stripe says not active. +50ms accepted per CEO ratification 2026-05-30.
-//   6. Pass → render newsletter/drafts/<date>/<topic>.md as HTML.
-//   7. Fail → 302 /upgrade?stream=<requested>&edition=<date>.
+//   7. Pass → render newsletter/drafts/<date>/<topic>.md as HTML.
+//   8. Fail → 302 /upgrade?swimlane=<requested>&edition=<date>.
 
 import { marked } from "marked";
 
 type Stream = "nonprofit" | "commercial";
-type Tier = "individual" | "enterprise";
+type Tier = "individual" | "functional_bundle" | "all_access";
 type SubStatus = "active" | "past_due" | "cancelled" | "suppressed";
 
+type Swimlane =
+  | "commercial_marketing_demand_generation"
+  | "commercial_sales_revenue_operations"
+  | "commercial_customer_success"
+  | "commercial_workforce_partner_enablement"
+  | "commercial_product_service_delivery"
+  | "commercial_brand_influence_thought_leadership"
+  | "commercial_strategic_partnerships"
+  | "commercial_business_intelligence_performance"
+  | "commercial_digital_transformation"
+  | "commercial_leadership_aim"
+  | "nonprofit_marketing_outreach"
+  | "nonprofit_fundraising_campaigns"
+  | "nonprofit_donor_stewardship"
+  | "nonprofit_volunteer_engagement"
+  | "nonprofit_program_delivery"
+  | "nonprofit_advocacy_awareness"
+  | "nonprofit_grant_prospecting_reporting"
+  | "nonprofit_impact_measurement"
+  | "nonprofit_organizational_readiness"
+  | "nonprofit_leadership_aim";
+
 const STREAMS: readonly Stream[] = ["nonprofit", "commercial"] as const;
+
+const SWIMLANES: readonly Swimlane[] = [
+  "commercial_marketing_demand_generation",
+  "commercial_sales_revenue_operations",
+  "commercial_customer_success",
+  "commercial_workforce_partner_enablement",
+  "commercial_product_service_delivery",
+  "commercial_brand_influence_thought_leadership",
+  "commercial_strategic_partnerships",
+  "commercial_business_intelligence_performance",
+  "commercial_digital_transformation",
+  "commercial_leadership_aim",
+  "nonprofit_marketing_outreach",
+  "nonprofit_fundraising_campaigns",
+  "nonprofit_donor_stewardship",
+  "nonprofit_volunteer_engagement",
+  "nonprofit_program_delivery",
+  "nonprofit_advocacy_awareness",
+  "nonprofit_grant_prospecting_reporting",
+  "nonprofit_impact_measurement",
+  "nonprofit_organizational_readiness",
+  "nonprofit_leadership_aim",
+] as const;
+
+const SWIMLANE_SET = new Set<string>(SWIMLANES);
 
 const ENTITLED_STATUSES: readonly SubStatus[] = ["active", "past_due"] as const;
 
@@ -46,7 +99,7 @@ const JWKS_TTL_MS = 60 * 60 * 1000;
 interface Contact {
   ct_id: string;
   email: string | null;
-  company_id: string;
+  company_id?: string | null;  // metadata only post-v2; no longer load-bearing
   first_name?: string;
   last_name?: string;
 }
@@ -59,7 +112,8 @@ interface SubscriptionIndexRow {
   tier: Tier;
   status: SubStatus;
   current_period_end: string;
-  streams_accessible: Stream[];
+  swimlanes_accessible: Swimlane[];
+  shared_contact_ids: string[];
   stripe_subscription_id: string;
 }
 
@@ -69,7 +123,7 @@ interface SubscriptionIndex {
 }
 
 interface SubscriptionEntitlements {
-  streams_accessible: Stream[];
+  swimlanes_accessible: Swimlane[];
   historical_access_from: string;
   deep_content_access: boolean;
 }
@@ -88,12 +142,17 @@ interface FullSubscription {
   current_period_end: string;
   cancel_at_period_end: boolean;
   cancelled_at: string | null;
+  shared_contact_ids: string[];
   entitlements: SubscriptionEntitlements;
   source: string;
   notes?: string;
 }
 
 interface Frontmatter {
+  // Post-v2: `swimlane` drives entitlement. `stream` is retained for display
+  // (and Newsletter's Postmark targeting upstream) but no longer used by the
+  // Worker's gating decision.
+  swimlane?: Swimlane;
   stream?: Stream;
   title?: string;
   edition_date?: string;
@@ -148,23 +207,23 @@ async function handleEdition(
   const mdText = await obj.text();
   const { frontmatter, body } = parseFrontmatter(mdText);
 
-  const stream = frontmatter.stream;
-  if (!stream || !STREAMS.includes(stream)) {
-    return text("Edition missing valid stream frontmatter.", 500);
+  const swimlane = frontmatter.swimlane;
+  if (!swimlane || !SWIMLANE_SET.has(swimlane)) {
+    return text("Edition missing valid swimlane frontmatter.", 500);
   }
 
   const contact = await resolveContactByEmail(env, email);
   if (!contact) {
-    return upgradeRedirect(url, stream, editionDate);
+    return upgradeRedirect(url, swimlane, editionDate);
   }
 
-  const candidates = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  const candidates = await findActiveSubscriptions(env, contact.ct_id);
   if (candidates.length === 0) {
-    return upgradeRedirect(url, stream, editionDate);
+    return upgradeRedirect(url, swimlane, editionDate);
   }
 
   for (const row of candidates) {
-    if (!row.streams_accessible.includes(stream)) continue;
+    if (!row.swimlanes_accessible.includes(swimlane)) continue;
 
     const full = await getFullSubscription(env, row.sb_id);
     if (!full) continue;
@@ -181,12 +240,12 @@ async function handleEdition(
       headers: {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "private, no-store",
-        "x-elevationary-entitlement": `sb=${full.sb_id};tier=${full.tier}`,
+        "x-elevationary-entitlement": `sb=${full.sb_id};tier=${full.tier};swimlane=${swimlane}`,
       },
     });
   }
 
-  return upgradeRedirect(url, stream, editionDate);
+  return upgradeRedirect(url, swimlane, editionDate);
 }
 
 async function handleAccount(env: Env, email: string, url: URL): Promise<Response> {
@@ -194,7 +253,7 @@ async function handleAccount(env: Env, email: string, url: URL): Promise<Respons
   if (!contact) {
     return upgradeRedirect(url, null, null);
   }
-  const subs = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  const subs = await findActiveSubscriptions(env, contact.ct_id);
   if (subs.length === 0) {
     return upgradeRedirect(url, null, null);
   }
@@ -212,7 +271,7 @@ async function handleArchive(env: Env, email: string, url: URL): Promise<Respons
   if (!contact) {
     return upgradeRedirect(url, null, null);
   }
-  const subs = await findActiveSubscriptions(env, contact.ct_id, contact.company_id);
+  const subs = await findActiveSubscriptions(env, contact.ct_id);
   if (subs.length === 0) {
     return upgradeRedirect(url, null, null);
   }
@@ -395,8 +454,7 @@ async function resolveContactByEmail(env: Env, email: string): Promise<Contact |
 
 async function findActiveSubscriptions(
   env: Env,
-  contactId: string,
-  companyId: string | null
+  contactId: string
 ): Promise<SubscriptionIndexRow[]> {
   const obj = await env.SALES_CRM.get("sales/index_subscriptions.json");
   if (!obj) return [];
@@ -409,8 +467,11 @@ async function findActiveSubscriptions(
   if (!Array.isArray(idx.subscriptions)) return [];
   return idx.subscriptions.filter((s) => {
     if (!ENTITLED_STATUSES.includes(s.status)) return false;
+    // Purchaser path — works for all 3 tiers (individual, functional_bundle, all_access).
     if (s.contact_id === contactId) return true;
-    if (s.tier === "enterprise" && companyId && s.company_id === companyId) return true;
+    // Seat-sharing path — only populated for All-Access Pass per the v2 schema's
+    // if/then constraints (empty for individual + functional_bundle).
+    if (Array.isArray(s.shared_contact_ids) && s.shared_contact_ids.includes(contactId)) return true;
     return false;
   });
 }
@@ -450,7 +511,9 @@ function parseFrontmatter(md: string): { frontmatter: Frontmatter; body: string 
     if (eq < 0) continue;
     const key = line.slice(0, eq).trim();
     const raw = line.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
-    if (key === "stream" && (raw === "nonprofit" || raw === "commercial")) {
+    if (key === "swimlane" && SWIMLANE_SET.has(raw)) {
+      fm.swimlane = raw as Swimlane;
+    } else if (key === "stream" && (raw === "nonprofit" || raw === "commercial")) {
       fm.stream = raw;
     } else if (key === "title") {
       fm.title = raw;
@@ -463,9 +526,9 @@ function parseFrontmatter(md: string): { frontmatter: Frontmatter; body: string 
   return { frontmatter: fm, body };
 }
 
-function upgradeRedirect(url: URL, stream: Stream | null, date: string | null): Response {
+function upgradeRedirect(url: URL, swimlane: Swimlane | null, date: string | null): Response {
   const upgrade = new URL("/upgrade/", url.origin);
-  if (stream) upgrade.searchParams.set("stream", stream);
+  if (swimlane) upgrade.searchParams.set("swimlane", swimlane);
   if (date) upgrade.searchParams.set("edition", date);
   return Response.redirect(upgrade.toString(), 302);
 }
@@ -485,6 +548,17 @@ function renderEditionHtml(
 ): string {
   const title = escapeHtml(fm.title || `${editionDate} — ${topic}`);
   const bodyHtml = String(marked.parse(body, { async: false }));
+  // Display both: swimlane is the entitled lane (what unlocked this view);
+  // stream is the Postmark/persona context (still useful for orientation).
+  const swimlaneDisplay = fm.swimlane ? escapeHtml(humanSwimlane(fm.swimlane)) : "";
+  const streamDisplay = fm.stream ? escapeHtml(fm.stream) : "";
+  const meta = [
+    `Edition: ${escapeHtml(editionDate)}`,
+    swimlaneDisplay ? `Swimlane: ${swimlaneDisplay}` : "",
+    streamDisplay ? `Stream: ${streamDisplay}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
   return baseHtml(
     title,
     `
@@ -492,7 +566,7 @@ function renderEditionHtml(
       <nav class="breadcrumb">
         <a href="/editions/">← Editions</a>
       </nav>
-      <p class="article-subtitle">Edition: ${escapeHtml(editionDate)} · Stream: ${escapeHtml(fm.stream || "")}</p>
+      <p class="article-subtitle">${meta}</p>
       <h1>${title}</h1>
       ${bodyHtml}
     </article>`
@@ -501,15 +575,22 @@ function renderEditionHtml(
 
 function renderAccountHtml(contact: Contact, subs: SubscriptionIndexRow[], email: string): string {
   const rows = subs
-    .map(
-      (s) => `
+    .map((s) => {
+      const tier = humanTier(s.tier);
+      const lanes = s.swimlanes_accessible.length;
+      const seatNote =
+        s.tier === "all_access" && s.shared_contact_ids.length > 0
+          ? ` (+ ${s.shared_contact_ids.length} shared seat${s.shared_contact_ids.length === 1 ? "" : "s"})`
+          : "";
+      return `
       <tr>
+        <td>${escapeHtml(tier)}${seatNote}</td>
         <td>${escapeHtml(s.stream)}</td>
-        <td>${escapeHtml(s.tier)}</td>
+        <td>${lanes} swimlane${lanes === 1 ? "" : "s"}</td>
         <td>${escapeHtml(s.status)}</td>
         <td>${escapeHtml(s.current_period_end)}</td>
-      </tr>`
-    )
+      </tr>`;
+    })
     .join("");
   const name = [contact.first_name, contact.last_name].filter(Boolean).join(" ").trim() || email;
   return baseHtml(
@@ -521,7 +602,7 @@ function renderAccountHtml(contact: Contact, subs: SubscriptionIndexRow[], email
 
       <h2>Active subscriptions</h2>
       <table class="account-subs">
-        <thead><tr><th>Stream</th><th>Tier</th><th>Status</th><th>Renews / ends</th></tr></thead>
+        <thead><tr><th>Plan</th><th>Stream</th><th>Access</th><th>Status</th><th>Renews / ends</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
 
@@ -541,9 +622,28 @@ function renderArchivePlaceholderHtml(email: string): string {
       <h1>Your Editions</h1>
       <p>Signed in as <strong>${escapeHtml(email)}</strong>.</p>
       <p>Your edition archive will list every issue your subscription entitles you to. Per-date links arrive as Newsletter ships editions to R2.</p>
-      <p class="muted">If you have a direct link to an edition (e.g. <code>/editions/2026-06-01/your-topic</code>), it will load if you are entitled to that stream and date.</p>
+      <p class="muted">If you have a direct link to an edition (e.g. <code>/editions/2026-06-01/your-topic</code>), it will load if your subscription's swimlanes cover that edition.</p>
     </article>`
   );
+}
+
+function humanTier(t: Tier): string {
+  switch (t) {
+    case "individual":
+      return "Individual Access";
+    case "functional_bundle":
+      return "Functional Bundle";
+    case "all_access":
+      return "All-Access Pass";
+  }
+}
+
+function humanSwimlane(s: Swimlane): string {
+  // commercial_marketing_demand_generation → "Commercial · Marketing Demand Generation"
+  const parts = s.split("_");
+  const stream = parts.shift() || "";
+  const rest = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ");
+  return `${stream.charAt(0).toUpperCase() + stream.slice(1)} · ${rest}`;
 }
 
 function baseHtml(title: string, inner: string): string {

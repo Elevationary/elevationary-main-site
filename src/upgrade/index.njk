@@ -21,7 +21,7 @@ eleventyExcludeFromCollections: true
 
   <p id="upgrade-context" class="lede">Your subscription does not include this edition.</p>
 
-  <p>Choose a plan that covers the stream and history you need:</p>
+  <p>Choose a plan that covers the swimlanes and history you need:</p>
 
   <p>
     <a href="/subscribe/" class="cta-primary">See subscription plans →</a>
@@ -32,18 +32,26 @@ eleventyExcludeFromCollections: true
 </article>
 
 <script>
-  // Personalize the lede from the ?stream= and ?edition= query params the
+  // Personalize the lede from the ?swimlane= and ?edition= query params the
   // Entitlement Worker passes on redirect. No tracking — purely client-side
-  // adjustment to the visible copy.
+  // adjustment to the visible copy. Treat params as TEXT only (textContent,
+  // not innerHTML) so any URL-borne content is safely escaped.
   (function() {
     var params = new URLSearchParams(window.location.search);
-    var stream = params.get("stream");
+    var swimlane = params.get("swimlane");
     var edition = params.get("edition");
-    if (!stream && !edition) return;
+    if (!swimlane && !edition) return;
     var ctx = document.getElementById("upgrade-context");
     if (!ctx) return;
+    function humanSwimlane(s) {
+      var parts = s.split("_");
+      if (parts.length < 2) return s;
+      var stream = parts.shift();
+      var rest = parts.map(function(p) { return p.charAt(0).toUpperCase() + p.slice(1); }).join(" ");
+      return stream.charAt(0).toUpperCase() + stream.slice(1) + " · " + rest;
+    }
     var parts = [];
-    if (stream) parts.push("the " + stream + " stream");
+    if (swimlane) parts.push("the " + humanSwimlane(swimlane) + " swimlane");
     if (edition) parts.push("the edition dated " + edition);
     ctx.textContent = "Your subscription does not include " + parts.join(" or ") + ".";
   })();
