@@ -183,11 +183,17 @@
 > Run regardless of whether an LLM interface exists. Sensitive files must not be present in any agent repo directory.
 
 ```
-# Run from the agent repo root to check for sensitive files:
-find . -name ".env" -o -name "*.env" -o -name "*.pem" -o -name "*.key" \
-  -o -name "*.p12" -o -name "*.pfx" -o -name "credentials.json" \
-  -o -name "service_account*.json" -o -name "secrets.*" \
-  | grep -v ".git"
+# Run from the agent repo root AND from its Antigravity_Data dir to check for sensitive files.
+# Pattern hardened 2026-06-02 (Heller ORS F9): plain `.env` and `*.env` miss `.env.local`,
+# `.env.production`, `.envrc`, `api_token.txt`, etc. — induced and confirmed missed.
+find . \
+  \( -name ".env" -o -name ".env.*" -o -name "*.env" -o -name ".envrc" \
+     -o -name "*.pem" -o -name "*.key" -o -name "*.p12" -o -name "*.pfx" \
+     -o -name "credentials.json" -o -name "credentials.*.json" \
+     -o -name "service_account*.json" -o -name "secrets.*" \
+     -o -iname "*token*.txt" -o -iname "*token*.json" \
+     -o -iname "*api*key*" -o -iname "*credential*.json" \) \
+  2>/dev/null | grep -v "/.git/" | grep -v "/node_modules/"
 ```
 
 - [ ] Command run and output reviewed?
