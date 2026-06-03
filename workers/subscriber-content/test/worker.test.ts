@@ -1121,6 +1121,236 @@ describe("JWT verification (strict Access mode)", () => {
 });
 
 // ============================================================
+// 9c. STAGE 3 INDUCED-FAILURE MATRIX (P9_D3 Detailed Red-Team)
+// Each test deliberately seeds malformed R2 payloads or injection
+// attempts. Real induction, real output. Findings → fix inline + retest.
+// ============================================================
+
+describe("Stage 3 induced-failure matrix", () => {
+  function malformedSeed(opts: {
+    // Override individual sub fields with arbitrary shapes
+    indexRowOverrides?: Partial<{
+      swimlanes_accessible: unknown;
+      shared_contact_ids: unknown;
+      status: unknown;
+      contact_id: unknown;
+    }>;
+    fullSubOverrides?: Record<string, unknown>;
+    editionMd?: string;
+    contactEmail?: string;
+    contactCtId?: string;
+  }) {
+    const sales = new MockR2Bucket();
+    const news = new MockR2Bucket();
+    const contact = makeContact({
+      ct_id: opts.contactCtId ?? "ct_alice",
+      email: opts.contactEmail ?? "alice@example.com",
+    });
+    sales.put(`sales/contacts/${contact.ct_id}.json`, contact);
+    const baseSub = makeSubscription({
+      sb_id: "sb_induce", contact_id: contact.ct_id,
+      stream: "nonprofit", tier: "individual", status: "active",
+      swimlanes_accessible: ["nonprofit_marketing_outreach"],
+      stripe_subscription_id: "sub_induce",
+    });
+    const fullSub: Record<string, unknown> = { ...baseSub, ...(opts.fullSubOverrides ?? {}) };
+    sales.put(`sales/subscriptions/${baseSub.sb_id}.json`, fullSub);
+    // Build index row by hand so we can poison fields
+    const indexRow: Record<string, unknown> = {
+      sb_id: baseSub.sb_id,
+      contact_id: baseSub.contact_id,
+      company_id: baseSub.company_id,
+      stream: baseSub.stream,
+      tier: baseSub.tier,
+      status: baseSub.status,
+      current_period_end: baseSub.current_period_end,
+      swimlanes_accessible: baseSub.entitlements.swimlanes_accessible,
+      shared_contact_ids: baseSub.shared_contact_ids,
+      stripe_subscription_id: baseSub.stripe_subscription_id,
+      ...(opts.indexRowOverrides ?? {}),
+    };
+    sales.put("sales/index_subscriptions.json", { generated_at: "2026-06-02T00:00:00Z", subscriptions: [indexRow] });
+    news.put(
+      "newsletter/drafts/2026-06-01/p9d3-live-fire.md",
+      opts.editionMd ?? makeEdition({ swimlane: "nonprofit_marketing_outreach" })
+    );
+    return { sales, news, contact, sbId: baseSub.sb_id };
+  }
+
+  // INDUCTION 1: index row swimlanes_accessible = null → predicted TypeError on .includes()
+  it("[A] index row swimlanes_accessible=null", async () => {
+    const { sales, news } = malformedSeed({ indexRowOverrides: { swimlanes_accessible: null } });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    let res: Response | { status: number; body: string };
+    try {
+      res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    } catch (e) {
+      res = { status: 500, body: `THREW: ${(e as Error).message}` };
+    }
+    console.log(`[A] status=${res.status}`);
+    // After fix: must be 302 (graceful fail-closed) — not 500/throw
+    expect(res.status).toBe(302);
+  });
+
+  // INDUCTION 2: index row swimlanes_accessible = "nonprofit_marketing_outreach" (string not array)
+  it("[B] index row swimlanes_accessible=<string not array>", async () => {
+    const { sales, news } = malformedSeed({ indexRowOverrides: { swimlanes_accessible: "nonprofit_marketing_outreach" } });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    let res: Response | { status: number; body: string };
+    try {
+      res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    } catch (e) {
+      res = { status: 500, body: `THREW: ${(e as Error).message}` };
+    }
+    console.log(`[B] status=${res.status}`);
+    // String has .includes() — would match substring, NOT semantic match. Real bug surface.
+    // After fix: must be 302 (graceful fail-closed)
+    expect(res.status).toBe(302);
+  });
+
+  // INDUCTION 3: full sub entitlements = null → predicted TypeError on .historical_access_from
+  it("[C] full sub entitlements=null", async () => {
+    const { sales, news } = malformedSeed({ fullSubOverrides: { entitlements: null } });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    let res: Response | { status: number; body: string };
+    try {
+      res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    } catch (e) {
+      res = { status: 500, body: `THREW: ${(e as Error).message}` };
+    }
+    console.log(`[C] status=${res.status}`);
+    expect(res.status).toBe(302);
+  });
+
+  // INDUCTION 4: full sub entitlements={} (empty object, no fields)
+  it("[D] full sub entitlements={} (empty object)", async () => {
+    const { sales, news } = malformedSeed({ fullSubOverrides: { entitlements: {} } });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    let res: Response | { status: number; body: string };
+    try {
+      res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    } catch (e) {
+      res = { status: 500, body: `THREW: ${(e as Error).message}` };
+    }
+    console.log(`[D] status=${res.status}`);
+    expect(res.status).toBe(302);
+  });
+
+  // INDUCTION 5: HTML <script> tag in MD body → confirm marked escapes
+  it("[E] MD body with <script>alert(1)</script> injection", async () => {
+    const md =
+      "---\nswimlane: nonprofit_marketing_outreach\ntitle: Injection Test\n---\n" +
+      "Normal paragraph.\n\n<script>alert('XSS')</script>\n\nMore content.";
+    const { sales, news } = malformedSeed({ editionMd: md });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    const res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    console.log(`[E] contains-raw-script=${body.includes("<script>alert")}`);
+    // Confirm marked does NOT pass the raw script through as live HTML
+    expect(body.includes("<script>alert('XSS')</script>")).toBe(false);
+  });
+
+  // INDUCTION 6: Frontmatter swimlane with leading/trailing whitespace
+  it("[F] frontmatter 'swimlane:   nonprofit_marketing_outreach   ' (whitespace)", async () => {
+    const md =
+      "---\nswimlane:   nonprofit_marketing_outreach   \ntitle: Whitespace Test\n---\nBody.\n";
+    const { sales, news } = malformedSeed({ editionMd: md });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    const res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    console.log(`[F] status=${res.status}`);
+    expect(res.status).toBe(200);
+  });
+
+  // INDUCTION 7: MD with frontmatter delimiter inside body — does parser get confused?
+  it("[G] MD body containing literal '---' lines", async () => {
+    const md =
+      "---\nswimlane: nonprofit_marketing_outreach\ntitle: Delimiter Confusion\n---\nIntro paragraph.\n\n---\n\nSecond section after delimiter.\n";
+    const { sales, news } = malformedSeed({ editionMd: md });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    const res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    console.log(`[G] status=${res.status}`);
+    // The first '---\n...\n---\n' should match; body should contain rest
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toMatch(/Second section after delimiter/);
+  });
+
+  // INDUCTION 8: index row missing swimlanes_accessible field (undefined)
+  it("[H] index row missing swimlanes_accessible (undefined)", async () => {
+    const { sales, news } = malformedSeed({
+      // delete-equivalent: set to undefined; spread skips it but explicit makes it not enumerable.
+      // Use a manually-crafted index instead.
+    });
+    // Manually overwrite the index with a row missing swimlanes_accessible
+    sales.put("sales/index_subscriptions.json", {
+      generated_at: "2026-06-02T00:00:00Z",
+      subscriptions: [{
+        sb_id: "sb_induce", contact_id: "ct_alice", company_id: null,
+        stream: "nonprofit", tier: "individual", status: "active",
+        current_period_end: "2026-12-31T23:59:59Z",
+        shared_contact_ids: [], stripe_subscription_id: "sub_induce",
+        // swimlanes_accessible MISSING
+      }],
+    });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    let res: Response | { status: number; body: string };
+    try {
+      res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    } catch (e) {
+      res = { status: 500, body: `THREW: ${(e as Error).message}` };
+    }
+    console.log(`[H] status=${res.status}`);
+    expect(res.status).toBe(302);
+  });
+
+  // INDUCTION 9: very large MD body (~1 MB) — Worker perf + Workers response size
+  it("[I] MD body ~1 MB (perf + size check)", async () => {
+    const big = "Paragraph. ".repeat(100_000);  // ~1.1 MB
+    const md =
+      "---\nswimlane: nonprofit_marketing_outreach\ntitle: Big Body\n---\n" + big;
+    const { sales, news } = malformedSeed({ editionMd: md });
+    mockStripeFetch({ sub_induce: { status: 200, body: { status: "active" } } });
+    const t0 = performance.now();
+    const res = await worker.fetch(gatedRequest("/editions/2026-06-01/p9d3-live-fire"), mockEnv(sales, news), {} as ExecutionContext);
+    const elapsed = performance.now() - t0;
+    console.log(`[I] status=${res.status} elapsed_ms=${Math.round(elapsed)}`);
+    expect(res.status).toBe(200);
+    // Workers free tier has 25 MB response size limit; 1 MB MD → ~3 MB HTML; fine.
+  });
+
+  // INDUCTION 10: Stripe Sub ID with shell-metachar/URL-special chars
+  it("[J] stripe_subscription_id with URL-special chars (encode safety)", async () => {
+    const weirdSubId = "sub_test/../injected?query=1";
+    const sales = new MockR2Bucket();
+    const news = new MockR2Bucket();
+    sales.put("sales/contacts/ct_alice.json", makeContact({ ct_id: "ct_alice", email: "alice@example.com" }));
+    const sub = makeSubscription({
+      sb_id: "sb_weird", contact_id: "ct_alice",
+      stream: "nonprofit", tier: "individual", status: "active",
+      swimlanes_accessible: ["nonprofit_marketing_outreach"],
+      stripe_subscription_id: weirdSubId,
+    });
+    sales.put(`sales/subscriptions/${sub.sb_id}.json`, sub);
+    sales.put("sales/index_subscriptions.json", makeIndex([sub]));
+    news.put("newsletter/drafts/2026-06-01/index.md", makeEdition({ swimlane: "nonprofit_marketing_outreach" }));
+    // Intercept fetch and observe the URL the Worker constructs
+    let capturedUrl = "";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : (input as Request).url;
+      capturedUrl = url;
+      // Return 200 active so Worker proceeds
+      return new Response(JSON.stringify({ status: "active" }), { status: 200 });
+    });
+    const res = await worker.fetch(gatedRequest("/editions/2026-06-01/index"), mockEnv(sales, news), {} as ExecutionContext);
+    console.log(`[J] stripe_url=${capturedUrl} status=${res.status}`);
+    // Confirm encodeURIComponent escapes the sub ID into the path
+    expect(capturedUrl).toMatch(/\/v1\/subscriptions\/sub_test%2F\.\.%2Finjected%3Fquery%3D1/);
+    expect(res.status).toBe(200);  // Worker proceeds; injection neutralized
+  });
+});
+
+// ============================================================
 // 10. PERFORMANCE INSTRUMENTATION
 // ============================================================
 describe("Performance instrumentation", () => {

@@ -23,6 +23,26 @@
 
 import { marked } from "marked";
 
+// Defense-in-depth: tell marked to ESCAPE any raw HTML / `<script>` blocks
+// in the markdown source rather than passing them through. Newsletter MD is
+// assumed authored by an internal agent but the Worker treats it as untrusted
+// input. The default marked v12 renderer passes inline + block HTML through
+// unmodified (Stage 3 finding [E]). Overriding the `html` renderer to escape
+// the raw HTML string keeps real <script> tags inert as text. Configured once
+// at module load; applies to every marked.parse() call.
+marked.use({
+  renderer: {
+    html(html: string) {
+      return html
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    },
+  },
+});
+
 type Stream = "nonprofit" | "commercial";
 type Tier = "individual" | "functional_bundle" | "all_access";
 type SubStatus = "active" | "past_due" | "cancelled" | "suppressed";
@@ -223,11 +243,18 @@ async function handleEdition(
   }
 
   for (const row of candidates) {
+    // Defense: tolerate malformed index rows where `swimlanes_accessible` is
+    // missing, null, or wrong-typed. Stage 3 findings [A], [B], [H].
+    if (!Array.isArray(row.swimlanes_accessible)) continue;
     if (!row.swimlanes_accessible.includes(swimlane)) continue;
 
     const full = await getFullSubscription(env, row.sb_id);
     if (!full) continue;
 
+    // Defense: tolerate malformed full sub where `entitlements` is missing
+    // or has missing fields. Stage 3 finding [C]. Fail closed.
+    if (!full.entitlements || typeof full.entitlements !== "object") continue;
+    if (typeof full.entitlements.historical_access_from !== "string") continue;
     if (editionDate < full.entitlements.historical_access_from) continue;
     if (!full.entitlements.deep_content_access) continue;
 
