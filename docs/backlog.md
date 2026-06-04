@@ -78,4 +78,3 @@
 - [X] **2026-06-02 evening — P9_D3 Stage 3 induction + Stage 4 remediation.** Commit `935843a`. **3 bugs surfaced + fixed: 1 critical XSS (`marked@^12` raw-HTML), 2 defensive-coding gaps.** 66/66 tests. Worker v2.1 version `58820166-e764-48ab-bb6e-4dd2433c69fe`. ORS PASS (Rigor: Detailed) post-remediation.
 - [X] **2026-06-02 — P9_D3 Worker swimlane schema v2 migration.** Commit `1579ce5`. Rigor: Detailed. 56/56 tests. Worker v2.0 version `18746577-3dfd-4b4d-9803-717a9f62b71e`. Walkthrough + L4 vault uploads. Initial ORS PASS.
 - [X] **2026-06-02 — James close-out deploy chain executed.** Commit `360b740`. Cloudflare Access live; JWT strict-mode active; Worker deployed; R2 consolidated. Subscriber gate live.
-- [X] **2026-06-02 — Refresh handover + backlog + P4D3 to live state.** Commit `6e98842`. 4 P4D3 task statuses flipped.
