@@ -359,7 +359,7 @@ async function verifyAccessJwt(
   const [headerB64, payloadB64, sigB64] = parts;
 
   let header: { alg?: string; kid?: string };
-  let payload: { aud?: string | string[]; email?: string; exp?: number; iss?: string };
+  let payload: { aud?: string | string[]; email?: string; exp?: number; nbf?: number; iss?: string };
   try {
     header = JSON.parse(b64UrlDecodeString(headerB64));
     payload = JSON.parse(b64UrlDecodeString(payloadB64));
@@ -374,7 +374,12 @@ async function verifyAccessJwt(
 
   if (payload.iss !== `https://${teamDomain}`) return null;
 
-  if (!payload.exp || Math.floor(Date.now() / 1000) >= payload.exp) return null;
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (!payload.exp || nowSec >= payload.exp) return null;
+  // Pass-2 Stage 4 (F-Q-1, 2026-06-03): reject premature tokens. Strict verifier
+  // must check `nbf` if present; CF Access mints nbf ≤ now in normal flow, but
+  // defense-in-depth requires we reject future-dated tokens reaching the Worker.
+  if (typeof payload.nbf === "number" && nowSec < payload.nbf) return null;
 
   if (!payload.email) return null;
 
