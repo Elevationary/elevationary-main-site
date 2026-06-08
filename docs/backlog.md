@@ -49,7 +49,7 @@
 - [ ] **[JAMES] Deployment protection for Preview environments** — verify whether Cloudflare Pages preview environments need Cloudflare Access.
 
 ### Carry-over Warning
-- **2026-06-11 (7 days)** — GoDaddy → Squarespace handover. Suspect first if DNS surfaces break that day.
+- **2026-06-11 (3 days)** — GoDaddy → Squarespace handover. Suspect first if DNS surfaces break that day.
 
 ## Operational Rules
 - [ ] **Operational Rule:** Do NOT populate this backlog with granular tasks. All granular work must be filed in the P4D3 system.

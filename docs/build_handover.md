@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-06-04 (interim, post-Stage-2.6(b)-runbook-prep)
+# Website Build Handover — 2026-06-08 (interim check-in, no substantive change since 2026-06-04)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -8,9 +8,13 @@ Administrator (Fleet COO + Code Pilot)
 
 ## Session Summary
 
-**Doc-only session.** Authored the Stage 2.6(b) live-fire 11-cell runbook as the canonical paint-by-numbers reference so the next CEO + Sales + Website coordinated live-fire is deterministic, not invent-as-we-go. Production Worker untouched (v2.2 `459d1ab9…` from 2026-06-03 still live). ORS PASS (Standard rigor). Runbook uploaded to L4 `agent-context` vault (doc `…-9d9d699c`) as the canonical reference for ANY future entitlement matrix work, per CEO directive.
+**Onboarding-only check-in session.** No code or deliverable changes. Verified onboarding scan green: build_handover read, most recent ORS (`ORS_stage_2_6b_runbook_prep_2026_06_04.md`) = **ORS PASS (Standard)** trust anchor solid, memory router L1–L4 active (1511 L3 memories, 481 L4 docs), production smoke `https://elevationary.com/` → HTTP/2 200. State carries forward unchanged from 2026-06-04: Worker v2.2 (`459d1ab9…`) still live, Pages build `4aa8369` still serving, Stage 2.6(b) coordinated live-fire still the next gate (paint-by-numbers per the 992-line runbook).
 
-The runbook + ORS live in `~/Antigravity_Data/Website/docs/` (non-git data dir); only the handover + backlog + P4D3 task update land in the code-repo commit today.
+**Carry-over urgency bump:** GoDaddy → Squarespace handover is now **3 days out (2026-06-11)** — was 7 days out at last handover. Suspect this first if DNS surfaces break that day.
+
+## Prior session deliverable (2026-06-04 — carried forward, no change)
+
+**Stage 2.6(b) live-fire 11-cell runbook** — canonical paint-by-numbers reference at `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` (992 lines, L4 `agent-context` doc `…-9d9d699c`). ORS PASS (Standard) — `ORS_stage_2_6b_runbook_prep_2026_06_04.md`. Production Worker untouched.
 
 ## What's Live in Production (unchanged from 2026-06-03 build `19199b5` + Worker v2.2)
 
@@ -25,7 +29,16 @@ No code changed. State identical to prior handover.
 | Public routes | HTTP/2 200 unchanged. Production smoke trio at wrap-up: clean. |
 | Live-fire fixture | `newsletter/drafts/2026-06-01/p9d3-live-fire.md` (1777 bytes) remains seeded from pass-2 session. Three additional fixtures will be seeded by the runbook at Step 0.3 (and torn down at Step 12). |
 
-## What Got Done This Session (2026-06-04 — interim post-runbook-prep)
+## What Got Done This Session (2026-06-08 — interim onboarding-only)
+
+- Ran the 6-step Onboarding Scan per `directives/CLAUDE_CODE.md`. All steps green.
+- Read most recent ORS log end-to-end and confirmed **ORS PASS** (Standard rigor) trust anchor — Stage 5 retest clean, all 10 R-modes resolved deterministically in runbook v2. Only unchecked items are post-deploy observability signals gated on CEO's *future* live-fire run, NOT on this ORS.
+- Confirmed production homepage HTTP/2 200.
+- No code changes; no Worker / Pages deploy; no R2 / Sales / Stripe mutations.
+
+This wrap-up commit appends doc-only changes (this handover refresh + backlog GoDaddy countdown bump + today's timelog).
+
+## Prior session deliverable carryover (2026-06-04)
 
 ### Stage 2.6(b) live-fire runbook v2 — paint-by-numbers 11-cell matrix
 
@@ -165,12 +178,12 @@ CEO directive named `~/Antigravity_Data/Elevationary_Website/docs/...`; canonica
 - **R2 bucket `gemini-content-factory`** — single bucket; `sales/` + `newsletter/` prefixes.
 - **Worker secret `STRIPE_SECRET_KEY`** — set, LIVE-mode restricted `subscriptions:read`. Runbook Step 0.2 cycles to TEST mode for live-fire; Step 12.5 cycles back.
 - **DNS:** Cloudflare hosted zone unchanged.
-- **GoDaddy → Squarespace handover scheduled 2026-06-11** — **7 days from now**.
+- **GoDaddy → Squarespace handover scheduled 2026-06-11** — **3 days from now**. Suspect first if DNS surfaces break that day.
 - **Telegram bot:** `agentName: "Website"` in `~/.elevationary/bots.json` entry [8].
 
 ## Branch State
 
-On `main`, in sync with `origin/main`. HEAD pre-this-commit: `4aa8369`. This wrap-up commit appends doc-only changes (handover + backlog + this session's timelog). Untracked: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md` (carried; pre-existing).
+On `main`. HEAD pre-this-commit: `185ea66` (backlog auto-trim from 2026-06-04 wrap-up). This wrap-up commit appends doc-only changes (handover refresh + backlog GoDaddy bump + today's timelog). Untracked: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md` (carried; pre-existing).
 
 ## Tech Stack
 
