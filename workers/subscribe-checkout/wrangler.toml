@@ -1,0 +1,99 @@
+name = "subscribe-checkout"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ============================================================================
+# SKELETON STATE — 2026-06-09
+# ============================================================================
+# Routes, R2 bindings, and KV namespaces are COMMENTED below until CEO Q6
+# unblocks Stripe Products + restricted API key provisioning. To activate:
+#   1. CEO provisions restricted Stripe key + 3 (or 6 if Q4 ratifies annual)
+#      Stripe Price IDs in Dashboard.
+#   2. `wrangler kv:namespace create "IDEMPOTENCY_KV"` + `--env preview`
+#      → paste IDs into env blocks below.
+#   3. `wrangler secret put STRIPE_SECRET_KEY` (Live) +
+#      `wrangler secret put STRIPE_SECRET_KEY --env preview` (Test).
+#   4. `wrangler secret put STRIPE_PRICE_*_MONTHLY` for each tier × env.
+#   5. Uncomment routes block; run `wrangler deploy --env preview` first.
+#   6. Execute Test Mode round-trip (per spec § 3.10 dry-run flow).
+#   7. Flip preview → production via `wrangler deploy` (no env flag).
+# ============================================================================
+
+# --- Production routes — UNCOMMENT AT ACTIVATION ---
+# [[routes]]
+# pattern = "elevationary.com/api/checkout/*"
+# zone_name = "elevationary.com"
+
+# --- R2 binding (single bucket; sales/ prefix per current convention) ---
+# Re-uses the same bucket as subscriber-content v2.2.
+# [[r2_buckets]]
+# binding = "R2_SALES"
+# bucket_name = "gemini-content-factory"
+
+# --- KV namespace for idempotency (per-IP rate limit + per-email lockout) ---
+# Spec § 3.7: one namespace, prefixed keys (rl:ip:* and lock:email:*).
+# [[kv_namespaces]]
+# binding = "IDEMPOTENCY_KV"
+# id = "<TODO_PRODUCTION_KV_ID>"
+
+# --- Worker env vars (non-secret; safe to commit) ---
+[vars]
+WORKER_ENV = "production"
+# spec § 3.8 — Origin allow-list per env; comma-separated.
+ALLOWED_ORIGINS = "https://elevationary.com,https://www.elevationary.com"
+# spec § 6 — Stripe API version pin.
+STRIPE_API_VERSION = "2025-08-27.basil"
+# spec § 3.10 — dry-run flag for Sales schema confirmation.
+# Set DRY_RUN_CONTACT_WRITE=true in preview env via `wrangler secret put` to
+# log proposed Contact JSON without R2 write + short-circuit Stripe call.
+DRY_RUN_CONTACT_WRITE = "false"
+
+[observability]
+enabled = true
+
+# ============================================================================
+# Preview environment (Stripe TEST MODE — spec § 3.9)
+# ============================================================================
+[env.preview]
+# --- Preview routes optional; preview can also use *.pages.dev review URLs ---
+# [[env.preview.routes]]
+# pattern = "preview.elevationary.com/api/checkout/*"
+# zone_name = "elevationary.com"
+
+# [[env.preview.r2_buckets]]
+# binding = "R2_SALES"
+# bucket_name = "gemini-content-factory"
+
+# [[env.preview.kv_namespaces]]
+# binding = "IDEMPOTENCY_KV"
+# id = "<TODO_PREVIEW_KV_ID>"
+
+[env.preview.vars]
+WORKER_ENV = "preview"
+# Preview origin allow-list adds *.pages.dev review URLs + localhost dev.
+ALLOWED_ORIGINS = "https://elevationary.com,https://www.elevationary.com,http://localhost:8788,http://127.0.0.1:8788"
+STRIPE_API_VERSION = "2025-08-27.basil"
+DRY_RUN_CONTACT_WRITE = "true"
+
+# ============================================================================
+# Secrets — NEVER committed. Set via wrangler CLI at activation:
+#
+#   # Production (Live Mode):
+#   wrangler secret put STRIPE_SECRET_KEY                    # sk_live_..., restricted: write:checkout.sessions
+#   wrangler secret put STRIPE_PRICE_INDIVIDUAL_MONTHLY      # price_...
+#   wrangler secret put STRIPE_PRICE_BUNDLE_MONTHLY          # price_...
+#   wrangler secret put STRIPE_PRICE_ALL_ACCESS_MONTHLY      # price_...
+#   # (and STRIPE_PRICE_*_ANNUAL if Q4 ratifies annual v1)
+#
+#   # Preview (Test Mode):
+#   wrangler secret put STRIPE_SECRET_KEY --env preview      # sk_test_...
+#   wrangler secret put STRIPE_PRICE_INDIVIDUAL_MONTHLY --env preview
+#   wrangler secret put STRIPE_PRICE_BUNDLE_MONTHLY --env preview
+#   wrangler secret put STRIPE_PRICE_ALL_ACCESS_MONTHLY --env preview
+#
+# After Live setting, append a row to
+#   ~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md
+# per fleet lesson (secret consumer registry — name + smoke test only,
+# NEVER the value).
+# ============================================================================

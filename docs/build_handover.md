@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-06-08 (interim check-in, no substantive change since 2026-06-04)
+# Website Build Handover — 2026-06-09 (Stripe Checkout Worker SKELETON)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -8,196 +8,183 @@ Administrator (Fleet COO + Code Pilot)
 
 ## Session Summary
 
-**Onboarding-only check-in session.** No code or deliverable changes. Verified onboarding scan green: build_handover read, most recent ORS (`ORS_stage_2_6b_runbook_prep_2026_06_04.md`) = **ORS PASS (Standard)** trust anchor solid, memory router L1–L4 active (1511 L3 memories, 481 L4 docs), production smoke `https://elevationary.com/` → HTTP/2 200. State carries forward unchanged from 2026-06-04: Worker v2.2 (`459d1ab9…`) still live, Pages build `4aa8369` still serving, Stage 2.6(b) coordinated live-fire still the next gate (paint-by-numbers per the 992-line runbook).
+**Skeleton-build session.** Per COO morning dispatch 2026-06-09, pre-built the buyer-side Stripe Checkout Worker so when CEO clears Q6 (Stripe Products + Prices + restricted API key) the swap-in is trivial. Spec § 3 architecture lands as scaffolded TypeScript at [`workers/subscribe-checkout/`](workers/subscribe-checkout/) with 14 grep-findable `TODO(...)` markers at every CEO-gated swap-in point. **Zero production change** — `wrangler.toml` routes block commented; no `wrangler deploy` executed. Worker `subscriber-content` v2.2 (`459d1ab9-…`) untouched. Production smoke clean (HTTP/2 200 at onboarding + close).
 
-**Carry-over urgency bump:** GoDaddy → Squarespace handover is now **3 days out (2026-06-11)** — was 7 days out at last handover. Suspect this first if DNS surfaces break that day.
+**ORS PASS (Standard)** at [`ORS_website_stripe_checkout_skeleton_2026_06_09.md`](../../Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md):
+- Stage 0 + Stage 1 inscribed pre-work per ORS-first discipline (visible commitment opened at task start: "Opening ORS log: ORS_website_stripe_checkout_skeleton_2026_06_09.md").
+- Stage 2 OBSERVE: `npm run typecheck` exit 0 + `npm test` 62/62 across 5 suites in 195ms; 19 tracked files (17 source/test/config + README + package-lock); 14 TODO markers across all 7 categories.
+- Stage 2.5: 28 distinct skeleton equivalence classes, every one mapped to a green vitest assertion.
+- Stage 2.6: **Explicitly deferred** — "Pending CEO Stripe Products + restricted API key (Q6) — swap-in ready" per dispatch done-criteria.
+- Stage 3: **10 distinct failure modes induced** (replay attack, missing metadata, malformed payload, idempotency double-submit, empty-secret fail-closed, CSRF cross-origin POST, orphan Contact acceptance, form-encoder shape, ct_id collision, accidental webhook routing). All acceptable as-written.
+- Stage 3 sensitive-file scan: 0 hits across repo + data dir.
+- Stage 4: No code edits needed — skeleton constructed for type-enforced + multi-line-of-defense + by-design + fail-closed correctness.
+- Stage 5 retest: clean across all axes.
 
-## Prior session deliverable (2026-06-04 — carried forward, no change)
+**L1 divergence logged** (per `directives/divergence_protocol.md`): Dispatch asked for "webhook envelope handler structure (signature verification placeholder)"; spec § 5 places all Stripe webhooks at Sales. Landed [`src/webhook.ts`](workers/subscribe-checkout/src/webhook.ts) as a forward-optionality stub for future Customer Portal events (spec § 10 Q5/Q7). NOT imported by [`src/index.ts`](workers/subscribe-checkout/src/index.ts) router. Self-approved + documented in ORS divergence table.
 
-**Stage 2.6(b) live-fire 11-cell runbook** — canonical paint-by-numbers reference at `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` (992 lines, L4 `agent-context` doc `…-9d9d699c`). ORS PASS (Standard) — `ORS_stage_2_6b_runbook_prep_2026_06_04.md`. Production Worker untouched.
+**L4 vault uploads:**
+- Walkthrough `walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09-fbb339fd` (9.9 KB).
+- ORS log `ors-logs/ORS_website_stripe_checkout_skeleton_2026_06_09-c08f14f9` (33.6 KB).
+- L3 semantic pointers auto-injected; recall on "Stripe Checkout Worker subscribe-checkout skeleton CEO Q6 swap-in ready" returns both at L2=0.53/0.55 (ranks 2 + 3 behind a related fleet lesson).
 
-## What's Live in Production (unchanged from 2026-06-03 build `19199b5` + Worker v2.2)
+**Telegram page** sent to `@EleSentinelIntelBot` ("ElWebsite") summarizing skeleton completion + waiting-on-CEO-Q6 gates.
 
-No code changed. State identical to prior handover.
+## What's Live in Production (unchanged)
+
+No production code touched today.
 
 | Component | State |
 |---|---|
-| Cloudflare Worker `subscriber-content` **v2.2** | DEPLOYED — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63`. Routes `elevationary.com/editions/*` + `/account/*`. JWT strict mode incl. `nbf` claim check. |
-| Cloudflare Access "Subscriber Content" app | LIVE. AUD `3c0a5765…0bfa`. |
-| R2 binding strategy | Single `gemini-content-factory` bucket; `sales/` + `newsletter/` prefixes. |
-| Worker secret `STRIPE_SECRET_KEY` | Set, LIVE-mode restricted `subscriptions:read`. (Runbook Step 0.2 cycles this to TEST mode for the live-fire window; cleanup cycles back.) |
-| Public routes | HTTP/2 200 unchanged. Production smoke trio at wrap-up: clean. |
-| Live-fire fixture | `newsletter/drafts/2026-06-01/p9d3-live-fire.md` (1777 bytes) remains seeded from pass-2 session. Three additional fixtures will be seeded by the runbook at Step 0.3 (and torn down at Step 12). |
+| Cloudflare Worker `subscriber-content` **v2.2** | DEPLOYED — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63`. Untouched. |
+| Cloudflare Worker `subscribe-checkout` | **NOT DEPLOYED** — skeleton on disk only; routes commented in `wrangler.toml`. |
+| Cloudflare Access "Subscriber Content" | LIVE. AUD `3c0a5765…0bfa`. Untouched. |
+| R2 binding strategy | Single `gemini-content-factory` bucket. Untouched. |
+| Worker secret `STRIPE_SECRET_KEY` (subscriber-content) | Set, LIVE-mode restricted `subscriptions:read`. Untouched. |
+| Worker secret `STRIPE_SECRET_KEY` (subscribe-checkout) | **NOT YET PROVISIONED** — TODO(CEO Q6) restricted scope `write:checkout.sessions`. |
+| Stripe Products + Prices | **NOT YET PROVISIONED** — TODO(CEO Q6). |
+| Public routes | HTTP/2 200 unchanged (verified at onboarding + wrap-up). |
 
-## What Got Done This Session (2026-06-08 — interim onboarding-only)
+## What Got Done This Session (2026-06-09 — Skeleton)
 
-- Ran the 6-step Onboarding Scan per `directives/CLAUDE_CODE.md`. All steps green.
-- Read most recent ORS log end-to-end and confirmed **ORS PASS** (Standard rigor) trust anchor — Stage 5 retest clean, all 10 R-modes resolved deterministically in runbook v2. Only unchecked items are post-deploy observability signals gated on CEO's *future* live-fire run, NOT on this ORS.
-- Confirmed production homepage HTTP/2 200.
-- No code changes; no Worker / Pages deploy; no R2 / Sales / Stripe mutations.
+### Codebase
 
-This wrap-up commit appends doc-only changes (this handover refresh + backlog GoDaddy countdown bump + today's timelog).
+**[`workers/subscribe-checkout/`](workers/subscribe-checkout/)** — 17 tracked files (excl. node_modules + package-lock):
 
-## Prior session deliverable carryover (2026-06-04)
+| File | Purpose | Spec ref |
+|---|---|---|
+| [`README.md`](workers/subscribe-checkout/README.md) | Build + activation procedure + module map + TODO grep | spec § 3 + activation sequence |
+| [`package.json`](workers/subscribe-checkout/package.json) | Deps: @cloudflare/workers-types, typescript, vitest, wrangler. No marked, no jose. | mirror `subscriber-content` |
+| [`tsconfig.json`](workers/subscribe-checkout/tsconfig.json) | strict TS, es2022, bundler resolution | mirror |
+| [`vitest.config.ts`](workers/subscribe-checkout/vitest.config.ts) | node env, test/**/*.test.ts, 5s timeout | mirror |
+| [`wrangler.toml`](workers/subscribe-checkout/wrangler.toml) | 2-env structure (production + preview); routes/r2/kv COMMENTED until Q6; vars active | spec § 3.9 |
+| [`src/index.ts`](workers/subscribe-checkout/src/index.ts) | Router: POST /api/checkout + OPTIONS; orchestrates validate → contact → stripe | spec § 3 step seq |
+| [`src/types.ts`](workers/subscribe-checkout/src/types.ts) | CheckoutRequest, SubscriptionMetadata, SalesContact, Env, WorkerError | spec § 2 + § 3 |
+| [`src/validation.ts`](workers/subscribe-checkout/src/validation.ts) | Email regex, tier/stream/billing-period enums, count enforcement, stream derivation | spec § 3.2 + § 3.5 |
+| [`src/ct_id.ts`](workers/subscribe-checkout/src/ct_id.ts) | Email → ct_id (lowercase + strip plus-addressing + `@./.` → `_`) | spec § 3.4 |
+| [`src/contact.ts`](workers/subscribe-checkout/src/contact.ts) | resolveOrCreateContact on R2; F-6 collision check; dry-run support | spec § 3.11 |
+| [`src/stripe.ts`](workers/subscribe-checkout/src/stripe.ts) | formEncode (bracket-notation); buildMetadata; createCheckoutSession; assertSecretsConfigured | spec § 3.3 + § 6 |
+| [`src/idempotency.ts`](workers/subscribe-checkout/src/idempotency.ts) | KV-backed rate limit (per-IP SHA-256) + email lockout window | spec § 3.7 |
+| [`src/origin.ts`](workers/subscribe-checkout/src/origin.ts) | Allow-list per env (apex+www; *.pages.dev preview suffix; localhost) | spec § 3.8 |
+| [`src/webhook.ts`](workers/subscribe-checkout/src/webhook.ts) | **STUB** — L1 divergence; not routed in v1 | divergence note in ORS |
+| [`test/*.test.ts`](workers/subscribe-checkout/test/) | 5 vitest suites: 7 + 26 + 12 + 11 + 6 = **62/62 pass** | — |
 
-### Stage 2.6(b) live-fire runbook v2 — paint-by-numbers 11-cell matrix
+### Test posture
 
-CEO directive: P9_D3 Detailed PASS landed 2026-06-03; Stage 2.6(b) is the final integration gate but requires CEO + Sales coordination — do NOT proceed with Stage 2.6(b) directly. Instead, deliver an exec-ready runbook so when CEO fires the live-fire it's deterministic.
+```
+$ npm test
+✓ test/ct_id.test.ts (7 tests)
+✓ test/webhook.test.ts (6 tests)
+✓ test/origin.test.ts (11 tests)
+✓ test/stripe.test.ts (12 tests)
+✓ test/validation.test.ts (26 tests)
+Test Files  5 passed (5) | Tests  62 passed (62) | Duration 195ms
+```
 
-**Deliverable:** `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` — 992 lines, 58.2 KB.
+### TODO marker map (CEO-gated swap-in)
 
-**11 cells in execution order** (cheapest setup first, terminal states last):
+```bash
+$ grep -rn "TODO(" workers/subscribe-checkout/src/ | wc -l
+14
+```
 
-| # | Cell | Worker branch (src/index.ts) | Expected |
-|---|---|---|---|
-| 1 | no-sub | findActiveSubscriptions → [] → upgradeRedirect | 302 → /upgrade/?swimlane=&edition= |
-| 2 | individual happy-path | all gates pass | 200 + `x-elevationary-entitlement: sb=...;tier=individual;swimlane=...` |
-| 10 | wrong-swimlane | `swimlanes_accessible.includes(swimlane)` false | 302 (carries REQUESTED swimlane, not entitled) |
-| 11 | before-historical | `editionDate < historical_access_from` | 302 |
-| 7 | past_due | both ENTITLED_STATUSES + STRIPE_ACTIVE_STATUSES include past_due — **dunning grace, expects 200** | 200 (Cell 7 gotcha flagged explicitly in runbook) |
-| 8 | suppressed | filtered at ENTITLED_STATUSES | 302 |
-| 6 | cancelled | same | 302 |
-| 9 | Stripe DiD catch | stripeVerifyActive returns false → continue | 302 (R2 active, Stripe canceled) |
-| 3 | functional_bundle | tier=functional_bundle, multi-swimlane | 200 |
-| 4 | all_access purchaser | contact_id === ct.ct_id branch | 200 |
-| 5 | all_access shared seat | shared_contact_ids.includes(contactId) branch | 200 (sb_id = purchaser's) |
+Categories:
+- `TODO(CEO Q6)` × 5 — Stripe Products + Prices + restricted key
+- `TODO(CEO Q4)` × 3 — annual vs monthly-only v1
+- `TODO(Sales coordination)` × 3 — § 3.11 Contact schema + ct_id scheme
+- `TODO(activation)` × 2 — webhook.ts activation when Q5/Q7 opens
 
-**Coordination summary at top (read-cold-once):** 3 system invariants (R2 strong consistency, Sales↔Stripe state independence, Worker reads R2's current Stripe sub_id) + roles + 2-inbox / 5-Stripe-test-sub / 4-fixture pre-staged inputs + FAIL vs SKIP rubric + Sales-script-unavailable direct-R2 fallback + cell-by-cell time budget (107 min, 150 budgeted) + Step 0.7 CF Access OTP screen walkthrough + Step 0.8 explicit no-auto-redirect-between-cells rule.
-
-### Stage 3 — induce ≥5 failure modes against the runbook itself
-
-Per CEO directive (Heller F9 generalized: the runbook IS the verifier of the production matrix, so verify it before shipping). Adversarial cold-CEO reading produced **10 distinct ambiguity modes (R-1 through R-10)** — twice the directive minimum:
-
-| Mode | Gap |
-|---|---|
-| R-1 | R2 consistency / Worker cache unspecified |
-| R-2 | CF Access OTP UI screens unspecified |
-| R-3 | Navigation after 302 redirect unspecified (auto-redirect vs manual typing) |
-| R-4 | Cell 5 private-mode cookie fallback missing |
-| R-5 | `sub_TEST_STRIPE_DID` cancel timing contradiction (Step 0 vs Cell 9) |
-| R-6 | Step 12.4 cleanup wording confused end-state vs origin-state |
-| R-7 | Cell 8 lifecycle (suppress on past_due may reject) unhandled |
-| R-8 | Sales/Stripe state independence not stated explicitly |
-| R-9 | URL query param ordering not guaranteed in `?swimlane=&edition=` |
-| R-10 | Sales-script-unavailable global fallback missing |
-
-### Stage 4 — surgical edits closing all 10 modes
-
-8 unique `Edit` calls landed v1 → v2:
-
-- New "Three system-level invariants" header section closes R-1 + R-8
-- New Step 0.7 (CF Access OTP screen walkthrough) closes R-2
-- New Step 0.8 (navigation rule) closes R-3 globally without per-cell edits
-- Cell 5 (b) expanded with first-try → fallback → second-fallback paths closes R-4
-- Step 0.3 + Cell 9 (a) both rewritten closes R-5
-- Step 12.4 replaced bullet list with end-state table closes R-6
-- Cell 8 (a) appended "Lifecycle fallback" block closes R-7
-- FAIL/SKIP table row rewritten closes R-9
-- New "Sales-script-unavailable fallback" section closes R-10
-
-### Stage 5 — retest
-
-Re-read v2 against the same 10 questions. Every one now has a deterministic answer cited at a specific v2 section. Sensitive file scan: 0 hits across repo + data dir.
-
-### L4 + L3 indexing
-
-`vault_upload.py upload agent-context <path>` succeeded. Doc ID `stage_2_6b_live_fire_runbook_2026_06_04-9d9d699c`, 58.2 KB. L3 pointer auto-injected via `vault_upload.py`. Recall on "Stage 2.6b live-fire runbook 11-cell entitlement matrix" returns runbook at rank #2 (L2=0.5428).
-
-### P4D3
-
-`task_05d28394` inserted under `P9_D3_Website_Phase_B_Swimlane_Adaptation`, status `Completed`, Owner `Website`, Date `2026-06-04`. Deliverable status remains 🔲 until Stage 2.6(b) browser live-fire passes — runbook prep does not flip the deliverable.
+(TODO(CEO Q7) + TODO(Marketing brand) belong to UI surface — separate Eleventy work item.)
 
 ## Remaining Work
 
-### Stage 2.6(b) browser live-fire — open, blocks deliverable status flip
+### Activation — open, gated on CEO Q6 (no Website-side blocker)
 
-**No longer "invent-as-we-go" — the runbook is canonical.** CEO + Sales + Website coordinate per the runbook. Pre-flight gates CEO must confirm before Step 0:
+When CEO clears Q6 (Stripe Products + Prices + restricted API key):
+1. `wrangler kv:namespace create "IDEMPOTENCY_KV"` × 2 envs → paste IDs into `wrangler.toml`.
+2. `wrangler secret put` for 4 secrets × 2 envs (8 writes, or 14 if Q4 ratifies annual).
+3. Uncomment routes + r2 + kv blocks in `wrangler.toml`.
+4. `wrangler deploy --env preview` with `DRY_RUN_CONTACT_WRITE=true` → Sales reads dry-run logs, confirms § 3.11 schema.
+5. `DRY_RUN_CONTACT_WRITE=false` → Test Mode round-trip with Stripe test card `4242 4242 4242 4242` → confirm Sales receiver picks up webhook + `subscriber-content` v2.2 returns 200 for new buyer.
+6. `wrangler deploy` (production).
+7. Append Worker-side `STRIPE_SECRET_KEY` row to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md`.
+8. Detailed-rigor implementation ORS.
 
-1. Two OTP-able email inboxes (`OTP_A` for cells 1–4, 6–11; `OTP_B` for cell 5).
-2. One Stripe Test Mode restricted key, scope `subscriptions:read`.
-3. Five test-mode Stripe subscription objects created per the runbook's Step 0.3 inventory.
-4. `sales_subscription.py` operational, OR Sales agent on standby for direct-R2 fallback if it errors.
-5. Cycle Worker `STRIPE_SECRET_KEY` to TEST mode per Step 0.2 (5-min window; pre-launch so blast radius zero).
+Effort: 2–3 days Website-Agent solo post-Q6.
 
-After matrix passes: flip P3_D1 + P4_D1 + P4_D2 + P9_D3 deliverable statuses 🔲 → 🟢. Post-live-fire ORS (separate deliverable) cites this runbook by cell number with real observed HTTP responses + headers per cell.
+### `/subscribe/` Lane-Picker UI — open, separate work item per spec § 4
 
-### Path-canonicalization note (deferred)
+Eleventy work — drop placeholder URLs from `src/_data/site.json`; build lane-picker partial; build `/subscribe/welcome/` landing page. Spec § 4 covers the work order. Brand pass deferred (Elevationary_Marketing/brand/ still empty as of 2026-06-04).
 
-CEO directive named `~/Antigravity_Data/Elevationary_Website/docs/...`; canonical Website data dir per CLAUDE.md is `~/Antigravity_Data/Website/docs/`. `Elevationary_Website` does not exist on disk. Runbook + ORS landed at the canonical path. If CEO intended a new hierarchy (rename / repurpose), flag and Website moves both files.
+### Stage 2.6(b) browser live-fire — open, parallel track to Stripe Checkout
+
+**Unchanged from prior handover.** Paint-by-numbers per the 2026-06-04 runbook. CEO + Sales + Website coordinate. Independent of Stripe Checkout integration.
 
 ### Sales-side optimizations (filed; non-blocking)
 
-- Add `historical_access_from` + `deep_content_access` to `_index_row()` projection in `sales_subscription.py` — closes one R2 GET per entitled request. Open since 2026-05-30.
-- Ship `sales/index_contacts_by_email.json` — O(1) email lookup; closes timing-oracle finding. Open since 2026-05-30.
-- Sales contact-by-email uniqueness invariant (from pass-2 F-U-1). Open since 2026-06-04.
+(Unchanged.)
+
+- Add `historical_access_from` + `deep_content_access` to `_index_row()` projection.
+- Ship `sales/index_contacts_by_email.json`.
+- Sales contact-by-email uniqueness invariant.
 
 ### Phase B+ candidates (Website-owned)
 
-- Real `/editions/` archive listing — Worker still returns placeholder.
+(Largely unchanged.)
+
+- Real `/editions/` archive listing.
 - Constant-time gating (timing-oracle hardening).
-- Replace 4 Stripe Checkout placeholders in `src/_data/site.json`.
-- Future Cell 12 (`!entitlements.deep_content_access` branch) — noted in runbook reference section; not in scope today's matrix.
+- Orphan Contact cleanup batch (F-A7 follow-on, post-v1).
+- Webhook activation (Q5/Q7 follow-on, post-v1).
 
 ### Deferred
 
-- Brand pass on `/subscribe/`, `/editions/`, `/account/`, `/upgrade/`, Worker-rendered surfaces — `~/Antigravity/Elevationary_Marketing/brand/` still empty.
-- `agent.elevationary.com` archival decision — 52 references in `_site/`.
-- `task_f1d4e0a9` (P3 Access service token) — confirm moot vs future hardening.
+- Brand pass on `/subscribe/`, `/editions/`, `/account/`, `/upgrade/`, Worker-rendered surfaces, lane-picker UI (§ 4).
+- `agent.elevationary.com` archival decision.
+- `task_f1d4e0a9` (P3 Access service token) moot vs future hardening.
+- Re-subscribe envelope ownership (spec § 10 Q5).
 
-## Open Questions (forwarded from runbook section 5)
+## Open Questions (forwarded to CEO via spec § 10)
 
-1. **`sales_contact.py`** — does it exist? Runbook documents both Sales-script and direct-R2 fallback paths for contact creation; resolve at first execution.
-2. **`sales_subscription.py update --field` JSON parsing** — confirm Cell 5's `--field 'shared_contact_ids=[...]'` syntax works.
-3. **Stripe Test Mode restricted key scope confirmation** — `subscriptions:read` ONLY.
-4. **OTP_A and OTP_B inbox confirmation** — both accessible from the mobile browser used for the live-fire.
-5. **Cell 5 cookie isolation** — incognito vs second browser app — pick at run time.
+Unchanged from prior handover. Q1 (Section 2 Option B) **CONFIRMED RATIFIED 2026-06-08** per dispatch line 1; skeleton landed accordingly. Q2–Q7 still open.
 
 ## Do Not Re-Try (Carried Fleet Rules)
 
-(Unchanged from 2026-06-03 handover. Replicated for self-contained reference.)
+Unchanged from 2026-06-08 PM handover. Added today:
 
-- Do NOT publish Elevationary-branded content without brand standard compliance.
-- Do NOT deploy production Stripe code without a Test Mode green pass.
-- Do NOT trust unsigned Stripe webhook payloads.
-- Do NOT include `STRIPE_SECRET_KEY` in any committed file.
-- Do NOT trust `cf-access-authenticated-user-email` without `Cf-Access-Jwt-Assertion` verification in production.
-- **From 2026-05-30:** Auth/identity/entitlement gates require executable tests, not just static red-team. (Fleet lesson `fleet_lesson_executable_security_tests_over_static_redteam` — L3.)
-- **From 2026-06-02:** When a cross-agent upstream schema migration ships, run consumer-side executable test matrix against the new shape BEFORE shipping.
-- **From 2026-06-02:** Do NOT trust runtime JSON shapes against TS types. Validate at use-site (`Array.isArray`, `typeof === "string"`).
-- **From 2026-06-02:** Do NOT trust markdown renderer defaults to escape HTML — `marked@^4` removed `sanitize`; override `renderer.html` or wrap with DOMPurify.
-- **From 2026-06-02:** ORS Stage 3 demands real induction, not characterological reasoning.
-- **From 2026-06-04 (pass-2):** Strict JWT verifiers must check every relevant time-window claim (`exp` AND `nbf`).
-- **From 2026-06-04 (pass-2):** Any "this command catches X / Y / Z" security check must ship with a positive-and-negative fixture verifier-of-the-verifier.
-- **From 2026-06-04 (this session):** When a runbook is the verifier of a production matrix, induce ≥5 failure modes against the runbook BEFORE shipping. Adversarial cold-read by a perspective that has not seen the supporting ORS / context — the gaps that surface are the gaps a real first-time executor will hit. (Captured in runbook itself; no separate L3 lesson needed because the canonical reference IS the lesson.)
+- **From 2026-06-09 (this session):** When a dispatch asks for "webhook envelope handler" on Website but spec § 5 routes all Stripe webhooks to Sales, classify as L1 divergence and ship a forward-optionality stub with an in-source banner repeating the rationale. Do NOT wire the stub into the router. Future activation requires explicit router edit + activation-time ORS.
 
 ## Infrastructure State
 
-- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Build `4aa8369` (post-2026-06-03-wrap-up timelog) live.
-- **Cloudflare Worker `subscriber-content` v2.2** — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63` DEPLOYED.
-- **Cloudflare Access "Subscriber Content"** — CONFIGURED + ACTIVE. AUD `3c0a5765…0bfa`. JWT strict-mode enforces both `exp` and `nbf`.
-- **R2 bucket `gemini-content-factory`** — single bucket; `sales/` + `newsletter/` prefixes.
-- **Worker secret `STRIPE_SECRET_KEY`** — set, LIVE-mode restricted `subscriptions:read`. Runbook Step 0.2 cycles to TEST mode for live-fire; Step 12.5 cycles back.
-- **DNS:** Cloudflare hosted zone unchanged.
-- **GoDaddy → Squarespace handover scheduled 2026-06-11** — **3 days from now**. Suspect first if DNS surfaces break that day.
+- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Build pre-this-session (`4aa8369` era) still live.
+- **Cloudflare Worker `subscriber-content` v2.2** — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63` DEPLOYED. Untouched today.
+- **Cloudflare Worker `subscribe-checkout`** — **NOT YET DEPLOYED.** Codebase on disk. Awaits Q6.
+- **Cloudflare Access "Subscriber Content"** — CONFIGURED + ACTIVE. AUD `3c0a5765…0bfa`. Untouched.
+- **R2 bucket `gemini-content-factory`** — single bucket; `sales/` + `newsletter/` prefixes. Untouched.
+- **Worker secret `STRIPE_SECRET_KEY`** — set for subscriber-content (LIVE restricted `subscriptions:read`). NOT yet provisioned for subscribe-checkout (TODO(CEO Q6); will be restricted scope `write:checkout.sessions`).
+- **DNS:** Cloudflare hosted zone unchanged. GoDaddy/Squarespace handover CANCELLED.
 - **Telegram bot:** `agentName: "Website"` in `~/.elevationary/bots.json` entry [8].
 
 ## Branch State
 
-On `main`. HEAD pre-this-commit: `185ea66` (backlog auto-trim from 2026-06-04 wrap-up). This wrap-up commit appends doc-only changes (handover refresh + backlog GoDaddy bump + today's timelog). Untracked: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md` (carried; pre-existing).
+On `main`. HEAD pre-this-commit: `c75d584` (last timelog auto-commit). This wrap-up commit adds 20 new files (workers/subscribe-checkout/ tree minus node_modules) + 3 doc updates (build_handover, backlog, ORS + walkthrough in Antigravity_Data). Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
 
 ## Tech Stack
 
-(Unchanged.)
+(Unchanged plus.)
 
 - Eleventy 3.1.5 · luxon 3.7.2 · Cloudflare Pages · Cloudflare Worker `subscriber-content` v2.2 (TypeScript, `@cloudflare/workers-types`)
-- Worker prod deps: `marked@^12.0.2` (renderer.html overridden to escape)
-- Worker dev deps: `jose@^5.9`, `vitest@^2.1`, `wrangler@^3.60`, `typescript@^5.4`
+- subscriber-content prod deps: `marked@^12.0.2` (renderer.html overridden to escape)
+- subscriber-content dev deps: `jose@^5.9`, `vitest@^2.1`, `wrangler@^3.60`, `typescript@^5.4`
+- **New `subscribe-checkout`** (skeleton on disk):
+  - Prod deps: NONE (direct fetch against Stripe REST, hand-rolled form-encoder)
+  - Dev deps: `@cloudflare/workers-types@^4.20260501`, `typescript@^5.4`, `vitest@^2.1`, `wrangler@^3.60`
 
 ## ORS + Walkthrough + L4 Cross-References
 
-- **This session ORS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_stage_2_6b_runbook_prep_2026_06_04.md` — ORS PASS (Standard rigor). 10-mode Stage 3 induction against runbook v1; 8 surgical edits closed all 10 in v2; Stage 5 re-induction confirms bulletproof.
-- **This session deliverable:** `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` — runbook v2. L4 `agent-context` doc `stage_2_6b_live_fire_runbook_2026_06_04-9d9d699c` (58.2 KB).
-- **Pass 2 substantive ORS (trust anchor for the Worker v2.2 the runbook targets):** `ORS_p9_d3_detailed_redteam_pass2_2026_06_03.md` — ORS PASS (Rigor: Detailed).
-- **Pass 2 walkthrough:** `walkthrough_p9_d3_detailed_redteam_pass2_2026_06_03.md`.
-- **Pass 2 wrap-up hygiene ORS:** `ORS_pass2_wrapup_2026_06_04.md` — ORS PASS (Standard).
-- **2026-06-02 substantive ORS:** `ORS_p9_d3_swimlane_migration_2026_06_02.md` — ORS PASS (Detailed) post-Stage-4-remediation.
+- **This session ORS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md` — ORS PASS (Standard). 10 induced modes; Stage 2.6 deferred pending CEO Q6 (swap-in ready); 28 ECs all green. L4 `ors-logs/ORS_website_stripe_checkout_skeleton_2026_06_09-c08f14f9`.
+- **This session walkthrough:** `~/Antigravity_Data/Website/docs/walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09.md` — architecture tour + activation sequence + TODO marker map. L4 `walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09-fbb339fd`.
+- **Spec (canonical work order — prior session):** `~/Antigravity_Data/Website/docs/plans/stripe_checkout_integration_spec_2026_06_08.md` — 670 lines, ORS PASS 2026-06-08. L4 `agent-context/stripe_checkout_integration_spec_2026_06_08-d1c0288f`.
+- **Paired Newsletter spec (read-only ref):** `~/Antigravity_Data/Newsletter/docs/plans/subscriber_funnel_architecture_2026_06_08.md`.
+- **Sales contract source-of-truth:** `~/Antigravity/Elevationary_Sales/scripts/stripe_webhook.py` lines 204–305 + `subscription.schema.json` v2.
+- **Stage 2.6(b) runbook (carried — canonical reference):** `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md`.
+- **Pass 2 substantive ORS (trust anchor for Worker v2.2):** `ORS_p9_d3_detailed_redteam_pass2_2026_06_03.md` — ORS PASS (Detailed).

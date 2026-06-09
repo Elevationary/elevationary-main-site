@@ -1,0 +1,23 @@
+{
+  "name": "subscribe-checkout",
+  "version": "0.1.0-skeleton",
+  "private": true,
+  "description": "Buyer-side Stripe Checkout Session creator for elevationary.com. Creates Sales Contact, calls Stripe POST /v1/checkout/sessions with full subscription_data.metadata, returns hosted Checkout URL. Pairs with subscriber-content Worker (entitlement gating) — separate concerns. Skeleton state: scaffolded 2026-06-09, swap-in ready, awaiting CEO Stripe Products + restricted key (Q6).",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler deploy --env preview",
+    "dev": "wrangler dev --env preview",
+    "tail": "wrangler tail",
+    "tail:preview": "wrangler tail --env preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260501.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.0",
+    "wrangler": "^3.60.0"
+  }
+}
