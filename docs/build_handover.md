@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-06-09 (Stripe Checkout Worker SKELETON)
+# Website Build Handover — 2026-06-10 (interim check-in; substantive work 2026-06-09)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -6,7 +6,20 @@ Website (Public-Facing Web Properties Code Specialist)
 ## Reports To
 Administrator (Fleet COO + Code Pilot)
 
-## Session Summary
+## Interim Update — 2026-06-10
+
+**Onboarding-only check-in session.** No code changes today. `workers/subscribe-checkout/` skeleton from 2026-06-09 commit `d9e7d9e` still on disk untouched; `subscriber-content` v2.2 (`459d1ab9-…`) untouched; routes block still commented; no `wrangler deploy` executed; no R2 or Stripe mutation. Production smoke clean (HTTP/2 200 at 2026-06-10 onboarding + wrap-up). Status with respect to all open items below is unchanged from the 2026-06-09 PM handover.
+
+**Still gated on:**
+- **CEO Q6** — Stripe Products + Prices + restricted API key with scope `write:checkout.sessions`. All Worker activation work blocks here.
+- **Sales coordination** — § 3.11 Contact JSON schema confirmation + ct_id scheme alignment (Worker-generated email-derived form vs Sales' human-readable form). Resolvable via spec § 3.10 dry-run procedure once Worker is preview-deployed.
+- **Stage 2.6(b) browser live-fire** — paint-by-numbers per 2026-06-04 runbook; independent of Stripe Checkout integration; awaits CEO 2-OTP setup + Stripe Test Mode key + 5 test subs.
+
+**Today's wrap-up:** doc-only — handover refresh, backlog reaffirmation, session_log entry via wrap-up script, production smoke. `--skip-ors` invoked per Website Agent OS directive (no deliverable this session).
+
+---
+
+## Substantive Session Summary (2026-06-09 — carried forward verbatim)
 
 **Skeleton-build session.** Per COO morning dispatch 2026-06-09, pre-built the buyer-side Stripe Checkout Worker so when CEO clears Q6 (Stripe Products + Prices + restricted API key) the swap-in is trivial. Spec § 3 architecture lands as scaffolded TypeScript at [`workers/subscribe-checkout/`](workers/subscribe-checkout/) with 14 grep-findable `TODO(...)` markers at every CEO-gated swap-in point. **Zero production change** — `wrangler.toml` routes block commented; no `wrangler deploy` executed. Worker `subscriber-content` v2.2 (`459d1ab9-…`) untouched. Production smoke clean (HTTP/2 200 at onboarding + close).
 
@@ -166,7 +179,7 @@ Unchanged from 2026-06-08 PM handover. Added today:
 
 ## Branch State
 
-On `main`. HEAD pre-this-commit: `c75d584` (last timelog auto-commit). This wrap-up commit adds 20 new files (workers/subscribe-checkout/ tree minus node_modules) + 3 doc updates (build_handover, backlog, ORS + walkthrough in Antigravity_Data). Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
+On `main`. 2026-06-09 substantive commit: `d9e7d9e` (skeleton + doc updates). Subsequent timelog auto-commits: `a79e486`, `7f7b1a0`. 2026-06-10 interim wrap-up appends this handover refresh + backlog reaffirmation as a single doc-only commit. Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
 
 ## Tech Stack
 
