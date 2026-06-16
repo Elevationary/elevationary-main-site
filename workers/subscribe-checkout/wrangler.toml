@@ -61,13 +61,19 @@ enabled = true
 # pattern = "preview.elevationary.com/api/checkout/*"
 # zone_name = "elevationary.com"
 
-# [[env.preview.r2_buckets]]
-# binding = "R2_SALES"
-# bucket_name = "gemini-content-factory"
+# R2 binding — preview env reads/writes sales/contacts/ in the shared bucket.
+# Per spec § 3.10, DRY_RUN_CONTACT_WRITE=true (env.preview.vars below) makes
+# this binding non-load-bearing until Sales schema confirmation completes.
+[[env.preview.r2_buckets]]
+binding = "R2_SALES"
+bucket_name = "gemini-content-factory"
 
-# [[env.preview.kv_namespaces]]
-# binding = "IDEMPOTENCY_KV"
-# id = "<TODO_PREVIEW_KV_ID>"
+# KV binding — preview env idempotency keyspace. Created 2026-06-16 via
+# `wrangler kv namespace create IDEMPOTENCY_KV --preview`. ID captured in
+# scripts/stripe_test_ids.json for reproducibility.
+[[env.preview.kv_namespaces]]
+binding = "IDEMPOTENCY_KV"
+id = "dd29099b31b5431fba7cfe6aa32242f5"
 
 [env.preview.vars]
 WORKER_ENV = "preview"

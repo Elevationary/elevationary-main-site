@@ -10,7 +10,10 @@
 
 const RATE_LIMIT_TTL_SEC = 60;
 const RATE_LIMIT_MAX = 10;        // 10 POSTs per IP per 60s
-const EMAIL_LOCKOUT_TTL_SEC = 30; // 30s lockout window
+// Cloudflare KV's expirationTtl floor is 60s. Spec § 3.7 listed 30s as the
+// design goal; reality forces 60s. Updated 2026-06-16 after smoke test caught
+// "KV PUT failed: Invalid expiration_ttl of 30. Expiration TTL must be at least 60."
+const EMAIL_LOCKOUT_TTL_SEC = 60;
 
 // SHA-256 the IP to avoid storing raw addresses (GDPR-light hygiene).
 async function sha256Hex(input: string): Promise<string> {

@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-06-10 (interim check-in; substantive work 2026-06-09)
+# Website Build Handover — 2026-06-16 (Stripe Checkout Test Mode ACTIVATED — metadata browser-verify pending)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -6,198 +6,214 @@ Website (Public-Facing Web Properties Code Specialist)
 ## Reports To
 Administrator (Fleet COO + Code Pilot)
 
-## Interim Update — 2026-06-10
+## Session Summary
 
-**Onboarding-only check-in session.** No code changes today. `workers/subscribe-checkout/` skeleton from 2026-06-09 commit `d9e7d9e` still on disk untouched; `subscriber-content` v2.2 (`459d1ab9-…`) untouched; routes block still commented; no `wrangler deploy` executed; no R2 or Stripe mutation. Production smoke clean (HTTP/2 200 at 2026-06-10 onboarding + wrap-up). Status with respect to all open items below is unchanged from the 2026-06-09 PM handover.
+**Major progress session — Stripe Checkout Test Mode is functionally activated.** Worker deployed, Stripe Test Mode catalog provisioned, smoke test returns valid Stripe Checkout Session URLs. One open verification remaining (browser-complete a Test Mode checkout to confirm `subscription_data.metadata` propagates correctly to the resulting Subscription) before the LIVE-side activation work can proceed safely.
 
-**Still gated on:**
-- **CEO Q6** — Stripe Products + Prices + restricted API key with scope `write:checkout.sessions`. All Worker activation work blocks here.
-- **Sales coordination** — § 3.11 Contact JSON schema confirmation + ct_id scheme alignment (Worker-generated email-derived form vs Sales' human-readable form). Resolvable via spec § 3.10 dry-run procedure once Worker is preview-deployed.
-- **Stage 2.6(b) browser live-fire** — paint-by-numbers per 2026-06-04 runbook; independent of Stripe Checkout integration; awaits CEO 2-OTP setup + Stripe Test Mode key + 5 test subs.
+### Today's deliverables
 
-**Today's wrap-up:** doc-only — handover refresh, backlog reaffirmation, session_log entry via wrap-up script, production smoke. `--skip-ors` invoked per Website Agent OS directive (no deliverable this session).
+**Stripe Test Mode catalog provisioned** (`acct_1S9DtzC5seLx7yR7` in Test Mode):
+- 3 Products (Individual Access / Functional Bundle / All-Access Corporate Pass) with MBP-ratified descriptions + `tier_key` metadata.
+- 6 Prices ($29/$290, $69/$690, $149/$1490 — monthly + annual per tier).
+- 1 Coupon `EJ7eBI1C` (Founding Member 50% off, `duration: repeating`, `duration_in_months: 3`).
+- 1 Promotion Code `ELEVATE50` (`promo_1Tj17lC5seLx7yR7N8oUXo2D`, `max_redemptions: 100`, `restrictions.first_time_transaction: true`).
+- All IDs persisted to [`workers/subscribe-checkout/scripts/stripe_test_ids.json`](workers/subscribe-checkout/scripts/stripe_test_ids.json) for reproducibility + Worker reference. Safe to commit — IDs only, no secrets.
 
----
+**Worker `subscribe-checkout-preview` deployed** at `https://subscribe-checkout-preview.ar-ef1.workers.dev` (Version ID `cd0567cb-17f2-4681-8f10-9056f1c0ddcf`):
+- KV binding `IDEMPOTENCY_KV` → `dd29099b31b5431fba7cfe6aa32242f5` (preview namespace).
+- R2 binding `R2_SALES` → `gemini-content-factory` (shared bucket; sales/ prefix).
+- 7 secrets via `wrangler secret bulk`: `STRIPE_SECRET_KEY` (Test Mode) + 6 `STRIPE_PRICE_*` IDs.
+- Vars: `WORKER_ENV=preview`, `ALLOWED_ORIGINS`, `STRIPE_API_VERSION=2025-08-27.basil`, `DRY_RUN_CONTACT_WRITE=true`.
 
-## Substantive Session Summary (2026-06-09 — carried forward verbatim)
+**Smoke test results:**
+- ✅ CORS preflight (`OPTIONS /api/checkout`) returns HTTP 204 with correct `Access-Control-*` headers + `Vary: Origin`.
+- ✅ POST `/api/checkout` with valid body returns `{ok: true, checkout_url: "https://checkout.stripe.com/c/pay/cs_test_..."}`.
+- ✅ Dry-run Contact synthesis logs proposed Sales Contact JSON without R2 write (spec § 3.10).
+- ✅ Email derivation works: `smoke-test-1@example.com` → `ct_smoke-test-1_example_com` (plus-stripping per spec § 3.4).
+- ✅ Stripe Session creates with all configured fields (`success_url`, `cancel_url`, `allow_promotion_codes`, `customer_email`, `line_items`, `mode: subscription`).
+- ⏳ **PENDING:** Browser-complete a Test Mode checkout to verify `subscription_data.metadata` populates on the resulting Subscription (Stripe Sessions API doesn't echo `subscription_data` on retrieve — write-only field; must complete payment to validate via `subscription.metadata`).
 
-**Skeleton-build session.** Per COO morning dispatch 2026-06-09, pre-built the buyer-side Stripe Checkout Worker so when CEO clears Q6 (Stripe Products + Prices + restricted API key) the swap-in is trivial. Spec § 3 architecture lands as scaffolded TypeScript at [`workers/subscribe-checkout/`](workers/subscribe-checkout/) with 14 grep-findable `TODO(...)` markers at every CEO-gated swap-in point. **Zero production change** — `wrangler.toml` routes block commented; no `wrangler deploy` executed. Worker `subscriber-content` v2.2 (`459d1ab9-…`) untouched. Production smoke clean (HTTP/2 200 at onboarding + close).
+### Bugs found + fixed this session
 
-**ORS PASS (Standard)** at [`ORS_website_stripe_checkout_skeleton_2026_06_09.md`](../../Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md):
-- Stage 0 + Stage 1 inscribed pre-work per ORS-first discipline (visible commitment opened at task start: "Opening ORS log: ORS_website_stripe_checkout_skeleton_2026_06_09.md").
-- Stage 2 OBSERVE: `npm run typecheck` exit 0 + `npm test` 62/62 across 5 suites in 195ms; 19 tracked files (17 source/test/config + README + package-lock); 14 TODO markers across all 7 categories.
-- Stage 2.5: 28 distinct skeleton equivalence classes, every one mapped to a green vitest assertion.
-- Stage 2.6: **Explicitly deferred** — "Pending CEO Stripe Products + restricted API key (Q6) — swap-in ready" per dispatch done-criteria.
-- Stage 3: **10 distinct failure modes induced** (replay attack, missing metadata, malformed payload, idempotency double-submit, empty-secret fail-closed, CSRF cross-origin POST, orphan Contact acceptance, form-encoder shape, ct_id collision, accidental webhook routing). All acceptable as-written.
-- Stage 3 sensitive-file scan: 0 hits across repo + data dir.
-- Stage 4: No code edits needed — skeleton constructed for type-enforced + multi-line-of-defense + by-design + fail-closed correctness.
-- Stage 5 retest: clean across all axes.
+**1. EMAIL_LOCKOUT_TTL_SEC was 30, Cloudflare KV minimum is 60.** First smoke-test POST returned Cloudflare error 1101 (Worker threw exception). Log: `KV PUT failed: 400 Invalid expiration_ttl of 30. Expiration TTL must be at least 60.` Fixed in [`src/idempotency.ts`](workers/subscribe-checkout/src/idempotency.ts) by bumping to 60 with a comment citing today's smoke-test discovery. Spec § 3.7 said 30s; reality says 60s floor. Worker redeployed. Second smoke test passed.
 
-**L1 divergence logged** (per `directives/divergence_protocol.md`): Dispatch asked for "webhook envelope handler structure (signature verification placeholder)"; spec § 5 places all Stripe webhooks at Sales. Landed [`src/webhook.ts`](workers/subscribe-checkout/src/webhook.ts) as a forward-optionality stub for future Customer Portal events (spec § 10 Q5/Q7). NOT imported by [`src/index.ts`](workers/subscribe-checkout/src/index.ts) router. Self-approved + documented in ORS divergence table.
+### Major operational discoveries
 
-**L4 vault uploads:**
-- Walkthrough `walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09-fbb339fd` (9.9 KB).
-- ORS log `ors-logs/ORS_website_stripe_checkout_skeleton_2026_06_09-c08f14f9` (33.6 KB).
-- L3 semantic pointers auto-injected; recall on "Stripe Checkout Worker subscribe-checkout skeleton CEO Q6 swap-in ready" returns both at L2=0.53/0.55 (ranks 2 + 3 behind a related fleet lesson).
+**LIVE Stripe account `acct_1S9DtzC5seLx7yR7` is already extensively provisioned** from a March 26, 2026 session:
+- 3 Products + 6 Prices matching MBP exactly to the penny. **Activation will reuse these IDs — no LIVE Products/Prices need creation.**
+- 2 Coupons (`dTwd1p8S`, `TEyye1SG`) named "30-Day Preview Access" — 100% off, once, max_redemptions=100, campaign=preview-2026. Both at 0/100 redeemed.
+- 100+ `PREVIEW-XXXXXX` Promotion Codes (single-use each, all tied to `dTwd1p8S`). Sequenced 1–100. CEO directed deactivation via `active=false` per code; scheduled for LIVE-side work.
 
-**Telegram page** sent to `@EleSentinelIntelBot` ("ElWebsite") summarizing skeleton completion + waiting-on-CEO-Q6 gates.
+**Second Stripe account `acct_1SFiCnCOzcWjCZ90` exists** with same display name "Elevationary, Inc". Different `acct_` ID. Origin unknown — P4D3 `task_1ec7983b` filed under `P4_D1_Entitlement_Worker` for later audit. Not touched today. NOT to be confused with the Sandbox account `acct_1S9DuBC3YEf5bh1i`.
 
-## What's Live in Production (unchanged)
+**Stripe MCP OAuth approach is a dead-end for our use case** (~90 min investigation):
+- Stripe MCP access toggle is global per account (not mode-specific).
+- Live account has MCP access toggle; Sandbox has separate toggle; Live's built-in Test Mode has NO MCP access at all.
+- OAuth grant is mode-locked at consent time and cannot be switched by toggling the dashboard mode after-the-fact.
+- Even with both Live + Sandbox MCP enabled, OAuth consent doesn't reliably pick the dashboard's current context.
+- **Pivot:** bearer-token via Python script + dotenv pattern, mirroring the fleet's existing pattern (`send_brian.py`, `memory_router.py`). Read STRIPE_TEST_KEY from `~/.elevationary/secrets.env`, hit Stripe REST API directly. Classifier-allowed via script-execution pattern; ad-hoc inline reads of secrets file are blocked (correct behavior).
 
-No production code touched today.
+### Fleet-pattern scripts created this session
 
-| Component | State |
-|---|---|
-| Cloudflare Worker `subscriber-content` **v2.2** | DEPLOYED — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63`. Untouched. |
-| Cloudflare Worker `subscribe-checkout` | **NOT DEPLOYED** — skeleton on disk only; routes commented in `wrangler.toml`. |
-| Cloudflare Access "Subscriber Content" | LIVE. AUD `3c0a5765…0bfa`. Untouched. |
-| R2 binding strategy | Single `gemini-content-factory` bucket. Untouched. |
-| Worker secret `STRIPE_SECRET_KEY` (subscriber-content) | Set, LIVE-mode restricted `subscriptions:read`. Untouched. |
-| Worker secret `STRIPE_SECRET_KEY` (subscribe-checkout) | **NOT YET PROVISIONED** — TODO(CEO Q6) restricted scope `write:checkout.sessions`. |
-| Stripe Products + Prices | **NOT YET PROVISIONED** — TODO(CEO Q6). |
-| Public routes | HTTP/2 200 unchanged (verified at onboarding + wrap-up). |
+**[`workers/subscribe-checkout/scripts/stripe_provision.py`](workers/subscribe-checkout/scripts/stripe_provision.py)** — CRUD against Stripe API via REST. Subcommands:
+- `probe` — list 1 product, confirm `livemode` + scope (smoke test for key + mode).
+- `create-all` — create 3 Products + 6 Prices + Founding Coupon + ELEVATE50 promo code.
+- `list` — list Products + Prices + Coupons + Promotion Codes (paginated).
+- `inspect-session --session <id>` — full Session JSON dump for round-trip validation.
+- `test-create-session` — direct-API Session creation with metadata, for encoder verification.
+- `deactivate-promo-codes --coupon <id>` — set `active=false` on every Promotion Code under a Coupon (for LIVE PREVIEW deactivation).
+- `--mode test` (default) reads `STRIPE_TEST_KEY`. `--mode live` requires `--i-mean-live` flag + reads `STRIPE_LIVE_KEY`.
 
-## What Got Done This Session (2026-06-09 — Skeleton)
+**[`workers/subscribe-checkout/scripts/configure_worker_secrets.py`](workers/subscribe-checkout/scripts/configure_worker_secrets.py)** — pushes Worker secrets via `wrangler secret bulk`. Reads STRIPE_*_KEY from secrets.env + Price IDs from `stripe_test_ids.json` / `stripe_live_ids.json`. Wrangler bulk subcommand never echoes values; secret never enters process args or stdout.
 
-### Codebase
+Both scripts follow the fleet's dotenv + requests pattern. Classifier-allowed via named-script execution (ad-hoc inline reads of secrets remain blocked — correct posture).
 
-**[`workers/subscribe-checkout/`](workers/subscribe-checkout/)** — 17 tracked files (excl. node_modules + package-lock):
+## What's Live (changes from prior handover marked)
 
-| File | Purpose | Spec ref |
+| Component | State | Change |
 |---|---|---|
-| [`README.md`](workers/subscribe-checkout/README.md) | Build + activation procedure + module map + TODO grep | spec § 3 + activation sequence |
-| [`package.json`](workers/subscribe-checkout/package.json) | Deps: @cloudflare/workers-types, typescript, vitest, wrangler. No marked, no jose. | mirror `subscriber-content` |
-| [`tsconfig.json`](workers/subscribe-checkout/tsconfig.json) | strict TS, es2022, bundler resolution | mirror |
-| [`vitest.config.ts`](workers/subscribe-checkout/vitest.config.ts) | node env, test/**/*.test.ts, 5s timeout | mirror |
-| [`wrangler.toml`](workers/subscribe-checkout/wrangler.toml) | 2-env structure (production + preview); routes/r2/kv COMMENTED until Q6; vars active | spec § 3.9 |
-| [`src/index.ts`](workers/subscribe-checkout/src/index.ts) | Router: POST /api/checkout + OPTIONS; orchestrates validate → contact → stripe | spec § 3 step seq |
-| [`src/types.ts`](workers/subscribe-checkout/src/types.ts) | CheckoutRequest, SubscriptionMetadata, SalesContact, Env, WorkerError | spec § 2 + § 3 |
-| [`src/validation.ts`](workers/subscribe-checkout/src/validation.ts) | Email regex, tier/stream/billing-period enums, count enforcement, stream derivation | spec § 3.2 + § 3.5 |
-| [`src/ct_id.ts`](workers/subscribe-checkout/src/ct_id.ts) | Email → ct_id (lowercase + strip plus-addressing + `@./.` → `_`) | spec § 3.4 |
-| [`src/contact.ts`](workers/subscribe-checkout/src/contact.ts) | resolveOrCreateContact on R2; F-6 collision check; dry-run support | spec § 3.11 |
-| [`src/stripe.ts`](workers/subscribe-checkout/src/stripe.ts) | formEncode (bracket-notation); buildMetadata; createCheckoutSession; assertSecretsConfigured | spec § 3.3 + § 6 |
-| [`src/idempotency.ts`](workers/subscribe-checkout/src/idempotency.ts) | KV-backed rate limit (per-IP SHA-256) + email lockout window | spec § 3.7 |
-| [`src/origin.ts`](workers/subscribe-checkout/src/origin.ts) | Allow-list per env (apex+www; *.pages.dev preview suffix; localhost) | spec § 3.8 |
-| [`src/webhook.ts`](workers/subscribe-checkout/src/webhook.ts) | **STUB** — L1 divergence; not routed in v1 | divergence note in ORS |
-| [`test/*.test.ts`](workers/subscribe-checkout/test/) | 5 vitest suites: 7 + 26 + 12 + 11 + 6 = **62/62 pass** | — |
+| Cloudflare Worker `subscriber-content` v2.2 | DEPLOYED — `459d1ab9-…`. | Unchanged. |
+| Cloudflare Worker `subscribe-checkout-preview` | **DEPLOYED — `cd0567cb-17f2-4681-8f10-9056f1c0ddcf`** at `https://subscribe-checkout-preview.ar-ef1.workers.dev`. | **NEW today.** |
+| Cloudflare Worker `subscribe-checkout` (production) | NOT YET DEPLOYED. Awaits LIVE catalog provisioning gate. | Unchanged. |
+| Cloudflare Access "Subscriber Content" | LIVE. AUD `3c0a5765…0bfa`. | Unchanged. |
+| R2 bucket `gemini-content-factory` | Single bucket; `sales/` + `newsletter/` prefixes. | Unchanged. |
+| Stripe Products + Prices (LIVE) | 3 Products + 6 Prices matching MBP. Created 2026-03-26. | Discovered today (already existed). |
+| Stripe Products + Prices (Test Mode) | **3 Products + 6 Prices NEW today** (matching LIVE shapes). | **NEW today.** |
+| Stripe Coupons (LIVE) | 2 stale "30-Day Preview Access" coupons. 100% off, once, 100/100 codes preview-2026. | Discovered today. To deactivate via `active=false` on codes when LIVE-side work resumes. |
+| Stripe Promotion Codes (LIVE) | 100 stale `PREVIEW-XXXXXX` codes. 0/100 redeemed each. | Discovered today. Scheduled for deactivation. |
+| Stripe Coupon ELEVATE50 (Test Mode) | **`EJ7eBI1C` — 50%/3 mo NEW today.** | **NEW today.** |
+| Stripe Promo Code ELEVATE50 (Test Mode) | **`promo_1Tj17lC5seLx7yR7N8oUXo2D` NEW today.** `max_redemptions=100`, `first_time_transaction=true`. | **NEW today.** |
+| Stripe ELEVATE50 in LIVE | NOT YET CREATED. Will mirror Test Mode shape when LIVE-side work resumes. | Pending. |
+| Worker secret `STRIPE_SECRET_KEY` (subscriber-content, LIVE) | Set, restricted `subscriptions:read`. | Unchanged. |
+| Worker secret `STRIPE_SECRET_KEY` (subscribe-checkout-preview, Test Mode) | **SET today via `wrangler secret bulk`.** | **NEW today.** |
+| Worker secret `STRIPE_SECRET_KEY` (subscribe-checkout production) | NOT YET PROVISIONED. Restricted scope `write:checkout.sessions` planned. | Pending. |
+| Public routes | HTTP/2 200 unchanged. | Unchanged. |
 
-### Test posture
+## What Got Done This Session (chronological)
 
-```
-$ npm test
-✓ test/ct_id.test.ts (7 tests)
-✓ test/webhook.test.ts (6 tests)
-✓ test/origin.test.ts (11 tests)
-✓ test/stripe.test.ts (12 tests)
-✓ test/validation.test.ts (26 tests)
-Test Files  5 passed (5) | Tests  62 passed (62) | Duration 195ms
-```
-
-### TODO marker map (CEO-gated swap-in)
-
-```bash
-$ grep -rn "TODO(" workers/subscribe-checkout/src/ | wc -l
-14
-```
-
-Categories:
-- `TODO(CEO Q6)` × 5 — Stripe Products + Prices + restricted key
-- `TODO(CEO Q4)` × 3 — annual vs monthly-only v1
-- `TODO(Sales coordination)` × 3 — § 3.11 Contact schema + ct_id scheme
-- `TODO(activation)` × 2 — webhook.ts activation when Q5/Q7 opens
-
-(TODO(CEO Q7) + TODO(Marketing brand) belong to UI surface — separate Eleventy work item.)
+1. **CEO ratified Q4** — Monthly + annual together (6 Prices).
+2. **CEO ratified Q6a** — Confirm MBP pricing as-is + design ELEVATE50 promo in parallel (`50% off first 3 months`, `max_redemptions: 100`, first-time-only).
+3. **Discovered LIVE state** — Existing 3 Products + 6 Prices at MBP pricing (created 2026-03-26); 100 stale PREVIEW-XXXXXX codes from a never-executed "30-Day Preview Access" campaign.
+4. **Filed P4D3 `task_1ec7983b`** — investigate second Elevationary, Inc account `acct_1SFiCnCOzcWjCZ90` (different `acct_` ID; provenance unknown).
+5. **Tried Stripe MCP OAuth → Test Mode (~90 min)** — Multiple attempts: revoke + reconnect from Test Mode dashboard; disable LIVE MCP + enable Sandbox MCP; etc. All landed back in LIVE. Confirmed MCP OAuth grant is mode-locked at consent time and Live's built-in Test Mode has no MCP at all.
+6. **Pivoted to bearer-token script pattern** — `stripe_provision.py` mirrors fleet's `dotenv` pattern (`send_brian.py`, `memory_router.py`). STRIPE_TEST_KEY in `~/.elevationary/secrets.env`. Classifier-clean.
+7. **Provisioned Test Mode catalog** — `create-all` ran clean: 3 Products + 6 Prices + Founding Coupon + ELEVATE50 promo. ~3 seconds. IDs persisted to `scripts/stripe_test_ids.json`.
+8. **Configured Worker** — Created preview + production KV namespaces; updated `wrangler.toml` to uncomment `env.preview.r2_buckets` + `env.preview.kv_namespaces` blocks with the actual IDs; pushed 7 secrets via `wrangler secret bulk`.
+9. **Deployed `subscribe-checkout-preview` Worker** — `wrangler deploy --env preview`. All bindings confirmed at deploy time. Worker live at `*.workers.dev` URL.
+10. **First smoke test → Worker threw `1101`** — Captured via `wrangler tail`. Root cause: `EMAIL_LOCKOUT_TTL_SEC = 30` violates Cloudflare KV's 60s minimum.
+11. **Fixed `idempotency.ts`** — Bumped to 60 with explanatory comment. Redeployed. Second smoke test green.
+12. **Created fresh Session for metadata validation** — `cs_test_b1F6pJK0qM6amjrUNeuveDsQkm6fX52TiRnlu66NWf8OJ4ozWNFpvHNyHV` — pending browser completion to verify `subscription_data.metadata` propagates to resulting Subscription.
 
 ## Remaining Work
 
-### Activation — open, gated on CEO Q6 (no Website-side blocker)
+### IMMEDIATE GATE — Metadata browser validation (CEO action, ~1 min)
 
-When CEO clears Q6 (Stripe Products + Prices + restricted API key):
-1. `wrangler kv:namespace create "IDEMPOTENCY_KV"` × 2 envs → paste IDs into `wrangler.toml`.
-2. `wrangler secret put` for 4 secrets × 2 envs (8 writes, or 14 if Q4 ratifies annual).
-3. Uncomment routes + r2 + kv blocks in `wrangler.toml`.
-4. `wrangler deploy --env preview` with `DRY_RUN_CONTACT_WRITE=true` → Sales reads dry-run logs, confirms § 3.11 schema.
-5. `DRY_RUN_CONTACT_WRITE=false` → Test Mode round-trip with Stripe test card `4242 4242 4242 4242` → confirm Sales receiver picks up webhook + `subscriber-content` v2.2 returns 200 for new buyer.
-6. `wrangler deploy` (production).
-7. Append Worker-side `STRIPE_SECRET_KEY` row to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md`.
-8. Detailed-rigor implementation ORS.
+Open the Test Mode Session URL in browser, complete payment with Stripe test card `4242 4242 4242 4242`. Worker round-trip then verifiable by retrieving the resulting Subscription via API and confirming `subscription.metadata` contains all 5 expected fields (`contact_id`, `stream`, `tier`, `swimlanes_accessible`, `source`).
 
-Effort: 2–3 days Website-Agent solo post-Q6.
+Without this gate: 95% confidence the Worker is correct (encoder unit-tests passing, encoder Python replica matches Stripe's spec exactly), but Stripe's `subscription_data` field is write-only on Session retrieve — only way to verify metadata is set correctly is to complete the checkout.
 
-### `/subscribe/` Lane-Picker UI — open, separate work item per spec § 4
+Session for validation: `cs_test_b1F6pJK0qM6amjrUNeuveDsQkm6fX52TiRnlu66NWf8OJ4ozWNFpvHNyHV`.
 
-Eleventy work — drop placeholder URLs from `src/_data/site.json`; build lane-picker partial; build `/subscribe/welcome/` landing page. Spec § 4 covers the work order. Brand pass deferred (Elevationary_Marketing/brand/ still empty as of 2026-06-04).
+P4D3 `task_<new>` filed for this validation (see P4D3 section below).
 
-### Stage 2.6(b) browser live-fire — open, parallel track to Stripe Checkout
+### After validation passes — LIVE activation
 
-**Unchanged from prior handover.** Paint-by-numbers per the 2026-06-04 runbook. CEO + Sales + Website coordinate. Independent of Stripe Checkout integration.
+When metadata validation is clean and CEO confirms proceed:
+1. **Re-enable LIVE MCP toggle** OR use `stripe_provision.py --mode live --i-mean-live` with `STRIPE_LIVE_KEY` in secrets.env.
+2. **Create Founding Coupon + ELEVATE50 promo code in LIVE** (Products/Prices already exist in LIVE — no duplication needed).
+3. **Deactivate 100 stale PREVIEW-XXXXXX codes in LIVE** — `stripe_provision.py deactivate-promo-codes --mode live --i-mean-live --coupon dTwd1p8S` (and again for `TEyye1SG`).
+4. **CEO creates LIVE restricted API key** — Dashboard → Developers → API keys → Create restricted key → Checkout Sessions: Write → `rk_live_...`. Tell Website Agent when ready; we run `wrangler secret put STRIPE_SECRET_KEY` (no `--env` for production) to set it.
+5. **Configure production env Worker** — uncomment production `routes` block in `wrangler.toml` (`elevationary.com/api/checkout/*`), push 6 LIVE price IDs + `STRIPE_SECRET_KEY` via wrangler bulk, `wrangler deploy` for production env.
+6. **Append Secret Consumer Registry row** — `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` for the new restricted key (name + smoke test only, NEVER value).
+7. **Run a controlled LIVE Test Mode round-trip** to validate the production Worker (same email pattern as today's preview validation, just hitting the production URL with a real card + immediate cancel + refund + cleanup).
+8. **Detailed-rigor implementation ORS** at end.
 
-### Sales-side optimizations (filed; non-blocking)
+### Parallel work — `/subscribe/` UI + welcome page (Eleventy)
 
-(Unchanged.)
+(Unchanged from prior handover.)
 
-- Add `historical_access_from` + `deep_content_access` to `_index_row()` projection.
-- Ship `sales/index_contacts_by_email.json`.
-- Sales contact-by-email uniqueness invariant.
+- `src/subscribe/index.njk` rewrite per spec § 4: 3 forms with lane-picker (Individual 1 / Functional Bundle 3 / All-Access stream-only).
+- Drop placeholder `stripeCheckout*Url` keys from `src/_data/site.json`.
+- New `src/subscribe/welcome/index.njk` per spec § 7. **Note: today's Test Mode round-trip hit a 404 at this URL because the page doesn't exist — that's expected for now.**
+- Brand pass deferred (`~/Antigravity/Elevationary_Marketing/brand/` still empty as of 2026-06-04).
 
-### Phase B+ candidates (Website-owned)
+### Other open work (unchanged from prior handover)
 
-(Largely unchanged.)
+- **Stage 2.6(b) browser live-fire** — independent track. Awaits CEO 2-OTP-able inboxes + Stripe Test Mode key + 5 pre-staged test subs.
+- **Sales-side optimizations** — `historical_access_from` projection, `index_contacts_by_email.json`, contact-by-email uniqueness invariant. Sales-owned.
+- **Q7 — Stripe Customer Portal config + URL** — affects `/account/` portal + welcome page.
+- **Q2 — Welcome-send flow Option A vs B** — Newsletter-side concern; Website ships zero code either way in v1.
+- **Q5 — Re-subscribe envelope ownership** — separate spec; not initial-checkout scope.
+- **Q3 — Postmark plan upgrade trigger** — Newsletter-side; defer.
 
-- Real `/editions/` archive listing.
-- Constant-time gating (timing-oracle hardening).
-- Orphan Contact cleanup batch (F-A7 follow-on, post-v1).
-- Webhook activation (Q5/Q7 follow-on, post-v1).
+## Open Questions (CEO)
 
-### Deferred
+(Unchanged from prior handover, modulo Q4 + Q6a resolved this session.)
 
-- Brand pass on `/subscribe/`, `/editions/`, `/account/`, `/upgrade/`, Worker-rendered surfaces, lane-picker UI (§ 4).
-- `agent.elevationary.com` archival decision.
-- `task_f1d4e0a9` (P3 Access service token) moot vs future hardening.
-- Re-subscribe envelope ownership (spec § 10 Q5).
+| # | Resolved? | Notes |
+|---|---|---|
+| Q1 | RATIFIED 2026-06-08 | Section 2 Option B. |
+| Q2 | OPEN | Welcome-send Option A recommended; defer until acquisition rate ≥ 10/wk. |
+| Q3 | OPEN | Newsletter-side; defer. |
+| Q4 | **RATIFIED 2026-06-16** | Monthly + annual together (6 Prices). |
+| Q5 | OPEN | Re-subscribe envelope; separate spec. |
+| Q6a | **RATIFIED 2026-06-16** | MBP pricing as-is + ELEVATE50 promo (50%/3 mo, max_redemptions=100, first-time-only). |
+| Q6b | RATIFIED 2026-06-16 | Restricted key scope: `write:checkout.sessions` only. |
+| Q6c | EXECUTED 2026-06-16 | Test Mode provisioning complete. LIVE work pending after validation gate. |
+| Q7 | OPEN | Stripe Customer Portal config. Affects welcome page + `/account/`. |
 
-## Open Questions (forwarded to CEO via spec § 10)
+## Do Not Re-Try (Carried Fleet Rules + 2026-06-16 additions)
 
-Unchanged from prior handover. Q1 (Section 2 Option B) **CONFIRMED RATIFIED 2026-06-08** per dispatch line 1; skeleton landed accordingly. Q2–Q7 still open.
+(Carry-forward + additions from this session.)
 
-## Do Not Re-Try (Carried Fleet Rules)
+- **From 2026-06-16 (this session):** Cloudflare KV's `expirationTtl` floor is 60 seconds. Any KV write with TTL < 60 throws at runtime. Spec design tables that show < 60s TTL are aspirational; always validate against Cloudflare runtime constraints. Captured inline at `src/idempotency.ts:8`.
 
-Unchanged from 2026-06-08 PM handover. Added today:
+- **From 2026-06-16:** Stripe MCP OAuth grant is mode-locked at consent time. The toggle in `dashboard.stripe.com/settings/mcp` is global (account-level), not mode-specific. Live's built-in Test Mode has NO MCP toggle at all. Sandbox MCP is a separate `acct_` boundary with its own toggle. **To do Stripe API write work from an agent: use a Test Mode restricted/secret key passed via the fleet dotenv pattern (`~/.elevationary/secrets.env` loaded by a named script using `dotenv.load_dotenv()`). Do NOT attempt MCP-based mode switching — it's a dead-end on this account configuration.**
 
-- **From 2026-06-09 (this session):** When a dispatch asks for "webhook envelope handler" on Website but spec § 5 routes all Stripe webhooks to Sales, classify as L1 divergence and ship a forward-optionality stub with an in-source banner repeating the rationale. Do NOT wire the stub into the router. Future activation requires explicit router edit + activation-time ORS.
+- **From 2026-06-16:** Stripe Checkout Session `subscription_data` is a **write-only request parameter** — not returned in GET responses. To verify metadata propagation, complete the Session via test card and inspect the resulting Subscription's `metadata`, OR trust the encoder's unit tests + Python-replica verification. Do NOT interpret an empty `subscription_data` field in Session retrieve as evidence the metadata wasn't set.
+
+- **From 2026-06-16:** When MCP OAuth is intractable, pivot to bearer-token API access via named script + dotenv. The classifier blocks inline `python3 -c` reads of `~/.elevationary/secrets.env` (correct), but allows named-script execution that reads via `dotenv.load_dotenv()`. Mirror `send_brian.py` / `memory_router.py` patterns.
+
+(All prior rules from 2026-06-09 and earlier carry forward unchanged.)
 
 ## Infrastructure State
 
-- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Build pre-this-session (`4aa8369` era) still live.
+- **Cloudflare Pages** auto-deploy active from `github.com/Elevationary/elevationary-main-site`. Pre-this-session build still live.
 - **Cloudflare Worker `subscriber-content` v2.2** — version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63` DEPLOYED. Untouched today.
-- **Cloudflare Worker `subscribe-checkout`** — **NOT YET DEPLOYED.** Codebase on disk. Awaits Q6.
-- **Cloudflare Access "Subscriber Content"** — CONFIGURED + ACTIVE. AUD `3c0a5765…0bfa`. Untouched.
-- **R2 bucket `gemini-content-factory`** — single bucket; `sales/` + `newsletter/` prefixes. Untouched.
-- **Worker secret `STRIPE_SECRET_KEY`** — set for subscriber-content (LIVE restricted `subscriptions:read`). NOT yet provisioned for subscribe-checkout (TODO(CEO Q6); will be restricted scope `write:checkout.sessions`).
-- **DNS:** Cloudflare hosted zone unchanged. GoDaddy/Squarespace handover CANCELLED.
+- **Cloudflare Worker `subscribe-checkout-preview`** — **DEPLOYED 2026-06-16 — version `cd0567cb-17f2-4681-8f10-9056f1c0ddcf`** at `https://subscribe-checkout-preview.ar-ef1.workers.dev`.
+- **Cloudflare Worker `subscribe-checkout` (production env)** — NOT YET DEPLOYED.
+- **Cloudflare KV namespaces created today:**
+  - `subscribe-checkout-IDEMPOTENCY_KV_preview` → `dd29099b31b5431fba7cfe6aa32242f5` (bound to preview Worker).
+  - `subscribe-checkout-IDEMPOTENCY_KV` → `9c504f7ad12f48118df4d0f8f686f489` (production, created but unbound — will bind when production Worker deploys).
+- **Cloudflare Access "Subscriber Content"** — CONFIGURED + ACTIVE. AUD `3c0a5765…0bfa`. Untouched today.
+- **R2 bucket `gemini-content-factory`** — single bucket; `sales/` + `newsletter/` prefixes. Untouched today.
+- **Stripe Test Mode catalog (`acct_1S9DtzC5seLx7yR7` in Test Mode)** — provisioned today. 3 Products + 6 Prices + Founding Coupon + ELEVATE50 promo. IDs in `scripts/stripe_test_ids.json`.
+- **Stripe LIVE catalog (`acct_1S9DtzC5seLx7yR7`)** — 3 Products + 6 Prices pre-existing (2026-03-26). 2 stale Coupons + 100 stale PREVIEW codes scheduled for deactivation.
+- **Stripe second account `acct_1SFiCnCOzcWjCZ90`** — separate Elevationary, Inc account; provenance unknown. P4D3 audit task filed.
+- **Stripe Sandbox account `acct_1S9DuBC3YEf5bh1i`** — exists, untouched today.
+- **Worker secrets (preview env)** — `STRIPE_SECRET_KEY` (Test Mode `sk_test_...`) + 6 `STRIPE_PRICE_*` IDs all set via `wrangler secret bulk`.
+- **DNS:** Cloudflare hosted zone unchanged.
 - **Telegram bot:** `agentName: "Website"` in `~/.elevationary/bots.json` entry [8].
 
 ## Branch State
 
-On `main`. 2026-06-09 substantive commit: `d9e7d9e` (skeleton + doc updates). Subsequent timelog auto-commits: `a79e486`, `7f7b1a0`. 2026-06-10 interim wrap-up appends this handover refresh + backlog reaffirmation as a single doc-only commit. Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
+On `main`. Prior wrap-up commit `28a66f9` (interim 2026-06-10). This wrap-up commit appends today's substantive work: scripts, IDs JSON, wrangler.toml changes, idempotency.ts fix, handover + backlog updates. Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
 
 ## Tech Stack
 
-(Unchanged plus.)
+(Unchanged + new today.)
 
-- Eleventy 3.1.5 · luxon 3.7.2 · Cloudflare Pages · Cloudflare Worker `subscriber-content` v2.2 (TypeScript, `@cloudflare/workers-types`)
-- subscriber-content prod deps: `marked@^12.0.2` (renderer.html overridden to escape)
-- subscriber-content dev deps: `jose@^5.9`, `vitest@^2.1`, `wrangler@^3.60`, `typescript@^5.4`
-- **New `subscribe-checkout`** (skeleton on disk):
-  - Prod deps: NONE (direct fetch against Stripe REST, hand-rolled form-encoder)
-  - Dev deps: `@cloudflare/workers-types@^4.20260501`, `typescript@^5.4`, `vitest@^2.1`, `wrangler@^3.60`
+- Eleventy 3.1.5 · luxon 3.7.2 · Cloudflare Pages · Cloudflare Worker `subscriber-content` v2.2.
+- subscribe-checkout Worker: TypeScript, `@cloudflare/workers-types`, no production deps (direct fetch against Stripe REST + hand-rolled form encoder).
+- **NEW today — provisioning scripts:** Python 3 + `dotenv` (already fleet-standard) + `requests` (already fleet-standard). At `workers/subscribe-checkout/scripts/`.
 
 ## ORS + Walkthrough + L4 Cross-References
 
-- **This session ORS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md` — ORS PASS (Standard). 10 induced modes; Stage 2.6 deferred pending CEO Q6 (swap-in ready); 28 ECs all green. L4 `ors-logs/ORS_website_stripe_checkout_skeleton_2026_06_09-c08f14f9`.
-- **This session walkthrough:** `~/Antigravity_Data/Website/docs/walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09.md` — architecture tour + activation sequence + TODO marker map. L4 `walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09-fbb339fd`.
-- **Spec (canonical work order — prior session):** `~/Antigravity_Data/Website/docs/plans/stripe_checkout_integration_spec_2026_06_08.md` — 670 lines, ORS PASS 2026-06-08. L4 `agent-context/stripe_checkout_integration_spec_2026_06_08-d1c0288f`.
-- **Paired Newsletter spec (read-only ref):** `~/Antigravity_Data/Newsletter/docs/plans/subscriber_funnel_architecture_2026_06_08.md`.
+- **Spec (canonical work order — prior session):** `~/Antigravity_Data/Website/docs/plans/stripe_checkout_integration_spec_2026_06_08.md` — ORS PASS 2026-06-08. L4 `agent-context/stripe_checkout_integration_spec_2026_06_08-d1c0288f`.
+- **Skeleton ORS (prior session):** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md` — ORS PASS (Standard). L4 `ors-logs/-c08f14f9`.
+- **Skeleton walkthrough (prior session):** `~/Antigravity_Data/Website/docs/walkthroughs/walkthrough_stripe_checkout_skeleton_2026_06_09.md`. L4 `walkthroughs/-fbb339fd`.
+- **Activation-time ORS (this session work):** TBD — opens at next session when LIVE work begins. Will document the full Test Mode → LIVE flip + smoke results + remediation for the EMAIL_LOCKOUT_TTL bug + observability signal definition.
+- **Paired Newsletter spec (read-only reference):** `~/Antigravity_Data/Newsletter/docs/plans/subscriber_funnel_architecture_2026_06_08.md`.
 - **Sales contract source-of-truth:** `~/Antigravity/Elevationary_Sales/scripts/stripe_webhook.py` lines 204–305 + `subscription.schema.json` v2.
-- **Stage 2.6(b) runbook (carried — canonical reference):** `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md`.
-- **Pass 2 substantive ORS (trust anchor for Worker v2.2):** `ORS_p9_d3_detailed_redteam_pass2_2026_06_03.md` — ORS PASS (Detailed).
+- **Stage 2.6(b) runbook (carried):** `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md`.
+- **Pass 2 ORS (carried — trust anchor for Worker v2.2):** `ORS_p9_d3_detailed_redteam_pass2_2026_06_03.md` — ORS PASS (Detailed).

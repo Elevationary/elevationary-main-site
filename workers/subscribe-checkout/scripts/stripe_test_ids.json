@@ -1,0 +1,26 @@
+{
+  "_comment": "Stripe Test Mode IDs for subscribe-checkout Worker. Created 2026-06-16 via stripe_provision.py create-all. Account acct_1S9DtzC5seLx7yR7 in Test Mode. NOT secrets — IDs only; safe to commit.",
+  "mode": "test",
+  "account_id": "acct_1S9DtzC5seLx7yR7",
+  "created_at": "2026-06-16",
+  "products": {
+    "individual_access": "prod_UiS1oM8SxbxR4D",
+    "functional_bundle": "prod_UiS1JaalWtSXx2",
+    "all_access_pass": "prod_UiS1QyciLNfarx"
+  },
+  "prices": {
+    "STRIPE_PRICE_INDIVIDUAL_MONTHLY": "price_1Tj17iC5seLx7yR7xKVzzVd1",
+    "STRIPE_PRICE_INDIVIDUAL_ANNUAL": "price_1Tj17iC5seLx7yR7oYuM4WqJ",
+    "STRIPE_PRICE_BUNDLE_MONTHLY": "price_1Tj17jC5seLx7yR7ge0RMoNv",
+    "STRIPE_PRICE_BUNDLE_ANNUAL": "price_1Tj17jC5seLx7yR7ZT6vHxn7",
+    "STRIPE_PRICE_ALL_ACCESS_MONTHLY": "price_1Tj17kC5seLx7yR7rr8tDM8o",
+    "STRIPE_PRICE_ALL_ACCESS_ANNUAL": "price_1Tj17kC5seLx7yR7YoZbAsde"
+  },
+  "founding_coupon": "EJ7eBI1C",
+  "elevate50_promo_code_id": "promo_1Tj17lC5seLx7yR7N8oUXo2D",
+  "elevate50_code_string": "ELEVATE50",
+  "kv_namespaces": {
+    "IDEMPOTENCY_KV_preview": "dd29099b31b5431fba7cfe6aa32242f5",
+    "IDEMPOTENCY_KV_production": "9c504f7ad12f48118df4d0f8f686f489"
+  }
+}
