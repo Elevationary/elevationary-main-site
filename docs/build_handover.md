@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-06-16 (Stripe Checkout Test Mode ACTIVATED — metadata browser-verify pending)
+# Website Build Handover — 2026-06-17 (interim check-in; substantive Stripe work 2026-06-16; Team Elevation audit COMPLETE today)
 
 ## Agent
 Website (Public-Facing Web Properties Code Specialist)
@@ -6,7 +6,49 @@ Website (Public-Facing Web Properties Code Specialist)
 ## Reports To
 Administrator (Fleet COO + Code Pilot)
 
-## Session Summary
+## Interim Update — 2026-06-17
+
+**Process / governance day — no code changes.** Stripe Checkout state unchanged from 2026-06-16 (preview Worker `subscribe-checkout-preview` version `cd0567cb-…` still live at `https://subscribe-checkout-preview.ar-ef1.workers.dev`; awaiting CEO browser-completion of Session `cs_test_b1F6pJK0qM6amjrUNeuveDsQkm6fX52TiRnlu66NWf8OJ4ozWNFpvHNyHV` with test card `4242 4242 4242 4242` to validate `subscription_data.metadata` propagation per `task_aeec81fc`). Production smoke clean (HTTP/2 200).
+
+### Team Elevation Self-Audit COMPLETE (2026-06-17)
+
+Per COO dispatch 2026-06-17 implementing Phase 3 of master `Team_Elevation` project. **ORS PASS Standard.**
+
+- **Project count owned:** 4 (concentrated in 2 portfolios where 100% of active work lives).
+- **State breakdown:** (a) In-flight Phase × 1 (Subscription_Revenue_Pipeline) + (c) Between-phases × 1 (Migrate_ElevationaryCom) + DRIFT × 1 (Update_EOs) + Closed × 1 (WebSiteFoundation).
+- **scope_text M.O.S.T. attribution APPENDED (not clobbered)** on the two active Projects:
+  - `Subscription_Revenue_Pipeline` → O3 + O2 / S2 + S6 + S7 / I1 Subscription Revenue.
+  - `Migrate_ElevationaryCom` → O4 + O3 / S7 + S2 / I6 Brand Foundation Locked + Applied.
+- **Append pattern** chosen so other co-owning teammates (Sales, Newsletter) can append theirs without clobber.
+- **Re-query verified** via grep on cached `get_project` output.
+
+**Top 3 drift findings surfaced to COO** (full 7 in audit doc):
+1. **F2** — CLAUDE_CODE.md amendment NOT yet landed in Website's `directives/`. Wrap-up enforcement won't engage until propagated.
+2. **F1** — `Update_EOs` cross-owner drift (22/22 tasks 🟢 but Project + Phases + Deliverables stuck 🔲 because Owner=James on Deliverables blocks self-flip per EDGE CASES). COO doctrine call needed.
+3. **F4** — Probation horizon convention not yet set fleet-wide. Deferred filing `subscribe-checkout-preview` Probation deliverable pending COO convention.
+
+### Artifacts landed today (2026-06-17)
+
+- **ORS:** `~/Antigravity_Data/Website/docs/ORS_logs/ORS_website_team_elevation_self_audit_2026_06_17.md` — PASS Standard. L4 `ors-logs/-72e36ccf`.
+- **Audit doc:** `~/Antigravity_Data/Website/docs/audits/team_elevation_self_audit_2026_06_17.md` (NEW directory under data dir).
+- **Walkthrough:** `~/Antigravity_Data/Website/docs/walkthroughs/walkthrough_website_team_elevation_self_audit_2026_06_17.md`. L4 `walkthroughs/-75c667`.
+- **2 P4D3 row writes** (scope_text appends on Subscription_Revenue_Pipeline + Migrate_ElevationaryCom).
+- **2 auto-memories** saved at `~/.claude/projects/-Users-jamesszmak-Antigravity-Website/memory/`:
+  - `feedback_voice_messages_use_send_brian.md` (carry-forward from 2026-06-14).
+  - `feedback_telegram_page_on_substantial_deliverable.md` (new today — page is required, chat reply is not the page).
+
+### Outstanding asks
+
+- **CEO:** browser-complete Test Mode validation (`task_aeec81fc`, ~1 min) — unblocks LIVE activation.
+- **COO:** dispositions on F1 (cross-owner status flips), F2 (amendment propagation), F4 (Probation horizon).
+
+### Today's wrap-up
+
+Doc-only interim — handover refresh, backlog reaffirmation, session_log via wrap-up script, production smoke verification. `--skip-ors` NOT needed (the Team Elevation audit IS a fully-closed ORS PASS today, satisfies the wrap-up gate).
+
+---
+
+## Substantive Session Summary (2026-06-16 — carried forward verbatim)
 
 **Major progress session — Stripe Checkout Test Mode is functionally activated.** Worker deployed, Stripe Test Mode catalog provisioned, smoke test returns valid Stripe Checkout Session URLs. One open verification remaining (browser-complete a Test Mode checkout to confirm `subscription_data.metadata` propagates correctly to the resulting Subscription) before the LIVE-side activation work can proceed safely.
 
@@ -197,7 +239,7 @@ When metadata validation is clean and CEO confirms proceed:
 
 ## Branch State
 
-On `main`. Prior wrap-up commit `28a66f9` (interim 2026-06-10). This wrap-up commit appends today's substantive work: scripts, IDs JSON, wrangler.toml changes, idempotency.ts fix, handover + backlog updates. Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`.
+On `main`. 2026-06-16 substantive commit: `d8310ab` (Stripe Test Mode catalog + preview Worker deploy). 2026-06-17 interim wrap-up commit appends this handover refresh + backlog reaffirmation as a single doc-only commit (no code change). Untracked carried: `.tmp/`, `directives/CLAUDE_CODE.md.bak.20260520`, `docs/SESSION_LOG.md`, snapshot autosaves, `.claude/` internal state.
 
 ## Tech Stack
 
