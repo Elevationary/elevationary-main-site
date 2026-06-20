@@ -3,6 +3,16 @@
 > **Project Source of Truth:** Always verify the active project phases and deliverables within the P4D3 database before beginning a session.
 > **Backlog tags:** `[CODE]` = Website code work | `[BRAND]` = needs Elevationary_Marketing approval | `[PROCESS]` = COO operational | `[JAMES]` = human action required. Website marks only its own items complete.
 
+> **⚡ 2026-06-20 ENVIRONMENT TRANSITION:** Website is transitioning from Claude Code IDE to TeamAgent (A2A + Telegram) environment. The new TeamAgent's first action on restart is to read `docs/build_handover.md` end-to-end (transition document), then execute the **Onboarding Scan** per `directives/CLAUDE_CODE.md`. Backlog items below remain valid; priority order reaffirmed in the **Restart Sequence** section at top of build_handover.md.
+
+## Restart Priority Order (TeamAgent)
+
+1. **Onboarding Scan** + read this backlog + read build_handover.md.
+2. **Query P4D3** for current-state surface: `task_aeec81fc`, `task_b0d86b20`, `task_d02e87e8`.
+3. **If `task_aeec81fc` (CEO browser validation) flipped 🟢:** begin LIVE activation per `task_b0d86b20`.
+4. **If still 🔲:** Telegram-page James with TeamAgent-online status + standing-by message.
+5. **Parallel work:** `task_d02e87e8` Eleventy UI work is unblocked regardless of validation gate.
+
 ## Active
 
 - [ ] **[COO] Subscription_Revenue_Pipeline — Website owns P3 + P4 + P9_D3** — CEO-ratified 2026-05-30 (P3 + P4) and 2026-06-01 (P9). P4D3 path: `Operations / Fleet_Governance / Subscription_Revenue_Pipeline`. Status as of 2026-06-04:
