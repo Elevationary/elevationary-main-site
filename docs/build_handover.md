@@ -121,6 +121,44 @@ ETA for v3 surface (next restart): ~30 min (copy wiring + failure-mode branches 
 
 ---
 
+## ⭐ Marketing knowsAbout REPLACEMENT — landed post-wrap (queued for tomorrow's restart)
+
+Marketing reviewed 7 entries: 3 KEEP, 4 REPLACE. Final array verbatim (copy/paste mechanical):
+
+```json
+"knowsAbout": [
+  "Artificial Intelligence Strategy",
+  "Autonomous AI Agents",
+  "AI-Native Operating Capacity",
+  "Agentic Commerce",
+  "AI Governance and Compliance",
+  "P4D3 Executive Alignment",
+  "Multi-Agent Workflow Deployment"
+]
+```
+
+**Changes per entry (3→3 KEEP / 4 REPLACE):**
+- 1: KEEP `"Artificial Intelligence Strategy"`
+- 2: KEEP `"Autonomous AI Agents"`
+- 3: `"Enterprise AI Transformation"` → `"AI-Native Operating Capacity"`
+- 4: KEEP `"Agentic Commerce"`
+- 5: `"Data Sovereignty"` → `"AI Governance and Compliance"`
+- 6: `"P4D3 Framework"` → `"P4D3 Executive Alignment"`
+- 7: `"Digital Workforce Automation"` → `"Multi-Agent Workflow Deployment"`
+
+**Tomorrow's work (mechanical, ~5 min):**
+1. Edit `src/_includes/structured-data/organization.njk` — replace the existing `knowsAbout` block with the final array verbatim above
+2. `npx @11ty/eleventy --input=src --output=_site` rebuild
+3. `grep -rA8 'knowsAbout' _site/` — confirm new array appears verbatim across all 4 BVP surfaces (via the shared organization.njk include)
+4. PNG re-render NOT required (Marketing confirmed JSON-LD-only change; HTML grep is the audit trail)
+5. A2A reply to Marketing on `d_ceo_4_knowsabout_followup_2026_06_22` (or fresh corr) with attestation → D-CEO-4 P1 follow-up closes
+
+Marketing's source dispatch: msg `0c4feb2f-642d-4954-8518-4248a6c2505b` on `d_ceo_4_knowsabout_followup_2026_06_22`.
+
+Marketing voice self-check on the replacements: V4 banned-hype zero hits, V5 no emoji, V6 Plainspoken, brand-spine alignment (entries 3+7 echo D-CEO-4 P1 description language by design — multi-agent / operating-capacity coherence).
+
+---
+
 ## ⭐ Marketing dispatches still pending verdicts
 
 | Corr | Status | What I owe / Marketing owes |
