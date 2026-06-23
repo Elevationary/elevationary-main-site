@@ -78,6 +78,49 @@ LIVE activation steps (paint-by-numbers per `~/Antigravity_Data/Website/docs/pla
 
 ---
 
+## ⭐ Marketing D1.7 tier-mapping DECISION — landed post-wrap (queued for tomorrow's restart)
+
+Marketing ratified **Option B**: keep 3-row structure, map 1:1 with Stripe enum (brand-honesty wins over architectural cleanliness; $69 functional_bundle subscriber should see acknowledgment of what they actually bought, not merged under generic "Newsletter").
+
+**Per-tier copy — verbatim per Q-WP4.b locked-tier-defaults rule. Copy/paste exactly into the Worker render code:**
+
+```
+individual ($29 / single swimlane):
+  acknowledgment: "You're in."
+  orientation:    "Your weekly edition arrives Wednesday morning. Edition #1 is already drafted."
+  next_action:    "Watch your inbox at the address you signed up with. The archive is at /editions/ when you want to revisit."
+
+functional_bundle ($69 / three swimlanes):
+  acknowledgment: "You're in."
+  orientation:    "Your three swimlane editions arrive Wednesday mornings. Edition #1 for each is already drafted."
+  next_action:    "Watch your inbox at the address you signed up with. The archive is at /editions/ — filter by swimlane when you want a single track."
+
+all_access ($149 / everything plus shared seats):
+  acknowledgment: "You're in."
+  orientation:    "All swimlanes plus shared seats. Your weekly editions arrive Wednesday morning, and All-Access companion materials publish alongside."
+  next_action:    "Watch your inbox. Your subscriber portal is at https://elevationary.com/account/ — manage seats and access tier from there."
+```
+
+**Template tokens confirmed:**
+- `{{ portal_url }}` = `https://elevationary.com/account/`
+- `{{ support_email }}` = `support@elevationary.com`
+- `{{ unsubscribe_url }}` = `https://elevationary.com/unsubscribe/` (Marketing-authorized placeholder; Newsletter dispatches canonical URL on separate corr when their surface ships)
+
+**Q-WP3 Clay rule reaffirmed:** tier-badge fires ONLY on `all_access`. `individual` + `functional_bundle` render in Newsletter palette (no Clay).
+
+**V3 render pass ask (Marketing closing the implementation cycle):**
+1. Wire per-tier copies into welcome handler / SSR module
+2. Render Clay tier-badge for `all_access` path (data-tier="all_access" on entitlement-shell + existing CSS already covers tier-distinct color)
+3. Add Q-WP5.b (Stripe unreachable) + Q-WP5.c (mismatched account) Worker logic with the verbatim spec copy
+4. Regenerate welcome PNG into a **v3** subdir (e.g. `~/Antigravity_Data/Website/visual_references/bvp_d_ceo_1_2026_06_22_v3/`)
+5. Reply to Marketing on the spec corr (or fresh) when v3 lands → Marketing runs D1.4 gate; on PASS, D1.7 flips 🟢
+
+**Spec amendment Marketing is doing in parallel:** `brand/welcome_page_brand_spec.md` Q-WP4.a row-set updates from `{Free, Newsletter, All-Access}` → `{individual, functional_bundle, all_access}` as first action on tomorrow's re-spin. Doesn't block render — verbatim copies above ARE the ratified Marketing copy regardless of where they live in spec.
+
+ETA for v3 surface (next restart): ~30 min (copy wiring + failure-mode branches + tier-badge wiring + PNG regen + reply).
+
+---
+
 ## ⭐ Marketing dispatches still pending verdicts
 
 | Corr | Status | What I owe / Marketing owes |
