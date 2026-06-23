@@ -1,104 +1,123 @@
 # Website Backlog
 
 > **Project Source of Truth:** Always verify the active project phases and deliverables within the P4D3 database before beginning a session.
-> **Backlog tags:** `[CODE]` = Website code work | `[BRAND]` = needs Elevationary_Marketing approval | `[PROCESS]` = COO operational | `[JAMES]` = human action required. Website marks only its own items complete.
+> **Backlog tags:** `[CODE]` = Website code work | `[BRAND]` = needs Elevationary_Marketing approval | `[PROCESS]` = COO operational | `[JAMES]` = human action required | `[WEB]` = current BVP / Day 3 Website work. Website marks only its own items complete.
 
-> **⚡ 2026-06-20 ENVIRONMENT TRANSITION:** Website is transitioning from Claude Code IDE to TeamAgent (A2A + Telegram) environment. The new TeamAgent's first action on restart is to read `docs/build_handover.md` end-to-end (transition document), then execute the **Onboarding Scan** per `directives/CLAUDE_CODE.md`. Backlog items below remain valid; priority order reaffirmed in the **Restart Sequence** section at top of build_handover.md.
+> **⚡ 2026-06-22 BVP DAY 3 EOD STATE:** Fleet-wide Claude restart triggered by CEO for clean PTY clear. Welcome-flow Day-2-shippable surface = PASS in preview. Marketing dispatch queue cleared (#1/#3/#4 verdicted PASS; #2 D1.7 partial impl awaiting tier-enum mapping reply). LIVE activation gated on `task_b0d86b20`.
 
-## Restart Priority Order (TeamAgent)
+## Restart Priority Order (post-restart)
 
-1. **Onboarding Scan** + read this backlog + read build_handover.md.
-2. **Query P4D3** for current-state surface: `task_aeec81fc`, `task_b0d86b20`, `task_d02e87e8`.
-3. **If `task_aeec81fc` (CEO browser validation) flipped 🟢:** begin LIVE activation per `task_b0d86b20`.
-4. **If still 🔲:** Telegram-page James with TeamAgent-online status + standing-by message.
-5. **Parallel work:** `task_d02e87e8` Eleventy UI work is unblocked regardless of validation gate.
+1. Onboarding Scan + read `docs/build_handover.md` end-to-end.
+2. Check inbox for Marketing's pending verdicts:
+   - D1.7 tier-enum mapping (3 options A/B/C dispatched, msg `cef45339-...`)
+   - knowsAbout replacement mapping (incoming on `d_ceo_4_knowsabout_followup_2026_06_22`)
+3. If Marketing tier-mapping reply present → wire per-tier copy, regenerate welcome PNG, reply with verdict-ready surface.
+4. If knowsAbout mapping present → apply find-and-replace in `organization.njk`, rebuild, verify; PNG re-render skippable (JSON-LD-only change).
+5. Standing-by for COO Day 3 active-drive signal (production deploy gated on `task_b0d86b20`).
 
 ## Active
 
-- [ ] **[COO] Subscription_Revenue_Pipeline — Website owns P3 + P4 + P9_D3** — CEO-ratified 2026-05-30 (P3 + P4) and 2026-06-01 (P9). P4D3 path: `Operations / Fleet_Governance / Subscription_Revenue_Pipeline`. Status as of 2026-06-04:
-    - [X] **Phase A shipped** (2026-05-30, build `c8ce467`): P3 spec, P4_D2 templates, `/unlock/` sweep, P4_D1 scaffold. ORS PASS.
-    - [X] **Phase B shipped** (2026-05-30, build `90083a3`): full P4_D1 Worker, `/upgrade/` template, wrangler.toml routes. ORS PASS.
-    - [X] **Detailed Red-Team ORS** (2026-05-30, build `4973625`, Rigor: Detailed): 55-test vitest harness + JWT verification fix + walkthrough + L4 uploads. ORS PASS.
-    - [X] **James close-out — deploy chain** (2026-06-02, build `360b740`): Cloudflare Access app live; JWT strict-mode vars set; R2 consolidated to `gemini-content-factory`; STRIPE_SECRET_KEY secret set; `wrangler deploy` executed.
-    - [X] **P9_D3 Worker swimlane schema v2 migration** (2026-06-02, build `1579ce5`, Rigor: Detailed): Worker source migrated across 10 v1→v2 surfaces; vitest harness rewrite to v2 (56/56 pass); `/upgrade/` `?swimlane=` URL param; wrangler deploy version `18746577-3dfd-4b4d-9803-717a9f62b71e`; live-fire fixture seeded; initial ORS PASS; walkthrough + L4 uploads.
-    - [X] **P9_D3 Stage 3 Detailed-Rigor induction + Stage 4 remediation** (2026-06-02 evening, build `935843a`, Rigor: Detailed): CEO escalation flagged initial Stage 3 as characterological. Re-ran with real 10-mode induction matrix. **5 of 10 modes surfaced 3 distinct bugs (1 critical XSS via `marked@^12` raw-HTML passthrough; 2 defensive-coding gaps on R2 reads).** Fixed inline (`Array.isArray` guard on swimlanes_accessible; null/type checks on entitlements; `marked.use` renderer.html override). 66/66 tests pass. Worker re-deployed as version `58820166-e764-48ab-bb6e-4dd2433c69fe`. ORS + walkthrough re-uploaded to L4. ORS PASS post-remediation.
-    - [X] **P9_D3 Detailed Red-Team Pass 2 — swimlane / JWT / R2 axes** (2026-06-04, build `19199b5`, Rigor: Detailed): Second-pass induction on axes the 2026-06-02 matrix under-covered. 11 new modes [K]–[U] in a separate test file (`workers/subscriber-content/test/worker.redteam-pass2.test.ts`). **1 real defense-in-depth gap surfaced: F-Q-1 — `verifyAccessJwt` did not check the `nbf` claim. Token with `nbf=now+3600s` returned HTTP 200 pre-fix; HTTP 403 post-fix.** Five-line fix (`nowSec` extract + `nbf?: number` type field + `nowSec < payload.nbf` guard). Three modes documented as accepted-with-rationale, not bugs: F-R-1 (`NEWSLETTER_CONTENT.get()` throw → CF 1101 fail-open-with-error preferable to fail-closed-to-upgrade), F-S-1 (same for `SALES_CRM.list()`), F-U-1 (duplicate-email contact collision → first-match-wins fail-closed; uniqueness invariant belongs to Sales). Heller F9 verifier-of-the-verifier sub-stage: 22 sensitive fixtures seeded across all 16 hardened-scan patterns + 5 benign — 22/22 hit, 0/5 false-positive, recursive + case-insensitive both proven. 77/77 vitest pass. Worker re-deployed as **v2.2 version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63`**. ORS + walkthrough uploaded to L4 (`-d72a3cc1` + `-7f2eeb0e`). ORS PASS.
-    - [X] **Stage 2.6(b) live-fire runbook prep — paint-by-numbers 11-cell** (2026-06-04, doc-only — no production code change; P4D3 `task_05d28394`; Rigor: Standard): 992-line runbook at `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` covering all 11 cells in execution order (cheapest setup → terminal states) with (a)–(g) per cell + coordination summary at top (3 system invariants, roles, pre-staged inputs, FAIL vs SKIP rubric, Sales-script-unavailable direct-R2 fallback, time budget ~107 min, CF Access OTP screen walkthrough, explicit no-auto-redirect-between-cells rule, full Worker decision tree + Sales schema cheat-sheet). **Stage 3 induced 10 distinct ambiguity modes against runbook v1** (R-1 through R-10 — twice the directive ≥5 minimum) by adversarial cold-CEO reading; **Stage 4 closed all 10 via 8 surgical Edit calls** to v2; Stage 5 re-induction confirmed every mode now has deterministic answer cited at a specific v2 section. L4 vault upload to `agent-context` as canonical reference for ANY future entitlement matrix work (doc id `stage_2_6b_live_fire_runbook_2026_06_04-9d9d699c`, 58.2 KB, L3 semantic pointer auto-injected). ORS PASS — `ORS_stage_2_6b_runbook_prep_2026_06_04.md`.
-    - [ ] **Stage 2.6(b) coordinated live-fire — happy path (`task_e5d72ed6` in P4D3):** Now **paint-by-numbers per the runbook above** (no more invent-as-we-go). CEO + Sales + Website coordinate per the 11-cell runbook. Pre-flight gates CEO confirms: 2 OTP-able inboxes (OTP_A for cells 1–4/6–11, OTP_B for cell 5); 1 Stripe Test Mode restricted key (`subscriptions:read`); 5 test-mode Stripe sub objects per runbook Step 0.3; `sales_subscription.py` operational OR Sales on standby for direct-R2 fallback; cycle Worker `STRIPE_SECRET_KEY` to TEST mode per Step 0.2. After matrix passes: flip P3_D1 + P4_D1 + P4_D2 + P9_D3 statuses 🔲 → 🟢. Post-live-fire ORS (separate deliverable) cites the runbook by cell number.
-    - [ ] **Full Stage 2.6(b) matrix — NEXT deliverable per CEO directive:** 11 cells covering no-sub / individual / functional_bundle / all_access purchaser / all_access shared seat / cancelled / past_due / suppressed / Stripe-DiD catch / wrong-swimlane / before-historical. **Runbook above (2026-06-04 `…-9d9d699c`) is the canonical execution doc.** Opens immediately on first live-fire window — no longer gated on happy-path-first sequencing because the runbook covers all 11 cells in execution-order-optimized sequence.
+- [ ] **[CODE / WEB] LIVE activation sequence (`task_b0d86b20` in P4D3)** — paint-by-numbers per `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`. STRIPE_READ_KEY + CF Access service token already pushed to both envs; production Worker `subscribe-checkout` exists as empty shell. Needs: LIVE Founding Coupon + ELEVATE50 promo creation, deactivate 100 stale PREVIEW codes, LIVE write-scope restricted API key, configure_worker_secrets.py --env production, uncomment production routes block, add production `[[services]]` mirror of ENTITLEMENT_WORKER, `wrangler deploy`, e2e smoke against real cs_live_ session, append Secret Consumer Registry rows × 3, flip `task_1c9bc273` 🟢 + `task_b0d86b20` 🟢, detailed-rigor ORS.
 
-- [ ] **[COO/JAMES] Fleet Secret Consumer Registry — Worker-side STRIPE_SECRET_KEY row** — append a row to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` for the Worker-side `STRIPE_SECRET_KEY` consumer (restricted, `subscriptions:read` only). Names + smoke test only; never the value. Not yet observed in registry. **Add a SECOND row at subscribe-checkout activation** — that Worker's `STRIPE_SECRET_KEY` is a separate restricted key with scope `write:checkout.sessions`.
+- [ ] **[WEB / BRAND] D1.7 welcome page per-tier copy implementation** — code prep + tier-agnostic items shipped 2026-06-22 (Q-WP1, Q-WP2, Q-WP3 default-no-Clay, Q-WP5.a, Q-WP6, Q-WP-MO, Q-WP-FT). Blocked on Marketing tier-mapping decision: Stripe enum `{individual, functional_bundle, all_access}` vs spec enum `{Free, Newsletter, All-Access}`. Three options dispatched (A: drop Free, map individual+functional_bundle→Newsletter; B: 1:1 Stripe rows; C: 4-row matrix). After reply: ~15 min for Worker logic + Q-WP4.a copy + Q-WP5.b/c failure branches + Q-WP3 tier-badge for All-Access + welcome PNG regen + Marketing brand-gate review request.
 
-- [X] **2026-06-09 — [CODE] Stripe Checkout Worker SKELETON (`workers/subscribe-checkout/`)** — per COO dispatch. Spec § 3 architecture scaffolded: 7 src modules (index, types, validation, ct_id, contact, stripe, idempotency, origin, webhook stub) + 5 vitest suites + 5 config files + README. 62/62 vitest pass, `tsc --noEmit` clean, 14 grep-findable `TODO(...)` markers across all 7 CEO-gated swap-in categories. Stage 3 induced 10 distinct failure modes, all acceptable as-written. L1 divergence logged. ORS PASS (Standard). L4 vault uploads `walkthroughs/-fbb339fd` + `ors-logs/-c08f14f9`.
+- [ ] **[WEB / BRAND] knowsAbout array replacement** — Marketing reviewing 7 entries row-by-row. Replacements arrive on corr `d_ceo_4_knowsabout_followup_2026_06_22`. Apply find-and-replace in `src/_includes/structured-data/organization.njk`, rebuild, grep-verify in `_site/`. PNG re-render likely skippable (JSON-LD-only).
 
-- [X] **2026-06-17 — [PROCESS] Team Elevation Self-Audit COMPLETE** — per COO dispatch 2026-06-17 implementing Phase 3 of master `Team_Elevation` project. ORS PASS Standard. 4 Projects classified across 4 states (a/c/DRIFT/Closed); 0 state-(f) gap. scope_text M.O.S.T. attribution appended (not clobbered) on `Subscription_Revenue_Pipeline` (O3 + O2 / S2 + S6 + S7 / I1) + `Migrate_ElevationaryCom` (O4 + O3 / S7 + S2 / I6); re-query verified. 7 drift findings surfaced (top 3: F2 amendment-not-landed in Website directives; F1 Update_EOs cross-owner stale Deliverables; F4 Probation horizon convention not set). L4 vault uploads `walkthroughs/-75c667` + `ors-logs/-72e36ccf` with L3 pointers. Telegram page sent to COO via @EleSentinelIntelBot. Audit doc at `~/Antigravity_Data/Website/docs/audits/team_elevation_self_audit_2026_06_17.md`. 2 auto-memories saved (voice cascade carry-forward + new Telegram-page-on-substantial-deliverable rule).
+- [ ] **[WEB / BRAND] D-CEO-4 P2 AEO/GEO authoring** — clean slate confirmed (zero AEO/GEO content in workspace). Marketing drafts scope from scratch; when scope lands, Website authors `src/_includes/structured-data/faq.njk` (or `qa.njk`) with FAQPage type, includes from `/aeo/` + `/geo/` surfaces.
 
-- [ ] **[COO disposition needed] 3 Team Elevation drift findings worth COO action** — (F1) Cross-owner status-flip doctrine: should teammates flip rows where Owner=other when underlying tasks 🟢? Update_EOs case. (F2) CLAUDE_CODE.md amendment propagation plan for Website's `directives/CLAUDE_CODE.md`. (F3) Fleet-wide Probation (b) horizon convention so teammates file consistently. Other 4 findings: cross-teammate Decision ownership on 3 open Migrate_ElevationaryCom Decisions; per-project four-surface audit cost extending Marketing #2; P4D3 column-header text leak (`organization_id` column showing "I suspect you can find the agent registry..."); duplicate Phase rows on Migrate_ElevationaryCom.
+- [ ] **[COO] Subscription_Revenue_Pipeline — Website owns P3 + P4 + P9_D3** — CEO-ratified 2026-05-30 (P3 + P4) and 2026-06-01 (P9). P4D3 path: `Operations / Fleet_Governance / Subscription_Revenue_Pipeline`. Status as of 2026-06-22:
+    - [X] All P3 + P4_D1 + P4_D2 + P9_D3 tasks 🟢 from prior sessions (see git history).
+    - [X] `task_aeec81fc` 🟢 2026-06-21 — CEO Stripe live-fire validation PASSED.
+    - [X] `task_1c9bc273` 🟡 2026-06-22 — ENTITLEMENT_WORKER service binding wired in preview; staying 🟡 until production deploy + e2e smoke 200/200 with real cs_live_ session.
+    - [ ] `task_b0d86b20` 🟡 — LIVE activation (sequence above).
+    - [ ] `task_d02e87e8` 🟢 (shipped Day 2; Eleventy `/subscribe/` lane-picker + welcome page).
 
-- [X] **2026-06-16 — [CODE] Stripe Checkout Test Mode catalog provisioned + preview Worker DEPLOYED** — Q4 (6 Prices) + Q6a (MBP pricing + ELEVATE50 promo 50%/3 mo, max_redemptions=100, first-time-only) + Q6b (restricted key scope `write:checkout.sessions`) + Q6c (provision now) all ratified. Pivoted from Stripe MCP OAuth (mode-locked, dead-end) to bearer-token script pattern (`scripts/stripe_provision.py` + `configure_worker_secrets.py`, fleet dotenv pattern). Test Mode catalog: 3 Products + 6 Prices ($29/$290/$69/$690/$149/$1490) + Founding Coupon `EJ7eBI1C` + ELEVATE50 promo `promo_1Tj17lC5seLx7yR7N8oUXo2D`. IDs in `scripts/stripe_test_ids.json`. Preview Worker DEPLOYED at `https://subscribe-checkout-preview.ar-ef1.workers.dev` (version `cd0567cb-…`). 7 secrets via `wrangler secret bulk` (STRIPE_SECRET_KEY + 6 prices). KV namespaces: preview `dd29099b…`, production `9c504f7a…`. R2 binding active. **Smoke test: CORS preflight ✅ + POST /api/checkout returns valid Stripe Test Session URL ✅.** Bug found + fixed inline: `EMAIL_LOCKOUT_TTL_SEC` was 30; Cloudflare KV minimum 60 — bumped + redeployed. Discoveries logged: LIVE catalog already provisioned (3 Products + 6 Prices since 2026-03-26); 100 stale PREVIEW-XXXXXX codes from never-executed campaign; second account `acct_1SFiCnCOzcWjCZ90` exists (P4D3 `task_1ec7983b` filed).
+- [ ] **[COO/JAMES] Fleet Secret Consumer Registry rows** — append rows to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` at LIVE activation for: (a) Worker-side `STRIPE_SECRET_KEY` (subscriber-content, scope `subscriptions:read`); (b) subscribe-checkout production `STRIPE_SECRET_KEY` (scope `write:checkout.sessions`); (c) subscribe-checkout `STRIPE_READ_KEY` (scope `checkout.sessions:read` + `subscriptions:read`, pushed both envs 2026-06-22); (d) subscribe-checkout `CF_ACCESS_CLIENT_ID` + `CF_ACCESS_CLIENT_SECRET` pair (service token `subscribe_checkout_to_subscriber_content`, pushed both envs 2026-06-22). Names + smoke test only; never values.
 
-- [ ] **[JAMES — IMMEDIATE GATE, ~1 min] Browser-complete Test Mode metadata validation** — Session `cs_test_b1F6pJK0qM6amjrUNeuveDsQkm6fX52TiRnlu66NWf8OJ4ozWNFpvHNyHV` is open. Open in browser, complete with test card `4242 4242 4242 4242` (any future expiry, any 3-digit CVC). Welcome page 404 is expected (page doesn't exist yet). After completion, Website Agent retrieves resulting Subscription via API + confirms `subscription.metadata` contains `contact_id`, `stream`, `tier`, `swimlanes_accessible`, `source`. This is the definitive proof that the Worker's `subscription_data.metadata` is reaching Stripe correctly (Stripe API doesn't echo `subscription_data` on Session retrieve — write-only field). Blocks LIVE activation.
+- [X] **2026-06-22 — [WEB / CODE] Welcome-flow Day-2-shippable surface PASS** — Stripe scope widening + dual-env secret push, ENTITLEMENT_WORKER service binding live preview (Worker `508cd6b3-...`), CF Access service token Option II wired both envs, subscriber-content `/api/entitlement` endpoint shipped (86/86 vitest), welcome handler progressive-enhancement via `liveFlowReady()`, preview smoke controlled-PASS (rk_live_ + cs_test_ separation), runbook at `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`.
 
-- [ ] **[CODE] Stripe Checkout Worker LIVE ACTIVATION** — After metadata validation passes: (a) Re-enable LIVE MCP toggle OR use `stripe_provision.py --mode live --i-mean-live` with `STRIPE_LIVE_KEY` set in secrets.env; (b) Create Founding Coupon + ELEVATE50 in LIVE (Products/Prices already exist — reuse IDs); (c) Deactivate 100 PREVIEW-XXXXXX codes via `stripe_provision.py deactivate-promo-codes --coupon dTwd1p8S` (and `TEyye1SG`); (d) CEO creates LIVE restricted API key in Dashboard (scope: Checkout Sessions Write only); (e) Set production env wrangler secrets via `configure_worker_secrets.py --env production`; (f) Uncomment production routes block in `wrangler.toml`; (g) `wrangler deploy` (production); (h) Append Secret Consumer Registry row; (i) Detailed-rigor implementation ORS. Effort: ~1 day after metadata validation.
+- [X] **2026-06-22 — [WEB / BRAND] Marketing remediation cycle PASS** — D-CEO-1 fleet→team scrub (5 hits) + D-CEO-4 P1 JSON-LD description swap (byte-verified by Marketing) + AEO/GEO clean-slate confirmation + D1.7 welcome-page partial implementation (tier-agnostic items). 16 v2 PNGs at `~/Antigravity_Data/Website/visual_references/bvp_d_ceo_1_2026_06_22_v2/`.
 
-- [ ] **[CODE] `/subscribe/` Lane-Picker UI + `/subscribe/welcome/` landing page** — separate Eleventy work item per spec § 4 + § 7. Builds 3 forms with lane pickers (Individual 1 / Functional Bundle 3 / All-Access stream-only); drops placeholder `stripeCheckout*Url` keys from `site.json`. **`/subscribe/welcome/` was hit during today's Test Mode smoke test (Stripe redirects there post-checkout) — currently 404s; expected, no priority bump until UI work begins.** Functional-but-unstyled v1; brand pass deferred. Parallelizable with Worker LIVE activation.
+- [X] **2026-06-22 — [WEB / CODE] D1.4 brand-gate self-review submitted + Marketing PASS** — 35/37 rows self-PASS, 5 inline remediations (C6 contrast / T1 Roboto load / T5 letter-spacing / S3 tap targets / I1 Lucide SVG), Marketing GREEN on D1.1 visual fidelity + D-CEO-1 + D-CEO-4 P1.
 
-- [X] **[Website wrap-up] Ingest fleet lessons to L3** — all 3 pass-2 lessons ingested 2026-06-04 per `ORS_pass2_wrapup_2026_06_04.md` Stage 2 (each stored 7 vectors; top-1 recall verified L2=0.46–0.50):
-    - `fleet_lesson_jwt_strict_must_check_nbf` — Any strict JWT verifier must check `nbf` if present, not just `exp`. F-Q-1 (pass-2) proof.
-    - `fleet_lesson_verify_the_verifier` — Generalizing Heller F9: any "this command catches X / Y / Z" claim ships with a positive-and-negative fixture test.
-    - `fleet_lesson_documented_acceptance_beats_silent_acceptance` — Acceptable-on-rationale behavior gets the rationale in the ORS as a written decision.
+- [X] **2026-06-21 — [WEB / BRAND] BVP Triad Day 2 sprint shipped** — 4 contemporary surfaces (/, /subscribe/, /subscribe/welcome/, /editions/), D1.5 R2 schema joint-locked with Newsletter, D2.1 hook contract locked with Marketing, D2.4 Website-half welcome handler pre-stage, Stripe CTA hook pre-stage (feature-flagged JS).
+
+- [X] **2026-06-09 — [CODE] Stripe Checkout Worker SKELETON shipped** — per prior backlog.
+
+- [X] **2026-06-17 — [PROCESS] Team Elevation Self-Audit COMPLETE** — per prior backlog.
+
+- [X] **2026-06-16 — [CODE] Stripe Checkout Test Mode catalog provisioned + preview Worker DEPLOYED** — per prior backlog.
+
+- [ ] **[COO disposition needed] 3 Team Elevation drift findings** — (F1) Cross-owner status-flip doctrine; (F2) CLAUDE_CODE.md amendment propagation; (F3) Fleet-wide Probation horizon convention. Other 4 findings carry forward.
 
 ### Optimization Backlog — Sales-owned (non-blocking)
 
-- [ ] **[CODE — Sales-owned] Add `historical_access_from` + `deep_content_access` to `_index_row`** in `sales_subscription.py`. ~30 ms saved per entitled Worker request. Sales' P9_D1 added `swimlanes_accessible` + `shared_contact_ids` to the projection but skipped these two — Worker still does one per-sub R2 GET to read them. Open since 2026-05-30.
-- [ ] **[CODE — Sales-owned] Ship `sales/index_contacts_by_email.json`** — O(1) email lookup; **also closes the timing-oracle finding** from the Detailed RT ORS. Open since 2026-05-30.
+- [ ] **[CODE — Sales-owned]** `historical_access_from` + `deep_content_access` projection into `_index_row`.
+- [ ] **[CODE — Sales-owned]** `sales/index_contacts_by_email.json` for O(1) email lookup (closes timing-oracle finding).
+- [ ] **[CODE — Sales-owned]** Sales contact-by-email uniqueness invariant (write-time conflict detection).
 
 ### Phase B+ Follow-ups (Website-owned)
 
-- [ ] **[CODE] Real `/editions/` archive listing** — Worker currently returns placeholder. Full version: list R2 `newsletter/drafts/` by date, filter by subscriber's `swimlanes_accessible` + `historical_access_from`, render. Awaits Newsletter date-manifest convention.
-- [ ] **[CODE] Constant-time gating** (Phase B+) — minimum wall-clock latency on gated responses to harden against timing-based email enumeration. Closeable by Sales `index_contacts_by_email.json`.
-- [ ] **[CODE] Real Stripe Checkout URLs** — replace 4 placeholders in `src/_data/site.json` when Sales P2 ships Checkout session creation, or use Stripe Payment Links sooner.
+- [ ] **[CODE] Real `/editions/` archive listing** — Worker currently signed-out fallback. Full version: list R2 `newsletter/drafts/` by date per D1.5 schema, filter by subscriber's swimlanes + historical_access_from, render `issue_card.archive` grid. Awaits Newsletter Q3 #1 publish + D1.5 schema instances in R2.
+- [ ] **[CODE] Constant-time gating** — minimum wall-clock latency on gated responses to harden against timing-based email enumeration. Closeable by Sales `index_contacts_by_email.json`.
+- [ ] **[CODE] Real Stripe Checkout URLs** — replace 4 placeholders in `src/_data/site.json` once tier CTAs use the live `/api/checkout` POST path (JS hook is in `assets/bvp-checkout.js`, feature-flagged off; flip to true at LIVE activation).
+- [ ] **[CODE] Replace `/subscribe/welcome/` portalUrl placeholder with real Stripe Billing Portal session URL** — currently the subscriber-content `/api/entitlement` returns `https://elevationary.com/account/` for `portalUrl`. Real Billing Portal session creation needs `billing_portal:write` scope on a Stripe key (not yet provisioned) OR move the session creation to subscribe-checkout Worker which has Stripe write scope.
+- [ ] **[CODE] subscriber-content production deploy** — code uploaded 2026-06-22 (route-claim auth error non-blocking; v2.2 routes still serve). Validate `/api/entitlement` endpoint via service-binding smoke once production subscribe-checkout deploys.
 - [ ] **[JAMES] Final `agent.elevationary.com` archival decision** — 52 references remain in `_site/`. If retire, second sweep pass needed.
-- [ ] **[CODE] Confirm `task_f1d4e0a9` (P3 Access service token) is moot or relevant** — current Worker design uses JWT verification, not service token.
-- [ ] **[CODE] Cleanup test fixture + test contact + test sub post-Stage 2.6(b) live-fire** — `newsletter/drafts/2026-06-01/p9d3-live-fire.md` (R2 MCP delete), `ct_test_p9d3` contact (Sales-side), test subscription (`sales_subscription.py cancel`). Commands in P9_D3 ORS Notes.
-- [ ] **[CODE — Sales-owned] Sales contact-by-email uniqueness invariant** — F-U-1 from pass-2 confirmed Worker's first-match-wins is fail-closed-safe, but the underlying invariant (one contact row per lowercased email) belongs to Sales. Add a check (write-time conflict detection or read-time dedupe assertion) so duplicate-email rows never enter `sales/contacts/`. Surfaced 2026-06-04.
+- [ ] **[CODE] Confirm `task_f1d4e0a9` (P3 Access service token)** — RESOLVED by Option II ratification 2026-06-22; service token `subscribe_checkout_to_subscriber_content` is the canonical solution. Close `task_f1d4e0a9` in P4D3 at LIVE activation.
+- [ ] **[CODE] Cleanup test fixture + test contact + test sub post-Stage 2.6(b) live-fire** — `newsletter/drafts/2026-06-01/p9d3-live-fire.md` (R2 MCP delete), `ct_test_p9d3` contact (Sales-side), test subscription (`sales_subscription.py cancel`).
+- [ ] **[WEB] Welcome handler Q-WP5.b/c failure-mode Worker logic** — currently the welcome handler maps every Stripe-or-Entitlement failure to a single failure UX (Q-WP5.a copy). Q-WP5.b (Stripe unreachable) + Q-WP5.c (mismatched account) require Worker error-code disambiguation + per-case copy selection at render time. Gated on Marketing tier-mapping reply (combines with that build pass).
+- [ ] **[WEB] Tier-badge render for All-Access path on welcome page (Q-WP3)** — Clay reservation requires Worker to set `data-tier` on `entitlement-shell` root when tier is All-Access; CSS already exists. Gated on Marketing tier-mapping reply.
 
-### Brand Foundation (blocking visible-content redesign only)
-- [ ] **[BRAND] Read `~/Antigravity/Elevationary_Marketing/brand/` cover-to-cover** — directory empty as of 2026-06-04; blocker on Elevationary_Marketing.
-- [ ] **[BRAND] Audit current site vs brand standard** — extends to all new routes (`/subscribe/`, `/editions/`, `/account/`, `/upgrade/`) + Worker-rendered surfaces (Worker `/account/` HTML, edition render).
-- [ ] **[BRAND] Brand-aligned design pass** — joint with Elevationary_Marketing.
+### Brand Foundation (BVP work continues this thread)
+
+- [X] **2026-06-21 — [BRAND] Read brand/ cover-to-cover** — d_ceo_1, d_ceo_2, d_ceo_4 dispatches all consumed; spec authority confirmed.
+- [X] **2026-06-21 — [BRAND] Audit current site vs brand standard** — D1.4 self-review submitted; Marketing PASS on visual fidelity.
+- [X] **2026-06-21 — [BRAND] Brand-aligned design pass v1** — 4 BVP surfaces shipped + brand-token CSS at `:root` of `assets/bvp.css`.
 
 ### Production Checklist
+
 - [X] ~~Custom domain on Cloudflare Pages~~ — confirmed; dropped 2026-06-02.
-- [ ] **[JAMES] Deployment protection for Preview environments** — verify whether Cloudflare Pages preview environments need Cloudflare Access.
+- [ ] **[JAMES] Deployment protection for Preview environments** — Cloudflare Pages preview environments — confirm whether CF Access policy needed.
 
 ### Carry-over Warning
 - (none active)
 
 ## Operational Rules
-- [ ] **Operational Rule:** Do NOT populate this backlog with granular tasks. All granular work must be filed in the P4D3 system.
-- [ ] **Operational Rule:** Execute ORS inline during implementation. Do NOT backfill retroactively.
-- [ ] **Operational Rule:** Brand-first. No visible-content change ships without Elevationary_Marketing sign-off. *(Subscription_Revenue_Pipeline infrastructure exception accepted with documented compensating controls; do not generalize.)*
-- [ ] **Operational Rule:** Stripe in Test Mode first, every time. *(Worker `subscriptions.retrieve` uses LIVE restricted key in `subscriptions:read` scope; read-only verification, not a charge path.)*
-- [ ] **Operational Rule (2026-05-30):** Any code path that gates on auth/identity/entitlement requires **executable tests**, not just static red-team. Fleet lesson `fleet_lesson_executable_security_tests_over_static_redteam` (L3).
-- [ ] **Operational Rule (2026-06-02 — initial v2):** When a cross-agent upstream schema migration ships, run the consumer-side executable test matrix BEFORE shipping. Type system + first failing test name the exact field that drifted.
-- [ ] **Operational Rule (2026-06-02 — induction pass):** Do NOT trust runtime JSON shapes against TypeScript types. Validate at use-site with `Array.isArray` (not `typeof === 'object'`) or `typeof === 'string'` before dereferencing.
-- [ ] **Operational Rule (2026-06-02 — induction pass):** Do NOT trust markdown renderer defaults to escape HTML. `marked@^4` removed the `sanitize` option; current default passes raw `<script>` through. Override `renderer.html` to escape, or wrap output with DOMPurify.
-- [ ] **Operational Rule (2026-06-02 — CEO induction discipline):** ORS Stage 3 demands **real induction**, not reasoned characterization. Characterological "findings" not backed by passing/failing tests do NOT count as Stage 3 evidence. Detailed Rigor = induce, observe, document.
-- [ ] **Operational Rule (2026-06-04 — pass-2 JWT discipline):** Strict JWT verifiers must check **every relevant time-window claim** (`exp` AND `nbf` when present), not just expiry. F-Q-1 proved a token with `nbf=now+3600s` was silently accepted; CF Access doesn't mint such tokens in its normal SSO flow, but defense-in-depth requires the check.
-- [ ] **Operational Rule (2026-06-04 — verifier discipline):** Any "this command catches X / Y / Z" security check must ship with a positive-and-negative fixture verifier-of-the-verifier. Heller F9 generalized: a textual claim is not evidence; only an executable test that seeds fixtures matching each claimed pattern and asserts detection (plus benign fixtures that must skip) is evidence.
+
+(Carried forward from prior backlog. New 2026-06-22 rules captured in `build_handover.md` "Do Not Re-Try" section.)
+
+- [ ] Do NOT populate this backlog with granular tasks — file in P4D3.
+- [ ] Execute ORS inline during implementation. No retroactive backfill.
+- [ ] Brand-first. No visible-content change ships without Elevationary_Marketing sign-off. (Subscription_Revenue_Pipeline infrastructure exception accepted with documented compensating controls.)
+- [ ] Stripe Test Mode first, every time.
+- [ ] Auth/identity/entitlement gates → executable tests, not just static red-team. (`fleet_lesson_executable_security_tests_over_static_redteam`)
+- [ ] Cross-agent upstream schema migration → consumer-side executable test matrix BEFORE shipping.
+- [ ] Runtime JSON shapes vs TypeScript types → validate at use-site with `Array.isArray` / `typeof === 'string'`.
+- [ ] Markdown renderer defaults → override `renderer.html` to escape OR DOMPurify wrap. (`marked@^12` raw-HTML default)
+- [ ] ORS Stage 3 demands real induction, not characterological reasoning.
+- [ ] Strict JWT verifiers → check both `exp` AND `nbf` when present. (`fleet_lesson_jwt_strict_must_check_nbf`)
+- [ ] "This catches X" security check → ship with positive AND negative fixture verifier-of-verifier. (`fleet_lesson_verify_the_verifier`)
+- [ ] **NEW 2026-06-22:** STRIPE_READ_KEY needs BOTH `checkout.sessions:read` AND `subscriptions:read` scopes for the welcome flow chain.
+- [ ] **NEW 2026-06-22:** Service-binding fetches bypass CF Access edge; auth via `CF-Access-Client-*` headers checked by destination Worker.
+- [ ] **NEW 2026-06-22:** Wrangler auto-creates Workers on first `secret put` (no error if name doesn't exist). Empty shell with secret only — don't confuse for deployed Worker.
 
 ## Icebox
 
-- [ ] **[CODE] Lighthouse audit + optimization pass** — defer until brand pass complete.
-- [ ] **[CODE] /llms.txt (`llms.njk`)** — review against brand messaging when brand lands.
-- [ ] **[CODE] Eleventy version audit** — currently 3.1.5.
-- [ ] **[CODE] Worker bundle size monitoring** — `marked` adds ~30 KB; `jose` is devDep only. Bundle now 103.24 KiB / 24.16 KiB gzip post-pass-2 deploy (v2.2); 1 MB compressed limit.
-- [ ] **[CODE] Drop `company_id` from Worker `Contact` + `SubscriptionIndexRow` interfaces** — field is now metadata-only per v2 schema. Worker reads it for nothing. Future cleanup if/when Sales drops it from the schema entirely.
+- [ ] Lighthouse audit + optimization pass (defer until brand pass complete).
+- [ ] `/llms.txt` review against brand messaging.
+- [ ] Eleventy version audit (3.1.5 currently).
+- [ ] Worker bundle size monitoring.
+- [ ] Drop `company_id` from Worker types (metadata-only post-v2).
+- [ ] Replace `window.prompt()` email collection in `assets/bvp-checkout.js` with Marketing-blessed inline form once D1.2 promotes a form component.
 
-## Completed (last 5 — full history in session_log.md)
-- [X] **2026-06-04 — Stage 2.6(b) live-fire runbook prep — paint-by-numbers 11-cell.** Doc-only (no Worker change). P4D3 `task_05d28394`. Rigor: Standard. 992-line runbook at `~/Antigravity_Data/Website/docs/stage_2_6b_live_fire_runbook_2026_06_04.md` — 11 cells in execution order + coordination summary + 3 system invariants + Sales-script fallback + CF Access OTP screen walkthrough + Worker decision tree. Stage 3 induced 10 distinct ambiguity modes against runbook v1; Stage 4 closed all 10 via 8 surgical Edit calls; Stage 5 re-induction confirmed bulletproof. L4 vault `agent-context` doc `stage_2_6b_live_fire_runbook_2026_06_04-9d9d699c` (58.2 KB) — canonical reference for any future entitlement matrix work. ORS PASS — `ORS_stage_2_6b_runbook_prep_2026_06_04.md`.
-- [X] **2026-06-04 — P9_D3 Detailed Red-Team Pass 2 (swimlane / JWT / R2 axes).** Commit `19199b5`. Rigor: Detailed. 11 new modes [K]–[U]; F-Q-1 (JWT `nbf` claim) fixed inline; F-R-1 / F-S-1 / F-U-1 documented. Heller F9 verifier-of-verifier: 22/22 hit, 0/5 false-positive. 77/77 vitest. Worker re-deployed as **v2.2 version `459d1ab9-e767-4c83-b73c-3a7ba2b41c63`**. ORS + walkthrough uploaded to L4. ORS PASS.
-- [X] **2026-06-02 evening — P9_D3 Stage 3 induction + Stage 4 remediation.** Commit `935843a`. **3 bugs surfaced + fixed: 1 critical XSS (`marked@^12` raw-HTML), 2 defensive-coding gaps.** 66/66 tests. Worker v2.1 version `58820166-e764-48ab-bb6e-4dd2433c69fe`. ORS PASS (Rigor: Detailed) post-remediation.
-- [X] **2026-06-02 — P9_D3 Worker swimlane schema v2 migration.** Commit `1579ce5`. Rigor: Detailed. 56/56 tests. Worker v2.0 version `18746577-3dfd-4b4d-9803-717a9f62b71e`. Walkthrough + L4 vault uploads. Initial ORS PASS.
-- [X] **2026-06-02 — James close-out deploy chain executed.** Commit `360b740`. Cloudflare Access live; JWT strict-mode active; Worker deployed; R2 consolidated. Subscriber gate live.
+## Completed (last 8 — full history in session_log.md)
+
+- [X] **2026-06-22 — Welcome-flow Day-2-shippable surface PASS** — see Active section above.
+- [X] **2026-06-22 — Marketing remediation cycle (D-CEO-1 + D-CEO-4 P1 + AEO/GEO clean-slate + D1.7 partial)** — Marketing byte-verified PASS on D-CEO-4 P1; PASS on D-CEO-1 + D1.1 fidelity.
+- [X] **2026-06-22 — D1.4 brand-gate self-review submitted + Marketing PASS** — 35/37 self-PASS, 5 inline remediations.
+- [X] **2026-06-21 — BVP Triad Day 2 sprint shipped** — 4 contemporary surfaces, D1.5 schema lock, D2.1 hooks lock, D2.4 Website-half pre-stage, Stripe CTA hook pre-stage.
+- [X] **2026-06-04 — Stage 2.6(b) live-fire runbook prep — paint-by-numbers 11-cell.** ORS PASS Standard.
+- [X] **2026-06-04 — P9_D3 Detailed Red-Team Pass 2.** Worker v2.2 deployed; F-Q-1 nbf JWT fix; 77/77 vitest pass. ORS PASS Detailed.
+- [X] **2026-06-02 evening — P9_D3 Stage 3 induction + Stage 4 remediation.** 3 bugs (1 critical XSS); ORS PASS Detailed post-remediation.
+- [X] **2026-06-02 — P9_D3 Worker swimlane schema v2 migration.** ORS PASS Detailed.

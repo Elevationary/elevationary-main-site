@@ -1,12 +1,54 @@
 ---
-title: "Editions | Elevationary"
-description: "Your subscriber editions archive."
-layout: base.njk
+title: "Editions — Elevationary"
+description: "The archive of Elevationary editions you have access to."
+layout: layouts/bvp-base.njk
 eleventyExcludeFromCollections: true
 ---
 
-<article class="page-content">
-  <h1>Your Editions</h1>
-  <p>This page lists every edition your subscription entitles you to access. Subscriber content loading.</p>
-  <p class="muted">If you reached this page without logging in, please <a href="/subscribe/">subscribe</a> or sign in via the prompt above.</p>
-</article>
+{# Per D1.3 A.4: page header is plain h1 "Editions" — no fluff.
+   Live entitled archive renders via subscriber-content Worker overlay
+   (gated on D1.5 schema + ENTITLEMENT_WORKER binding). This Eleventy
+   page is the empty-state / fallback shell when the Worker is offline
+   or the subscriber is not yet signed in. #}
+
+{% from 'partials/bvp-issue-card.njk' import bvp_issue_card %}
+{% from 'partials/bvp-footer.njk' import bvp_footer %}
+{% from 'partials/bvp-signup-cta.njk' import bvp_signup_cta %}
+{% from 'partials/bvp-icon.njk' import bvp_icon %}
+
+<section class="el-editions">
+  <header class="el-editions__header">
+    <h1 class="el-editions__title">Editions</h1>
+    <p class="el-editions__sub">
+      Editions you have access to appear here once you are signed in. The archive
+      filters automatically to the swimlanes your subscription unlocks.
+    </p>
+  </header>
+
+  <div class="el-editions__grid" data-editions-state="signed-out">
+    {# Live mode: Worker SSRs issue cards from R2 metadata per D1.5 schema.
+       Signed-out mode: show a quiet sign-in / subscribe prompt. #}
+    <article class="el-issue-card" data-locked="true">
+      <header class="el-issue-card__header">
+        <span class="el-issue-card__tier-badge" data-tier="individual">Sign in</span>
+      </header>
+      <h3 class="el-issue-card__title">Sign in to see your editions.</h3>
+      <p class="el-issue-card__preview">
+        Already subscribed? Use the sign-in link to load your entitled archive.
+        New here? Choose a tier and your first edition follows within seven days.
+      </p>
+      <footer class="el-issue-card__footer">
+        <a class="el-issue-card__read-link" href="/subscribe/">
+          Compare plans
+          {{ bvp_icon('arrow-right', 16) }}
+        </a>
+      </footer>
+    </article>
+  </div>
+</section>
+
+{% set footerCta %}
+  {{ bvp_signup_cta('footer-anchored', 'Subscribe to Elevationary', '/subscribe/') }}
+{% endset %}
+
+{{ bvp_footer('full', footerCta) }}

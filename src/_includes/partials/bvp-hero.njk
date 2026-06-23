@@ -1,0 +1,23 @@
+{# Hero partial — D1.2 Component 1.
+   Params via macro call: bvp_hero(variant, promise, ctaSlot, welcomeShell)
+   variant ∈ { 'contemporary' | 'subscribe-landing' | 'welcome' }
+   ctaSlot is HTML for the CTA child (typically signup_cta partial output).
+   welcomeShell is HTML for the entitlement shell (welcome variant only).
+#}
+{% macro bvp_hero(variant, promise, ctaSlot, welcomeShell) %}
+<section class="el-hero" data-variant="{{ variant }}">
+  <div class="el-hero__brand">
+    <span class="el-hero__wordmark">Elevationary</span>
+    <span class="el-hero__accent-line" aria-hidden="true"></span>
+  </div>
+  <h1 class="el-hero__promise">{{ promise }}</h1>
+  {% if ctaSlot %}
+  <div class="el-hero__cta-slot">
+    {{ ctaSlot | safe }}
+  </div>
+  {% endif %}
+  {% if variant == 'welcome' and welcomeShell %}
+    {{ welcomeShell | safe }}
+  {% endif %}
+</section>
+{% endmacro %}

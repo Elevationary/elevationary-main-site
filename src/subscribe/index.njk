@@ -1,80 +1,75 @@
 ---
-title: "Subscribe | Elevationary"
-description: "Subscribers get access to in-depth research. Choose a plan to access the full implementation guidance behind each Elevationary briefing."
-layout: base.njk
+title: "Subscribe — Elevationary"
+description: "Choose the tier that matches how far up the L1→L5 ladder your team operates."
+layout: layouts/bvp-base.njk
 ---
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "{{ site.url }}/subscribe/#page",
-  "name": "Subscribe to Elevationary",
-  "url": "{{ site.url }}/subscribe/",
-  "description": "{{ description }}"
-}
-</script>
+{% from 'partials/bvp-hero.njk' import bvp_hero %}
+{% from 'partials/bvp-tier-card.njk' import bvp_tier_card %}
+{% from 'partials/bvp-footer.njk' import bvp_footer %}
+{% from 'partials/bvp-signup-cta.njk' import bvp_signup_cta %}
 
-<article class="page-content">
-  <header class="subscribe-hero">
-    <h1>Subscribe</h1>
-    <p class="lede">Subscribers get access to in-depth research.</p>
-    <p>Your free briefings show you <em>what</em> is happening and <em>why</em> it matters. The full implementation guidance — the step-by-step <em>how</em> your team executes it — is available to subscribers below.</p>
-  </header>
+{{ bvp_hero(
+  'subscribe-landing',
+  'Intelligence and solutions elevating businesses to AI speeds.',
+  '',
+  ''
+) }}
 
-  <div class="pricing-tiers">
+<section class="el-tier-grid" aria-label="Subscription tiers">
 
-    <div class="pricing-tier">
-      <h2>Individual Access</h2>
-      <p class="price">$29<span class="cadence">/month</span></p>
-      <p class="annual-note">Annual: $290/yr — save two months.</p>
-      <ul>
-        <li>1 swimlane of your choice</li>
-        <li>Weekly briefings</li>
-        <li>Execution blueprints</li>
-        <li>Vendor materials</li>
-        <li>Full archive access</li>
-      </ul>
-      <a href="{{ site.stripeCheckoutIndividualUrl }}" class="cta-secondary">Get Individual Access →</a>
-    </div>
+  {{ bvp_tier_card({
+    slug: 'individual',
+    name: 'Individual',
+    price: '$29/month',
+    features: [
+      'One swimlane of weekly intelligence — pick where your work lives.',
+      'Every Monday move + Sunday diagnostic, written for L2→L3 progression.',
+      'Full archive access for your swimlane, including historical editions.'
+    ],
+    ctaLabel: 'Subscribe — Individual',
+    ctaHref: '#tier-individual'
+  }) }}
 
-    <div class="pricing-tier pricing-tier-featured">
-      <p class="tier-flag">Most Popular</p>
-      <h2>Functional Bundle</h2>
-      <p class="price">$69<span class="cadence">/month</span></p>
-      <p class="annual-note">Annual: $690/yr — save two months.</p>
-      <ul>
-        <li>3 swimlanes (Revenue, Operations, Growth, Mission, or Impact)</li>
-        <li>Pre-built functional bundles</li>
-        <li>Weekly briefings across all three lanes</li>
-        <li>Vendor materials</li>
-      </ul>
-      <p class="savings-note">3 lanes individually = $87/mo. You save $18/mo.</p>
-      <a href="{{ site.stripeCheckoutBundleUrl }}" class="cta-primary">Get Functional Bundle →</a>
-    </div>
+  {{ bvp_tier_card({
+    slug: 'functional_bundle',
+    name: 'Functional Bundle',
+    price: '$69/month',
+    features: [
+      'Three connected swimlanes for cross-functional leaders.',
+      'Pre-built bundles for Revenue, Operations, Growth, Mission, or Impact.',
+      'Move your team from L2 documented to L3 systematized across three lanes at once.'
+    ],
+    ctaLabel: 'Subscribe — Functional Bundle',
+    ctaHref: '#tier-functional-bundle'
+  }) }}
 
-    <div class="pricing-tier">
-      <h2>All-Access Pass</h2>
-      <p class="price">$149<span class="cadence">/month</span></p>
-      <p class="annual-note">Annual: $1,490/yr — save two months.</p>
-      <ul>
-        <li>All 10 swimlanes</li>
-        <li>C-Suite digest</li>
-        <li>Share with up to 5 team members</li>
-        <li>Quarterly PDF compilation</li>
-        <li>Priority access to new releases</li>
-      </ul>
-      <p class="savings-note">10 lanes individually = $290/mo. You save $141/mo.</p>
-      <a href="{{ site.stripeCheckoutAllAccessUrl }}" class="cta-secondary">Get All-Access Pass →</a>
-    </div>
+  {{ bvp_tier_card({
+    slug: 'all_access',
+    name: 'All-Access',
+    price: '$149/month',
+    features: [
+      'Every swimlane. Every edition. Every Monday move.',
+      'Share with up to five teammates — the way L4 supervision actually works.',
+      'Quarterly compilation of the patterns we keep returning to in team operations.'
+    ],
+    ctaLabel: 'Subscribe — All-Access',
+    ctaHref: '#tier-all-access'
+  }) }}
 
-  </div>
+</section>
 
-  <p class="subscribe-policy">30-day cancellation window. No contracts. Cancel anytime.</p>
+<section class="el-home__section">
+  <h2 class="el-home__section-title">What you get on day one.</h2>
+  <p class="el-home__lede">
+    The next edition lands in your inbox within seven days. The archive opens immediately
+    for the tier you choose. Cancel anytime &mdash; we keep the dunning logic short and the
+    cancellation flow shorter.
+  </p>
+</section>
 
-  <section class="free-tier">
-    <h2>Not ready to subscribe?</h2>
-    <p>Free briefings are available — the <em>what</em> and the <em>why</em>, every week.</p>
-    <p><a href="/newsletter-stories/" class="cta-secondary">Read recent briefings →</a></p>
-  </section>
-</article>
+{% set footerCta %}
+  {{ bvp_signup_cta('footer-anchored', 'Subscribe to Elevationary', '#tier-individual') }}
+{% endset %}
+
+{{ bvp_footer('full', footerCta) }}

@@ -1,0 +1,8 @@
+{# signup_cta partial — D1.2 Component 2.
+   variant ∈ { 'hero' | 'inline' | 'footer-anchored' }
+#}
+{% macro bvp_signup_cta(variant, label, href) %}
+<a class="el-cta el-cta--{{ variant }}" href="{{ href or '/subscribe/' }}" data-cta="primary-signup">
+  <span class="el-cta__label">{{ label or 'Subscribe to Elevationary' }}</span>
+</a>
+{% endmacro %}

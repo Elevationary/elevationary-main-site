@@ -1,0 +1,38 @@
+{# Footer partial — D1.2 Component 4.
+   variant ∈ { 'full' | 'minimal' }
+   minimal: omits primary CTA, adds entitlement-portal-link DOM hook (Worker SSRs href).
+#}
+{% macro bvp_footer(variant, ctaSlot) %}
+<footer class="el-footer el-footer--{{ variant }}">
+  <span class="el-footer__accent-line" aria-hidden="true"></span>
+  <div class="el-footer__inner">
+    <div class="el-footer__brand">
+      <span class="el-footer__wordmark">Elevationary</span>
+      <span class="el-footer__tagline">Elevate your vision</span>
+    </div>
+    <nav class="el-footer__nav" aria-label="Footer navigation">
+      <ul>
+        <li><a href="/editions/">Editions</a></li>
+        <li><a href="/subscribe/">Subscribe</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        {% if variant == 'minimal' %}
+        <li><a data-hook="entitlement-portal-link" href="">Account</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% if variant == 'full' and ctaSlot %}
+    <div class="el-footer__cta-slot">
+      {{ ctaSlot | safe }}
+    </div>
+    {% endif %}
+    <div class="el-footer__legal">
+      <p>&copy; 2026 Elevationary. All rights reserved.</p>
+      <ul>
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+{% endmacro %}

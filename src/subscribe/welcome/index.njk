@@ -1,0 +1,25 @@
+---
+title: "You're in — Elevationary"
+description: "Your Elevationary subscription is active. Access begins now."
+layout: layouts/bvp-base.njk
+permalink: /subscribe/welcome/index.html
+---
+
+{% from 'partials/bvp-hero.njk' import bvp_hero %}
+{% from 'partials/bvp-footer.njk' import bvp_footer %}
+
+{# Per D1.2, the entitlement shell renders inside the hero.welcome variant.
+   Capture the shell HTML once and pass it to the hero macro. #}
+
+{% set welcomeShellHtml %}
+{% include 'partials/bvp-welcome-shell.njk' %}
+{% endset %}
+
+{{ bvp_hero(
+  'welcome',
+  'You\'re in. Here\'s your access.',
+  '',
+  welcomeShellHtml
+) }}
+
+{{ bvp_footer('minimal', '') }}

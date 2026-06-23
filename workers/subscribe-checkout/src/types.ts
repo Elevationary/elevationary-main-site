@@ -40,7 +40,13 @@ export type WorkerErrorCode =
   | "rate_limited"
   | "forbidden"
   | "method_not_allowed"
-  | "internal";
+  | "internal"
+  // Welcome-page surface (BVP Day 2; D2.4 Website half).
+  | "session_id_missing"
+  | "session_id_malformed"
+  | "session_id_invalid"
+  | "stripe_session_retrieve_failed"
+  | "entitlement_lookup_failed";
 
 export interface WorkerError {
   error: WorkerErrorCode;
@@ -60,6 +66,38 @@ export interface SalesContact {
   source: string;
   created_at: string;   // ISO 8601
   notes: string;
+}
+
+// Entitlement state for the /subscribe/welcome/ surface. Constructed from the
+// Stripe Session (tier + billing) + the Entitlement Worker subrequest (swimlanes
+// + portal URL). Marketing contract (D2.1, 2026-06-21): seven data-hook slots
+// in the shell HTML are mutated server-side from this object.
+export interface Entitlement {
+  // Display label for the tier slot. Marketing copy: "Individual" |
+  // "Functional Bundle" | "All-Access".
+  tierLabel: string;
+  // Raw tier enum — used for upsell-card omission (server hides the card
+  // matching the subscriber's current tier).
+  tier: Tier;
+  // Unlocked swimlane slugs. Worker emits one <li> per slug into the
+  // entitlement-swimlanes container.
+  swimlanes: string[];
+  // ISO date string (YYYY-MM-DD). Marketing renders display formatting via CSS
+  // ::before or template; Worker writes the ISO value into the text node.
+  billingNextIso: string;
+  // Absolute URL — Stripe Customer Portal session URL. Worker sets href on
+  // entitlement-portal-link.
+  portalUrl: string;
+}
+
+// Failure context for the /subscribe/welcome/ surface — when session_id is
+// missing/malformed/invalid OR a downstream call (Stripe / Entitlement Worker)
+// fails, the Worker un-hides the entitlement-failure block and writes the
+// human-readable message into the nested message hook. The entitlement slots
+// keep their static-shell defaults per Marketing's graceful-fallback convention.
+export interface WelcomeFailure {
+  code: WorkerErrorCode;
+  message: string;
 }
 
 // Cloudflare Worker env bindings — every secret + KV + R2 binding.
@@ -88,4 +126,22 @@ export interface Env {
   // Bindings (uncommented in wrangler.toml at activation):
   R2_SALES?: R2Bucket;
   IDEMPOTENCY_KV?: KVNamespace;
+
+  // Service binding to the P4_D1 Entitlement Worker (subscriber-content).
+  // D1.6 architecture lock (COO ratified 2026-06-21): /subscribe/welcome/
+  // subrequests this Worker for entitlement state — single source of truth,
+  // no direct KV/R2 read. TODO(wrangler): add [[services]] block at activation.
+  ENTITLEMENT_WORKER?: Fetcher;
+
+  // Read-side Stripe key — needs `checkout.sessions:read` +
+  // `subscriptions:read` scopes. Provisioned 2026-06-22.
+  STRIPE_READ_KEY?: string;
+
+  // CF Access service token for ENTITLEMENT_WORKER subrequests. The
+  // subscriber-content Worker's CF Access policy accepts this token in place
+  // of a user JWT, so the welcome handler can authenticate as a service
+  // principal. Pair of secrets — both required. Provisioned 2026-06-22 via
+  // CF dashboard service-auth flow.
+  CF_ACCESS_CLIENT_ID?: string;
+  CF_ACCESS_CLIENT_SECRET?: string;
 }

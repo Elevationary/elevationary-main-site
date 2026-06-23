@@ -3,9 +3,12 @@
 // Spec: ~/Antigravity_Data/Website/docs/plans/stripe_checkout_integration_spec_2026_06_08.md
 // Skeleton ORS: ~/Antigravity_Data/Website/docs/ORS_logs/ORS_website_stripe_checkout_skeleton_2026_06_09.md
 //
-// v1 routes:
+// Routes:
 //   OPTIONS /api/checkout       → CORS preflight (origin-gated)
 //   POST    /api/checkout       → validate → resolve Contact → call Stripe → return URL
+//   GET     /subscribe/welcome* → D2.4 Website half: session_id resolve + entitlement layer
+//                                 (skeleton; returns 501 until shell + STRIPE_READ_KEY
+//                                  + ENTITLEMENT_WORKER binding land)
 //   (all other paths)           → 405 method_not_allowed
 //
 // Webhook handling is NOT routed in v1 — Sales receives all Stripe webhooks
@@ -29,6 +32,7 @@ import {
   getEmailLockout,
   setEmailLockout,
 } from "./idempotency.js";
+import { handleWelcome } from "./welcome_handler.js";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -41,6 +45,16 @@ export default {
         return jsonError({ error: "forbidden", message: "Origin not allowed.", status: 403 });
       }
       return new Response(null, { status: 204, headers: corsHeaders(origin, env) });
+    }
+
+    // GET /subscribe/welcome* — D2.4 Website half. Idempotent on reload (Stripe
+    // Session retrieve is source of truth). No origin gate: this is a top-level
+    // navigation target post-checkout, not an XHR endpoint.
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/subscribe/welcome")
+    ) {
+      return handleWelcome(request, env);
     }
 
     // Only POST /api/checkout in v1.

@@ -1,0 +1,19 @@
+{# Lightweight tier card per D1.3 A.2 (not yet in D1.2; pending promotion).
+   tier: { slug, name, price, features[], ctaLabel, ctaHref }
+#}
+{% macro bvp_tier_card(tier) %}
+<article class="el-tier-card" data-tier="{{ tier.slug }}">
+  <header>
+    <h2 class="el-tier-card__name">{{ tier.name }}</h2>
+    <p class="el-tier-card__price">{{ tier.price }}</p>
+  </header>
+  <ul class="el-tier-card__features">
+    {% for f in tier.features %}<li>{{ f }}</li>{% endfor %}
+  </ul>
+  <footer>
+    <a class="el-cta el-cta--inline" href="{{ tier.ctaHref }}" data-cta="primary-signup">
+      <span class="el-cta__label">{{ tier.ctaLabel }}</span>
+    </a>
+  </footer>
+</article>
+{% endmacro %}

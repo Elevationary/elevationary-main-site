@@ -1,110 +1,78 @@
 ---
-title: "Elevationary | AI Strategy & Enterprise Transformation Consulting"
-description: "Trusted by Microsoft, Cisco, EY, and nonprofits like Second Harvest Food Bank — Elevationary helps organizations align vision, strategy, execution, and outcomes using AI."
-layout: base.njk
+title: "Elevationary — Intelligence and solutions elevating businesses to AI speeds"
+description: "Weekly intelligence and field-tested patterns for leaders moving their organization from L1 reactive to L4 AI-native operations."
+layout: layouts/bvp-base.njk
 ---
 
-<section class="hero">
-  <h1>Vision. Strategy. Execution. Outcomes.</h1>
-  <p>Trusted by Microsoft, Cisco, EY, and nonprofits like Second Harvest Food Bank — Elevationary, with AI, helps organizations align vision, strategy, execution, and outcomes.</p>
-  <a href="/services/" class="cta-primary">Our Services</a>
-  <a href="{{ site.agentSiteUrl }}" class="cta-secondary" target="_blank" rel="noopener">Book a Consultation →</a>
-</section>
+{% from 'partials/bvp-hero.njk' import bvp_hero %}
+{% from 'partials/bvp-signup-cta.njk' import bvp_signup_cta %}
+{% from 'partials/bvp-issue-card.njk' import bvp_issue_card %}
+{% from 'partials/bvp-footer.njk' import bvp_footer %}
 
-<section class="content-section">
-  <h2>Who We Are</h2>
-  <p>At Elevationary, we believe organizations that elevate their vision, see beyond the storm clouds of hype, and stay focused on their true destination.</p>
-  <p>We help align vision with strategy, architect solutions, design clear paths to execution, and deliver outcomes that matter. Along the way, we use AI every day with our clients — showing them how they too can leverage it to drive lasting success.</p>
-</section>
+{% set heroCta %}
+  {{ bvp_signup_cta('hero', 'Subscribe to Elevationary', '/subscribe/') }}
+{% endset %}
 
-<section class="content-section">
-  <h2>What Challenges Are You Facing Today?</h2>
-  <p>Every organization we work with faces at least one of these realities:</p>
-  <ul>
-    <li>Leaders face endless noise and hype about digital transformation and AI.</li>
-    <li>Systems are fragmented across finance, fundraising, HR, and marketing.</li>
-    <li>Teams struggle to connect vision to execution in ways that drive measurable outcomes.</li>
-  </ul>
-</section>
+{{ bvp_hero(
+  'contemporary',
+  'Intelligence and solutions elevating businesses to AI speeds.',
+  heroCta,
+  ''
+) }}
 
-<section class="content-section">
-  <h2>Outcomes / Success Stories</h2>
-
-  <div class="case-study">
-    <p><strong>Building the workforce of highly trained caregivers that many Californians can't live without.</strong></p>
-    <p><em>Challenge:</em> Training thousands of care workers required integrated systems for enrollment, learning, stipends, and compliance.</p>
-    <p><em>Outcome:</em> Built a Salesforce-based platform with LMS and finance integration — streamlined training delivery and enabled compliance reporting across California.</p>
-  </div>
-
-  <div class="case-study">
-    <p><strong>Create hope and nourish lives through a powerful hunger relief network, while multiplying the generosity of a caring community.</strong></p>
-    <p><em>Challenge:</em> Outdated and disconnected donor, marketing, fundraising, and volunteer systems limited growth.</p>
-    <p><em>Outcome:</em> Implemented a unified, AI-ready platform — CRM, digital marketing, fundraising, and volunteer management — with cross-functional dashboards, resulting in higher revenue, improved donor retention, and expanded volunteer capacity.</p>
-  </div>
-
-  <div class="case-study">
-    <p><strong>Helping businesses use AI wisely and creatively to work smarter, create value, and grow ethically, building a better world together.</strong></p>
-    <p><em>Challenge:</em> Determine how to integrate AI into day-to-day workflows in a secure, ethical, and practical way.</p>
-    <p><em>Outcome:</em> Built proof-of-concept closed AI systems trained on real legal and financial agreements — enabling rapid, contract-aware decision support that matched EY's high standards for security and ethics.</p>
+<section class="el-home__section">
+  <h2 class="el-home__section-title">From L2 documented to L4 AI-native — without the hype loop.</h2>
+  <p class="el-home__lede">
+    Every Sunday, one diagnostic prompt and one Monday move &mdash; designed for leaders
+    already past the experimentation phase and ready to operate at AI speed under human
+    supervision. Weekday editions tighten the loop with field examples drawn directly from
+    team operations.
+  </p>
+  <p class="el-home__lede">
+    <strong>Where does your team sit on the L1&ndash;L5 ladder?</strong> If you cannot
+    answer that in one sentence, the first edition is built for you. If you can, the
+    Monday move is built for the next rung.
+  </p>
+  <div class="el-hero__cta-slot">
+    {{ bvp_signup_cta('inline', 'Subscribe to Elevationary', '/subscribe/') }}
   </div>
 </section>
 
-<section class="content-section">
-  <h2>Our Focus Areas</h2>
-  <div class="focus-areas">
-    <div class="focus-item">
-      <h3>1. Strategy &amp; Alignment</h3>
-      <ul>
-        <li>Clarify vision and goals</li>
-        <li>Align stakeholders around outcomes that matter</li>
-      </ul>
-    </div>
-    <div class="focus-item">
-      <h3>2. Execution &amp; Systems</h3>
-      <ul>
-        <li>Architect solutions and integrate platforms</li>
-        <li>Design clear paths to sustainable delivery</li>
-      </ul>
-    </div>
-    <div class="focus-item">
-      <h3>3. AI as an Enabler</h3>
-      <ul>
-        <li>Task-first AI adoption — practical, applied, effective</li>
-        <li>Show teams how to work smarter, not harder</li>
-      </ul>
-    </div>
+<section class="el-editions" aria-label="Recent editions">
+  <header class="el-editions__header">
+    <h2 class="el-editions__title">Recent editions</h2>
+    <p class="el-editions__sub">A representative sample. Full archive at <a href="/editions/">/editions/</a>.</p>
+  </header>
+  <div class="el-editions__grid">
+    {{ bvp_issue_card('archive', {
+      slug: 'sample-1',
+      title: 'Replace weekly status meetings with async ledgers',
+      date: '2026-06-22',
+      tier: 'individual',
+      tier_label: 'Individual',
+      preview: 'A Monday move for L2 teams trapped in synchronous status rituals. Includes the ledger template and the meeting-cull script.'
+    }, false) }}
+    {{ bvp_issue_card('archive', {
+      slug: 'sample-2',
+      title: 'The hand-off that decides whether AI sticks or stalls',
+      date: '2026-06-15',
+      tier: 'functional_bundle',
+      tier_label: 'Functional Bundle',
+      preview: 'Three patterns from team operations on how the human&harr;AI hand-off determines whether your L3 automation survives contact with the team.'
+    }, false) }}
+    {{ bvp_issue_card('archive', {
+      slug: 'sample-3',
+      title: 'L4 supervision without the dashboard sprawl',
+      date: '2026-06-08',
+      tier: 'all_access',
+      tier_label: 'All-Access',
+      preview: 'How to design AI-native operations where supervision compounds instead of fragmenting across twelve dashboards. With the rule set we use in team ops.'
+    }, false) }}
   </div>
 </section>
 
-<section class="content-section">
-  <h2>Our Proven Expertise</h2>
-  <p>From strategy to outcomes — delivering clarity, systems, and results across nine core functions:</p>
-  <ul class="expertise-list">
-    <li>Marketing</li>
-    <li>Fundraising</li>
-    <li>Donor Operations</li>
-    <li>Volunteer Management</li>
-    <li>Program Delivery</li>
-    <li>Advocacy &amp; Awareness</li>
-    <li>Grant Management</li>
-    <li>Impact Measurement</li>
-    <li>Organizational Readiness</li>
-  </ul>
-</section>
+{% set footerCta %}
+  {{ bvp_signup_cta('footer-anchored', 'Subscribe to Elevationary', '/subscribe/') }}
+{% endset %}
 
-<section class="content-section newsletter-cta">
-  <h2>From Proven Expertise to Practical Insights</h2>
-  <p>Our expertise spans nine core functions. We now share these lessons regularly — designed for both executives and functional leaders.</p>
-  <div class="newsletter-options">
-    <div class="newsletter-option">
-      <h3>✨ Elevationary AI Insights for the C-Suite (Free)</h3>
-      <p>Success stories that show how AI drives outcomes across core business functions — tailored for senior leaders who want to see impact without the hype.</p>
-      <a href="/subscribe/" class="cta-primary">C-Suite AI Insights (free)</a>
-    </div>
-    <div class="newsletter-option">
-      <h3>🔹 Functional Insights for Leaders (Free+)</h3>
-      <p>For department and function leaders — practical, actionable AI applications you can apply right away. Topics include Marketing, Fundraising, Donor Operations, Volunteer Management, Program Delivery, Advocacy, Grant Management, Impact Measurement, and Organizational Readiness.</p>
-      <a href="/subscribe/" class="cta-secondary">Dept. AI Insights</a>
-    </div>
-  </div>
-</section>
+{{ bvp_footer('full', footerCta) }}

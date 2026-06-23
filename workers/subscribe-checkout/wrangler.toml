@@ -75,6 +75,20 @@ bucket_name = "gemini-content-factory"
 binding = "IDEMPOTENCY_KV"
 id = "dd29099b31b5431fba7cfe6aa32242f5"
 
+# Service binding — D1.6 architecture lock (COO ratified 2026-06-21):
+# /subscribe/welcome/ Worker subrequests P4_D1 Entitlement Worker
+# (subscriber-content) for entitlement state. P4D3 task_1c9bc273.
+# Single source of truth; no direct KV/R2 read for entitlement.
+#
+# Contract gap (Day 3 follow-up): subscriber-content's current ingress is
+# Cloudflare-Access-JWT-gated. For the welcome flow's service-binding call,
+# subscriber-content needs to expose an internal endpoint that bypasses CF
+# Access (auth via service-binding header or shared secret instead). Filed
+# as a sub-task on the welcome flow before LIVE cutover.
+[[env.preview.services]]
+binding = "ENTITLEMENT_WORKER"
+service = "subscriber-content"
+
 [env.preview.vars]
 WORKER_ENV = "preview"
 # Preview origin allow-list adds *.pages.dev review URLs + localhost dev.

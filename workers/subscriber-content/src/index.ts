@@ -184,14 +184,24 @@ const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    // Internal service-binding endpoint — POST /api/entitlement.
+    // Called by subscribe-checkout via env.ENTITLEMENT_WORKER.fetch().
+    // Auth: presence of CF-Access-Client-* headers indicates the caller
+    // holds the service token. Service-binding requests are internal
+    // (Cloudflare-account-scoped), so CF Access does NOT validate at the
+    // edge — header presence is the application-level trust check.
+    if (path === "/api/entitlement") {
+      return handleEntitlementApi(request, env);
+    }
+
     const auth = await resolveAuthenticatedEmail(request, env);
     if (!auth.ok) {
       return text(auth.reason, 403);
     }
     const email = auth.email;
-
-    const url = new URL(request.url);
-    const path = url.pathname;
 
     if (path === "/account" || path === "/account/" || path.startsWith("/account/")) {
       return handleAccount(env, email, url);
@@ -273,6 +283,100 @@ async function handleEdition(
   }
 
   return upgradeRedirect(url, swimlane, editionDate);
+}
+
+// Tier rank for selecting "best" subscription when a contact has multiples.
+const TIER_RANK: Record<Tier, number> = {
+  all_access: 3,
+  functional_bundle: 2,
+  individual: 1,
+};
+
+// Internal /api/entitlement endpoint for the /subscribe/welcome/ Worker.
+// D1.6 architecture lock (COO ratified 2026-06-21): subscribe-checkout
+// subrequests entitlement state via service binding; this is the receiver.
+//
+// Contract:
+//   Request:  POST /api/entitlement
+//             Headers: CF-Access-Client-Id + CF-Access-Client-Secret (presence)
+//             Body:    { "email": "<subscriber email>" }
+//   Response 200:
+//             { "tier", "tierLabel", "swimlanes", "billingNextIso", "portalUrl" }
+//   Response 404: no active subscription
+//   Response 400: malformed request
+//   Response 401: missing service-token headers
+async function handleEntitlementApi(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") {
+    return jsonError("method_not_allowed", "POST only.", 405);
+  }
+  if (
+    !request.headers.get("CF-Access-Client-Id") ||
+    !request.headers.get("CF-Access-Client-Secret")
+  ) {
+    return jsonError("unauthorized", "Service token headers missing.", 401);
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("bad_request", "Body must be JSON.", 400);
+  }
+  const obj = body as Record<string, unknown> | null;
+  const email = obj && typeof obj.email === "string" ? obj.email.trim().toLowerCase() : "";
+  if (!email || !email.includes("@")) {
+    return jsonError("bad_request", "Body.email required.", 400);
+  }
+
+  const contact = await resolveContactByEmail(env, email);
+  if (!contact) {
+    return jsonError("not_subscribed", "No subscription on file for that email.", 404);
+  }
+  const candidates = await findActiveSubscriptions(env, contact.ct_id);
+  if (candidates.length === 0) {
+    return jsonError("not_subscribed", "No active subscription for that email.", 404);
+  }
+
+  // Pick the highest-tier sub (all_access > functional_bundle > individual).
+  candidates.sort((a, b) => (TIER_RANK[b.tier] ?? 0) - (TIER_RANK[a.tier] ?? 0));
+  const best = candidates[0];
+  const full = await getFullSubscription(env, best.sb_id);
+  if (!full) {
+    return jsonError("not_subscribed", "Subscription record missing.", 404);
+  }
+  if (!full.entitlements || !Array.isArray(full.entitlements.swimlanes_accessible)) {
+    return jsonError("lookup_failed", "Subscription entitlements missing.", 500);
+  }
+
+  // current_period_end is ISO; strip the time portion for billingNextIso.
+  const isoDate = (full.current_period_end || "").slice(0, 10);
+
+  const payload = {
+    tier: full.tier,
+    tierLabel: humanTier(full.tier),
+    swimlanes: full.entitlements.swimlanes_accessible,
+    billingNextIso: isoDate,
+    // Pre-LIVE: point at the existing /account/ surface (Worker-rendered).
+    // Day-3-plus follow-up: replace with a real Stripe Billing Portal session
+    // URL once subscriber-content gets the billing_portal:write scope or that
+    // session creation moves to subscribe-checkout.
+    portalUrl: "https://elevationary.com/account/",
+  };
+
+  return new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "private, no-store",
+    },
+  });
+}
+
+function jsonError(error: string, message: string, status: number): Response {
+  return new Response(JSON.stringify({ ok: false, error, message }), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
 }
 
 async function handleAccount(env: Env, email: string, url: URL): Promise<Response> {

@@ -1,0 +1,27 @@
+{# issue_card partial — D1.2 Component 3.
+   variant ∈ { 'archive' | 'featured' }
+   tier ∈ { 'individual' | 'functional_bundle' | 'all_access' }
+   issue: { slug, title, date, tier, tier_label, preview }
+   locked: bool — gray preview when user tier < required
+#}
+{% from 'partials/bvp-icon.njk' import bvp_icon %}
+{% macro bvp_issue_card(variant, issue, locked) %}
+<article class="el-issue-card el-issue-card--{{ variant }}"
+         data-issue-id="{{ issue.slug }}"
+         {% if locked %}data-locked="true"{% endif %}>
+  <header class="el-issue-card__header">
+    <span class="el-issue-card__tier-badge" data-tier="{{ issue.tier }}">{{ issue.tier_label }}</span>
+    <time class="el-issue-card__date" datetime="{{ issue.date }}">{{ issue.date }}</time>
+  </header>
+  <h3 class="el-issue-card__title">
+    <a href="/editions/{{ issue.slug }}/">{{ issue.title }}</a>
+  </h3>
+  <p class="el-issue-card__preview">{{ issue.preview }}</p>
+  <footer class="el-issue-card__footer">
+    <a class="el-issue-card__read-link" href="/editions/{{ issue.slug }}/">
+      Read edition
+      {{ bvp_icon('arrow-right', 16) }}
+    </a>
+  </footer>
+</article>
+{% endmacro %}
