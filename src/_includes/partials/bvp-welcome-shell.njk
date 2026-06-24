@@ -7,35 +7,31 @@
    client-side state, no time-decay copy. Per Q-WP3, Clay tokens render
    only when the resolved tier is the All-Access path; the static shell
    defaults to no-Clay (Newsletter palette). #}
-<div data-hook="entitlement-shell" data-state="pending">
+<div data-hook="entitlement-shell" data-state="pending" data-tier="">
+  {# D1.7 v3' remediation 2026-06-23 (Marketing D1.4 verdict):
+     Welcome surface is NOT an entitlement-management surface per spec
+     "What this surface IS (and is not)". Per Q-WP4.a/b/c the visible
+     surface = flowing prose: acknowledgment + Q-WP2 promise sub-anchor +
+     orientation + next-action. No dl/widget chrome. No portal-link widget.
+     Worker mutates the 3 entitlement-* hooks server-side; static defaults
+     carry Q-WP4.c entitlement-read-failed fallback verbatim. #}
   <p data-hook="entitlement-acknowledgment" class="el-welcome__ack">You're in.</p>
 
   <p class="el-welcome__promise-sub">Intelligence and solutions elevating businesses to AI speeds.</p>
 
-  <dl class="el-welcome__details">
-    <dt>Tier</dt>
-    <dd><span data-hook="entitlement-tier">Your subscription is active. We're loading your tier details now.</span></dd>
+  <p data-hook="entitlement-orientation" class="el-welcome__orientation">Your subscription is active. We're loading your tier details now.</p>
 
-    <dt>Access</dt>
-    <dd>
-      <ul data-hook="entitlement-swimlanes">
-        <li>Loading&hellip;</li>
-      </ul>
-    </dd>
-
-    <dt>Next billing</dt>
-    <dd><time data-hook="entitlement-billing-next" datetime="">&mdash;</time></dd>
-
-    <dt>Manage subscription</dt>
-    <dd><a data-hook="entitlement-portal-link" href="">Open subscriber portal</a></dd>
-  </dl>
+  <p data-hook="entitlement-next-action" class="el-welcome__next-action">If the page still shows this message after a minute, your access works regardless &mdash; your first edition will arrive on schedule. Reach us at support@elevationary.com if you'd like us to verify.</p>
 
   <aside data-hook="entitlement-failure" hidden>
-    {# Failure copy populated by Worker per Q-WP5.a / b / c — the Worker
-       selects which case and writes both headline + body via HTMLRewriter. #}
+    {# Q-WP5.a/b/c failure copy — Worker selects which case and writes
+       headline + body + next-action via HTMLRewriter. Static defaults = Q-WP5.a verbatim. #}
     <h2 data-hook="entitlement-failure-headline">We can't read that subscription link.</h2>
     <p data-hook="entitlement-failure-message">
       The link in your welcome email expires after a short window for security reasons. If you clicked an older copy of the email, or the link came from somewhere else, that's the cause.
+    </p>
+    <p data-hook="entitlement-failure-next-action">
+      Two options: forward your most recent welcome email to support@elevationary.com and we'll re-issue access, or sign in at https://elevationary.com/account/ if you already have an account.
     </p>
   </aside>
 </div>

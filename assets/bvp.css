@@ -432,8 +432,28 @@ h1 { letter-spacing: 0.01em; }
 @media (prefers-color-scheme: dark) {
   .el-welcome__promise-sub { color: var(--el-soft-cream); }
 }
-.el-welcome__details {
-  margin: 0 0 var(--el-space-8) 0;
+/* Per D1.7 v3' remediation 2026-06-23 (Marketing D1.4 verdict):
+   welcome surface = flowing prose only. dl/widget chrome retired. */
+.el-welcome__orientation,
+.el-welcome__next-action {
+  font-size: var(--el-type-body);
+  line-height: var(--el-lh-body);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-6) 0;
+}
+
+/* Accessible-name-only heading — visually hidden, screen-reader + SEO present.
+   Standard WCAG-recommended sr-only implementation. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---- entitlement shell defaults (D2.1 hook contract; graceful fallback) ---- */
@@ -445,29 +465,6 @@ h1 { letter-spacing: 0.01em; }
   border-radius: var(--el-radius);
   background: var(--el-card-bg);
 }
-[data-hook="entitlement-shell"] dt {
-  font-size: var(--el-type-caption);
-  font-weight: 500;
-  color: var(--el-text-muted);
-  margin-top: var(--el-space-4);
-}
-[data-hook="entitlement-shell"] dd { margin: 0 0 var(--el-space-2) 0; }
-
-[data-hook="entitlement-swimlanes"] {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--el-space-2);
-}
-[data-hook="entitlement-swimlane-item"] {
-  padding: var(--el-space-1) var(--el-space-3);
-  border-radius: var(--el-space-1);
-  background: color-mix(in srgb, var(--el-os-electric-blue) 12%, transparent);
-  color: var(--el-text-body);
-  font-size: var(--el-type-caption);
-}
 
 [data-hook="entitlement-failure"] {
   margin-top: var(--el-space-4);
@@ -478,29 +475,18 @@ h1 { letter-spacing: 0.01em; }
 }
 [data-hook="entitlement-failure"][hidden] { display: none; }
 
-/* state coupling — D1.3 A.3: slots hidden on failure */
-[data-hook="entitlement-shell"][data-state="failure"] dl { display: none; }
-
-/* tier-aware tier-display color per D1.3 A.3 */
-[data-hook="entitlement-shell"][data-tier="individual"] [data-hook="entitlement-tier"] {
-  color: var(--el-os-electric-blue);
-  font-size: var(--el-type-h2);
-  font-weight: 600;
+/* Tier-aware shell accent — D1.7 v3' (Marketing 2026-06-23):
+   Clay reserved for all_access per Q-WP3 hard rule. Subtle top-border
+   accent on the shell; tier-distinct color. Newsletter-base palette
+   (Q-WP4.c fallback) leaves data-tier="" → no accent. */
+[data-hook="entitlement-shell"][data-tier="individual"] {
+  border-top: 2px solid var(--el-os-electric-blue);
 }
-[data-hook="entitlement-shell"][data-tier="functional_bundle"] [data-hook="entitlement-tier"] {
-  color: var(--el-deep-navy);
-  font-size: var(--el-type-h2);
-  font-weight: 600;
+[data-hook="entitlement-shell"][data-tier="functional_bundle"] {
+  border-top: 2px solid var(--el-deep-navy);
 }
-[data-hook="entitlement-shell"][data-tier="all_access"] [data-hook="entitlement-tier"] {
-  color: var(--el-higher-ground-clay);
-  font-size: var(--el-type-h2);
-  font-weight: 600;
-}
-
-[data-hook="entitlement-billing-next"] {
-  font-size: var(--el-type-caption);
-  color: var(--el-text-muted);
+[data-hook="entitlement-shell"][data-tier="all_access"] {
+  border-top: 2px solid var(--el-higher-ground-clay);
 }
 [data-hook="entitlement-portal-link"] {
   color: var(--el-accent);
@@ -632,4 +618,117 @@ h1 { letter-spacing: 0.01em; }
   color: var(--el-text-body);
   max-width: 64ch;
   margin: 0 0 var(--el-space-6) 0;
+}
+
+/* ---- /answers/ family — Phase D Day-3 (2026-06-23) ----
+   AEO/GEO content surface. Marketing-authored copy lands incrementally
+   into src/_data/answers.json per Phase C cadence; templates render
+   gracefully on empty qa[] arrays. */
+
+.el-answers__index,
+.el-answers__dept {
+  max-width: 80ch;
+  margin: 0 auto;
+  padding: var(--el-space-8) var(--el-space-6);
+}
+.el-answers__index-title,
+.el-answers__dept-name {
+  font-size: var(--el-type-h1);
+  line-height: var(--el-lh-h1);
+  font-weight: 700;
+  color: var(--el-text-primary);
+  margin: 0 0 var(--el-space-6) 0;
+}
+.el-answers__index-intro,
+.el-answers__dept-brief {
+  font-size: var(--el-type-body);
+  line-height: var(--el-lh-body);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-8) 0;
+}
+.el-answers__dept-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--el-space-6);
+}
+.el-answers__dept-card-link {
+  display: block;
+  padding: var(--el-space-6);
+  border: 1px solid var(--el-card-border);
+  border-radius: var(--el-radius);
+  background: var(--el-card-bg);
+  text-decoration: none;
+  color: inherit;
+}
+.el-answers__dept-card-link:hover,
+.el-answers__dept-card-link:focus-visible {
+  border-color: var(--el-os-electric-blue);
+}
+.el-answers__dept-card-name {
+  font-size: var(--el-type-h3);
+  font-weight: 600;
+  color: var(--el-text-primary);
+  margin: 0 0 var(--el-space-3) 0;
+}
+.el-answers__dept-card-teaser {
+  font-size: var(--el-type-body);
+  color: var(--el-text-body);
+  margin: 0;
+}
+.el-answers__qa-list {
+  margin: var(--el-space-8) 0 0 0;
+}
+.el-answers__qa-empty {
+  margin: var(--el-space-8) 0 0 0;
+  color: var(--el-text-muted);
+  font-style: italic;
+}
+.el-answers__qa-item {
+  margin: 0 0 var(--el-space-10) 0;
+}
+.el-answers__qa-question {
+  font-size: var(--el-type-h3);
+  line-height: var(--el-lh-h3);
+  font-weight: 600;
+  color: var(--el-deep-navy);
+  margin: 0 0 var(--el-space-2) 0;
+}
+@media (prefers-color-scheme: dark) {
+  .el-answers__qa-question { color: var(--el-soft-cream); }
+}
+.el-answers__qa-meta {
+  font-size: var(--el-type-caption);
+  color: var(--el-text-muted);
+  margin: 0 0 var(--el-space-3) 0;
+}
+.el-answers__qa-answer p {
+  font-size: var(--el-type-body);
+  line-height: var(--el-lh-body);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-4) 0;
+}
+.el-answers__qa-cta {
+  margin: 0 0 var(--el-space-4) 0;
+}
+.el-answers__qa-cta a {
+  color: var(--el-os-electric-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+.el-answers__qa-cta a:hover,
+.el-answers__qa-cta a:focus-visible {
+  text-decoration: underline;
+}
+.el-answers__dept-cross-link {
+  margin: var(--el-space-10) 0 0 0;
+  padding-top: var(--el-space-6);
+  border-top: 1px solid var(--el-card-border);
+  color: var(--el-text-body);
+}
+.el-answers__dept-cross-link a {
+  color: var(--el-os-electric-blue);
+  font-weight: 600;
 }

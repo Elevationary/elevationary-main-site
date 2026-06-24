@@ -33,11 +33,11 @@ export const WELCOME_SHELL_HTML = `<!doctype html>
   "knowsAbout": [
     "Artificial Intelligence Strategy",
     "Autonomous AI Agents",
-    "Enterprise AI Transformation",
+    "AI-Native Operating Capacity",
     "Agentic Commerce",
-    "Data Sovereignty",
-    "P4D3 Framework",
-    "Digital Workforce Automation"
+    "AI Governance and Compliance",
+    "P4D3 Executive Alignment",
+    "Multi-Agent Workflow Deployment"
   ],
   "sameAs": [
     
@@ -98,10 +98,13 @@ export const WELCOME_SHELL_HTML = `<!doctype html>
   
     
 
-<div data-hook="entitlement-shell" data-state="pending">
+<div data-hook="entitlement-shell" data-state="pending" data-tier="">
   <p data-hook="entitlement-acknowledgment" class="el-welcome__ack">You're in.</p>
 
   <p class="el-welcome__promise-sub">Intelligence and solutions elevating businesses to AI speeds.</p>
+
+  
+  <p data-hook="entitlement-orientation" class="el-welcome__orientation">Your subscription is active. We're loading your tier details now.</p>
 
   <dl class="el-welcome__details">
     <dt>Tier</dt>
@@ -121,11 +124,16 @@ export const WELCOME_SHELL_HTML = `<!doctype html>
     <dd><a data-hook="entitlement-portal-link" href="">Open subscriber portal</a></dd>
   </dl>
 
+  <p data-hook="entitlement-next-action" class="el-welcome__next-action">If the page still shows this message after a minute, your access works regardless &mdash; your first edition will arrive on schedule. Reach us at support@elevationary.com if you'd like us to verify.</p>
+
   <aside data-hook="entitlement-failure" hidden>
     
     <h2 data-hook="entitlement-failure-headline">We can't read that subscription link.</h2>
     <p data-hook="entitlement-failure-message">
       The link in your welcome email expires after a short window for security reasons. If you clicked an older copy of the email, or the link came from somewhere else, that's the cause.
+    </p>
+    <p data-hook="entitlement-failure-next-action">
+      Two options: forward your most recent welcome email to support@elevationary.com and we'll re-issue access, or sign in at https://elevationary.com/account/ if you already have an account.
     </p>
   </aside>
 </div>

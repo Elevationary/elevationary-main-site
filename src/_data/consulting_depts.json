@@ -1,0 +1,63 @@
+{
+  "version": "0.1.0-scaffold",
+  "lastUpdated": "2026-06-23",
+  "sourceContract": "brand/aeo_geo/phase_b_kickoff_brief_2026_06_23.md §6 (locked 4-section anatomy; 4-tier ladder replaces Session Expectations on dept pages)",
+  "durations": [
+    {
+      "slug": "15-minute",
+      "minutes": 15,
+      "shape": "introductory",
+      "shapeDescription": "qualifier / scoping conversation",
+      "calendarUrl": "https://agent.elevationary.com/consulting-15/",
+      "deliverableBusinessDays": 2
+    },
+    {
+      "slug": "30-minute",
+      "minutes": 30,
+      "shape": "readiness",
+      "shapeDescription": "assessment-shape conversation",
+      "calendarUrl": "https://agent.elevationary.com/consulting-30/",
+      "deliverableBusinessDays": 2
+    },
+    {
+      "slug": "60-minute",
+      "minutes": 60,
+      "shape": "strategy",
+      "shapeDescription": "working-session shape; specific workflow scoping",
+      "calendarUrl": "https://agent.elevationary.com/consulting-60/",
+      "deliverableBusinessDays": 2
+    },
+    {
+      "slug": "90-minute",
+      "minutes": 90,
+      "shape": "enterprise",
+      "shapeDescription": "multi-dept / multi-workflow / leadership-team shape",
+      "calendarUrl": "https://agent.elevationary.com/consulting-90/",
+      "deliverableBusinessDays": 3
+    }
+  ],
+  "depts": [
+    { "slug": "finance",          "name": "Finance",                       "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "legal",            "name": "Legal",                         "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "hr",               "name": "HR (People)",                   "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "operations",       "name": "Operations",                    "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "marketing",        "name": "Marketing",                     "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "sales",            "name": "Sales",                         "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "it",               "name": "IT (Engineering)",              "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "customer-success", "name": "Customer Success (Support)",    "context": "__PLACEHOLDER_MARKETING_AUTHORED__" },
+    { "slug": "executive",        "name": "Executive (Leadership)",        "context": "__PLACEHOLDER_MARKETING_AUTHORED__" }
+  ],
+  "anatomy": {
+    "_description": "Locked per brief §6 — 4-section anatomy for ALL 13 consulting pages. Dept pages substitute Section 4 (Session Expectations) with a 4-tier ladder routing to the 4 duration pages.",
+    "durationPage": ["whoItsFor", "keyBenefits", "whatYouGet", "sessionExpectations"],
+    "deptPage":     ["whoItsFor", "keyBenefits", "whatYouGet", "tierLadder"],
+    "twoTierDisclosure": {
+      "top": "1-paragraph summary + 1st CTA (book consulting button → calendar URL)",
+      "bottom": "full 4-section anatomy + 2nd CTA (same URL)"
+    }
+  },
+  "sectionItemSchema": {
+    "_description": "Reference shape for keyBenefits[], whatYouGet[], sessionExpectations[] arrays (4 bullets each).",
+    "items": "string[] — 4 bullets per section per brief §6"
+  }
+}

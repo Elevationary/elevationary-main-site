@@ -43,17 +43,19 @@ export async function handleWelcome(
   const url = new URL(request.url);
   const sessionId = url.searchParams.get("session_id");
 
-  // (1) session_id validation — pure local check, no network.
+  // (1) session_id validation — pure local check, no network. Failure copy
+  // is sourced from the spec at render time; `message` is informational only
+  // (preserved for logs / future inline rendering).
   if (!sessionId) {
     return renderFailure(env, {
       code: "session_id_missing",
-      message: "No checkout session was provided. If you just completed checkout, return to elevationary.com/subscribe/ to start again.",
+      message: "session_id query parameter not present",
     });
   }
   if (!SESSION_ID_PATTERN.test(sessionId)) {
     return renderFailure(env, {
       code: "session_id_malformed",
-      message: "The checkout session reference is malformed. Please retry from elevationary.com/subscribe/.",
+      message: "session_id failed cs_(test|live)_<alnum> pattern check",
     });
   }
 
@@ -73,24 +75,22 @@ export async function handleWelcome(
 
   // (2) Stripe Session retrieve — follow session.subscription to recover
   // the Subscription's metadata (2026-06-16 write-only-on-Session lesson).
+  // Failure copy is sourced from spec at render time per Q-WP5.b.
   const stripeResult = await retrieveStripeSessionEmail(env, sessionId);
   if (!stripeResult.ok) {
     return renderFailureWithShell(env, {
       code: stripeResult.code,
-      message: "We could not look up that checkout session. Please retry from elevationary.com/subscribe/.",
+      message: `Stripe session retrieve failed: ${stripeResult.code}`,
     });
   }
 
   // (3) Entitlement Worker subrequest via service binding + CF Access token.
+  // Failure copy is sourced from spec at render time per Q-WP5.c.
   const entResult = await fetchEntitlement(env, stripeResult.email);
   if (!entResult.ok) {
-    const friendly =
-      entResult.code === "not_subscribed"
-        ? "We could not find an active subscription for that account yet. If you just checked out, please refresh in a moment."
-        : "We could not verify your subscription. Please refresh, or contact support.";
     return renderFailureWithShell(env, {
       code: "entitlement_lookup_failed",
-      message: friendly,
+      message: `Entitlement lookup failed: ${entResult.code}`,
     });
   }
 

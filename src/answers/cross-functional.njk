@@ -1,0 +1,30 @@
+---
+title: "Cross-Functional — Answers — Elevationary"
+description: "Cross-functional answers on agentic AI deployment — questions that span two or more departments, with multi-stakeholder framing."
+layout: layouts/bvp-base.njk
+permalink: /answers/cross-functional/index.html
+---
+
+{% from 'partials/answers-qa-list.njk' import answers_qa_list %}
+{% set xf = answers.crossFunctional %}
+
+<section class="el-answers__dept el-answers__dept--cross">
+  <header class="el-answers__dept-header">
+    <h1 class="el-answers__dept-name">{{ xf.name }}</h1>
+    <div class="el-answers__dept-brief" data-hook="answers-dept-brief">
+      <p>{{ xf.intro }}</p>
+    </div>
+  </header>
+
+  {{ answers_qa_list(xf.qa, xf.slug) }}
+
+  <aside class="el-answers__dept-cross-link" data-hook="answers-dept-cross-link">
+    <p>Looking for a single-dept perspective? Browse the <a href="/answers/">Answers index</a> for all 9 department pages.</p>
+  </aside>
+</section>
+
+{# Cross-functional FAQPage JSON-LD — canonical for cross-dept Q&A. #}
+{% set faqItems = xf.qa %}
+{% set faqPageId = "cross-functional-faqpage" %}
+{% set faqPageUrl = site.url + "/answers/cross-functional/" %}
+{% include 'structured-data/faq-page.njk' %}

@@ -1,0 +1,30 @@
+{# FAQPage JSON-LD — Phase D AEO/GEO scaffold.
+   Per brief §4 (per-dept FAQPage on /answers/<dept>/) + the master FAQPage on
+   /answers/ index per scope §4 (referenced in brief §5).
+   Consumer template MUST set:
+     - faqItems: array of { question: string, answer: string }
+     - faqPageId: stable URL fragment id for this page's FAQPage entity
+     - faqPageUrl: canonical absolute URL of the surface
+   Empty/missing faqItems renders an empty mainEntity array (Eleventy build-clean;
+   Schema.org validator will warn — that's expected pre-Marketing-Phase-C-drop).
+#}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "{{ faqPageUrl }}#{{ faqPageId }}",
+  "url": "{{ faqPageUrl }}",
+  "mainEntity": [
+    {% for qa in faqItems %}
+    {
+      "@type": "Question",
+      "name": {{ qa.question | dump | safe }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ qa.answer | dump | safe }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

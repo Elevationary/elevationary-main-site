@@ -1,0 +1,81 @@
+{
+  "version": "0.1.0-scaffold",
+  "lastUpdated": "2026-06-23",
+  "sourceContract": "brand/aeo_geo/phase_b_kickoff_brief_2026_06_23.md §3-§4 (Marketing-locked structure; copy populated incrementally per Phase C cadence)",
+  "index": {
+    "title": "Answers — Elevationary on Agentic AI Deployment",
+    "intro": "__PLACEHOLDER_MARKETING_AUTHORED__ 80-word intro per brief §5; do NOT lift; awaits Marketing Phase C drop."
+  },
+  "depts": [
+    {
+      "slug": "finance",
+      "name": "Finance",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__ 60-100 word dept brief per brief §3 anatomy",
+      "qa": []
+    },
+    {
+      "slug": "legal",
+      "name": "Legal",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "hr",
+      "name": "HR (People)",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "operations",
+      "name": "Operations",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "marketing",
+      "name": "Marketing",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "sales",
+      "name": "Sales",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "it",
+      "name": "IT (Engineering)",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "customer-success",
+      "name": "Customer Success (Support)",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    },
+    {
+      "slug": "executive",
+      "name": "Executive (Leadership)",
+      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
+      "qa": []
+    }
+  ],
+  "crossFunctional": {
+    "slug": "cross-functional",
+    "name": "Cross-Functional",
+    "intro": "__PLACEHOLDER_MARKETING_AUTHORED__ intro framing per brief §4 (Marketing solo-author for voice coherence)",
+    "qa": []
+  },
+  "qaItemSchema": {
+    "_description": "Reference shape for items in dept.qa[] and crossFunctional.qa[] (do not consume programmatically — this is documentation).",
+    "id": "<dept-slug>-<3-digit-zero-pad> e.g. fin-001",
+    "type": "what-is | how-do-I | when-should-I | what-does-it-cost | how-do-I-prove-it-worked",
+    "question": "Q line — H3 in render (deep_navy)",
+    "answer": "A paragraph (body, deep_navy on cream)",
+    "capability": "metadata caption fragment — what capability this answers about",
+    "outcome": "metadata caption fragment — what outcome this enables",
+    "action": "subscribe | consulting-15 | consulting-30 | consulting-60 | consulting-90 | none — drives CTA presence + target URL"
+  }
+}

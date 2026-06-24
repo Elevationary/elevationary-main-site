@@ -1,5 +1,8 @@
 # robots.txt for https://elevationary.com/
-# Last updated: 2026-04-22
+# Last updated: 2026-06-23
+# Policy: AI engines explicitly allowed (AEO/GEO surface optimization per
+# Phase B Decision #7 ratified 2026-06-23). Wildcard fallback also allows.
+# If you propose ANY Disallow directive for an AI engine, surface to COO first.
 
 User-agent: *
 Allow: /
@@ -11,5 +14,41 @@ Disallow: /private/
 Disallow: /staging/
 Disallow: /admin/
 
+# --- AI engine explicit allowlist (Phase B kickoff 2026-06-23) ---
+# Source-of-truth for engine signatures: src/_data/ai_bot_signatures.json
+
 User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
 Allow: /

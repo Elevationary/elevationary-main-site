@@ -1,0 +1,119 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-06-23",
+  "sourceUrl": "https://github.com/ai-robots-txt/ai.robots.txt",
+  "signatures": [
+    {
+      "name": "GPTBot",
+      "engine": "openai",
+      "userAgentPattern": "GPTBot",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://platform.openai.com/docs/gptbot"
+    },
+    {
+      "name": "ChatGPT-User",
+      "engine": "openai",
+      "userAgentPattern": "ChatGPT-User",
+      "purpose": "user_action_fetch",
+      "operatorUrl": "https://platform.openai.com/docs/plugins/bot"
+    },
+    {
+      "name": "OAI-SearchBot",
+      "engine": "openai",
+      "userAgentPattern": "OAI-SearchBot",
+      "purpose": "search_index",
+      "operatorUrl": "https://platform.openai.com/docs/bots"
+    },
+    {
+      "name": "ClaudeBot",
+      "engine": "anthropic",
+      "userAgentPattern": "ClaudeBot",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://www.anthropic.com/claudebot"
+    },
+    {
+      "name": "Claude-Web",
+      "engine": "anthropic",
+      "userAgentPattern": "Claude-Web",
+      "purpose": "user_action_fetch",
+      "operatorUrl": "https://www.anthropic.com/claudebot"
+    },
+    {
+      "name": "anthropic-ai",
+      "engine": "anthropic",
+      "userAgentPattern": "anthropic-ai",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://www.anthropic.com/claudebot"
+    },
+    {
+      "name": "PerplexityBot",
+      "engine": "perplexity",
+      "userAgentPattern": "PerplexityBot",
+      "purpose": "search_index",
+      "operatorUrl": "https://perplexity.ai/perplexitybot"
+    },
+    {
+      "name": "Perplexity-User",
+      "engine": "perplexity",
+      "userAgentPattern": "Perplexity-User",
+      "purpose": "user_action_fetch",
+      "operatorUrl": "https://perplexity.ai/perplexitybot"
+    },
+    {
+      "name": "Google-Extended",
+      "engine": "google",
+      "userAgentPattern": "Google-Extended",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers"
+    },
+    {
+      "name": "GoogleOther",
+      "engine": "google",
+      "userAgentPattern": "GoogleOther",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers"
+    },
+    {
+      "name": "Bingbot",
+      "engine": "microsoft",
+      "userAgentPattern": "bingbot",
+      "purpose": "search_index_with_ai",
+      "operatorUrl": "https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0"
+    },
+    {
+      "name": "Applebot",
+      "engine": "apple",
+      "userAgentPattern": "Applebot",
+      "purpose": "search_index_with_ai",
+      "operatorUrl": "https://support.apple.com/en-us/119829"
+    },
+    {
+      "name": "Applebot-Extended",
+      "engine": "apple",
+      "userAgentPattern": "Applebot-Extended",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://support.apple.com/en-us/119829"
+    },
+    {
+      "name": "Bytespider",
+      "engine": "bytedance",
+      "userAgentPattern": "Bytespider",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://www.bytedance.com"
+    },
+    {
+      "name": "Meta-ExternalAgent",
+      "engine": "meta",
+      "userAgentPattern": "meta-externalagent",
+      "purpose": "training_crawl",
+      "operatorUrl": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers"
+    },
+    {
+      "name": "FacebookBot",
+      "engine": "meta",
+      "userAgentPattern": "facebookexternalhit",
+      "purpose": "preview_fetch",
+      "operatorUrl": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers"
+    }
+  ]
+}

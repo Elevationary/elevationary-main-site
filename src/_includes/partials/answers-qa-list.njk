@@ -1,0 +1,40 @@
+{# Reusable Q&A list renderer for /answers/<dept>/ + /answers/cross-functional/.
+   Per brief §3 anatomy: Q line (H3) + metadata caption + A paragraph + optional CTA.
+   Renders empty-gracefully — zero qa items = "Phase C authoring in progress" placeholder.
+
+   Required context:
+     - qaList: array of qa items per qaItemSchema in src/_data/answers.json
+     - parent_slug: dept slug or "cross-functional" — for the CTA's booking URL fallback
+#}
+{% macro answers_qa_list(qaList, parent_slug) %}
+  {% if qaList | length == 0 %}
+  <div class="el-answers__qa-empty" data-hook="answers-qa-empty" data-parent="{{ parent_slug }}">
+    <p>Q&amp;A authoring in progress. The first batch lands in this section over the next few days.</p>
+  </div>
+  {% else %}
+  <div class="el-answers__qa-list" data-hook="answers-qa-list" data-parent="{{ parent_slug }}">
+    {% for qa in qaList %}
+    <article class="el-answers__qa-item" data-hook="answers-qa-item" data-qa-id="{{ qa.id }}" data-qa-type="{{ qa.type }}">
+      <h3 class="el-answers__qa-question">{{ qa.question }}</h3>
+      <p class="el-answers__qa-meta">[{{ qa.type }} / {{ qa.capability }} / {{ qa.outcome }} / {{ qa.action }}]</p>
+      <div class="el-answers__qa-answer">
+        <p>{{ qa.answer }}</p>
+      </div>
+      {% if qa.action and qa.action != 'none' %}
+        {% if qa.action == 'subscribe' %}
+        <p class="el-answers__qa-cta"><a href="/subscribe/" data-hook="answers-qa-cta" data-action="subscribe">Subscribe to Elevationary &rarr;</a></p>
+        {% elif qa.action == 'consulting-15' %}
+        <p class="el-answers__qa-cta"><a href="/book/consulting/15-minute/" data-hook="answers-qa-cta" data-action="consulting-15">Book a 15-minute consultation &rarr;</a></p>
+        {% elif qa.action == 'consulting-30' %}
+        <p class="el-answers__qa-cta"><a href="/book/consulting/30-minute/" data-hook="answers-qa-cta" data-action="consulting-30">Book a 30-minute consultation &rarr;</a></p>
+        {% elif qa.action == 'consulting-60' %}
+        <p class="el-answers__qa-cta"><a href="/book/consulting/60-minute/" data-hook="answers-qa-cta" data-action="consulting-60">Book a 60-minute consultation &rarr;</a></p>
+        {% elif qa.action == 'consulting-90' %}
+        <p class="el-answers__qa-cta"><a href="/book/consulting/90-minute/" data-hook="answers-qa-cta" data-action="consulting-90">Book a 90-minute consultation &rarr;</a></p>
+        {% endif %}
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endmacro %}

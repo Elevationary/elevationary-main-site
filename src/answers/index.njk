@@ -1,0 +1,52 @@
+---
+title: "Answers — Elevationary on Agentic AI Deployment"
+description: "Answers from Elevationary on agentic AI deployment across departments. Working-buyer questions and the practitioners' perspective."
+layout: layouts/bvp-base.njk
+permalink: /answers/index.html
+---
+
+{# Master /answers/ index — single browser-loadable surface routing to 10
+   sub-pages (9 dept + 1 cross-functional). Hosts the master FAQPage JSON-LD
+   per scope §4 (Marketing brief §5).
+   Q&A render happens on dept pages, NOT here. Index = routing surface only. #}
+
+<section class="el-answers__index">
+  <header class="el-answers__index-header">
+    <h1 class="el-answers__index-title">{{ answers.index.title }}</h1>
+    <p class="el-answers__index-intro" data-hook="answers-index-intro">{{ answers.index.intro }}</p>
+  </header>
+
+  <ul class="el-answers__dept-grid" data-hook="answers-dept-grid">
+    {% for dept in answers.depts %}
+    <li class="el-answers__dept-card" data-hook="answers-dept-card" data-dept-slug="{{ dept.slug }}">
+      <a href="/answers/{{ dept.slug }}/" class="el-answers__dept-card-link">
+        <h2 class="el-answers__dept-card-name">{{ dept.name }}</h2>
+        <p class="el-answers__dept-card-teaser">{{ dept.deptBrief | truncate(140) }}</p>
+      </a>
+    </li>
+    {% endfor %}
+    <li class="el-answers__dept-card el-answers__dept-card--cross" data-hook="answers-dept-card" data-dept-slug="{{ answers.crossFunctional.slug }}">
+      <a href="/answers/{{ answers.crossFunctional.slug }}/" class="el-answers__dept-card-link">
+        <h2 class="el-answers__dept-card-name">{{ answers.crossFunctional.name }}</h2>
+        <p class="el-answers__dept-card-teaser">{{ answers.crossFunctional.intro | truncate(140) }}</p>
+      </a>
+    </li>
+  </ul>
+</section>
+
+{# Master FAQPage JSON-LD — aggregates Q&A across all 9 dept pages + cross-functional.
+   Per Marketing brief §5 + scope §4. Per-dept FAQPage on each sub-page covers
+   that dept's local subset; master here covers everything. #}
+{% set masterFaqItems = [] %}
+{% for dept in answers.depts %}
+  {% for qa in dept.qa %}
+    {% set masterFaqItems = (masterFaqItems.push({ question: qa.question, answer: qa.answer }), masterFaqItems) %}
+  {% endfor %}
+{% endfor %}
+{% for qa in answers.crossFunctional.qa %}
+  {% set masterFaqItems = (masterFaqItems.push({ question: qa.question, answer: qa.answer }), masterFaqItems) %}
+{% endfor %}
+{% set faqItems = masterFaqItems %}
+{% set faqPageId = "master-answers-faqpage" %}
+{% set faqPageUrl = site.url + "/answers/" %}
+{% include 'structured-data/faq-page.njk' %}

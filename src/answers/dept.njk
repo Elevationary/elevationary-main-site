@@ -1,0 +1,35 @@
+---
+pagination:
+  data: answers.depts
+  size: 1
+  alias: dept
+permalink: "/answers/{{ dept.slug }}/index.html"
+eleventyComputed:
+  title: "{{ dept.name }} — Answers — Elevationary"
+  description: "Working-buyer answers on agentic AI deployment for {{ dept.name }} — questions, practitioners' answers, when to book a consultation."
+layout: layouts/bvp-base.njk
+---
+
+{% from 'partials/answers-qa-list.njk' import answers_qa_list %}
+
+<section class="el-answers__dept">
+  <header class="el-answers__dept-header">
+    <h1 class="el-answers__dept-name">{{ dept.name }}</h1>
+    <div class="el-answers__dept-brief" data-hook="answers-dept-brief">
+      <p>{{ dept.deptBrief }}</p>
+    </div>
+  </header>
+
+  {{ answers_qa_list(dept.qa, dept.slug) }}
+
+  <aside class="el-answers__dept-cross-link" data-hook="answers-dept-cross-link">
+    <p>Need a working session on {{ dept.name }} AI deployment? <a href="/book/consulting/{{ dept.slug }}/">Book consulting for {{ dept.name }}</a>.</p>
+  </aside>
+</section>
+
+{# Per-dept FAQPage JSON-LD — scoped to THIS dept's Q&A subset only.
+   Canonical for cross-functional Q&A lives on /answers/cross-functional/. #}
+{% set faqItems = dept.qa %}
+{% set faqPageId = dept.slug + "-faqpage" %}
+{% set faqPageUrl = site.url + "/answers/" + dept.slug + "/" %}
+{% include 'structured-data/faq-page.njk' %}

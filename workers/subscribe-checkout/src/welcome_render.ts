@@ -25,12 +25,24 @@
 // Worker smoke test (HTMLRewriter is not available in vitest's Node env).
 
 import type { Entitlement, Tier, WelcomeFailure } from "./types.js";
+import {
+  ENTITLEMENT_READ_FAILED_COPY,
+  FAILURE_COPY,
+  TIER_COPY,
+  TIER_DISPLAY_NAME,
+} from "./welcome_tier_copy.js";
 
 const UPSELL_TIER_SLUG: Record<Tier, string> = {
   individual: "individual",
   functional_bundle: "functional_bundle",
   all_access: "all_access",
 };
+
+// Q-WP3 — Clay tier-badge fires ONLY on all_access. The Worker sets a
+// `data-tier` attribute on the entitlement-shell root; CSS keys Clay
+// rendering off `[data-tier="all_access"]`. individual + functional_bundle
+// leave the attribute empty (Newsletter-base palette).
+const CLAY_TIER: Tier = "all_access";
 
 // ---- pure-logic helpers (unit-testable in Node) -------------------------
 
@@ -94,39 +106,75 @@ export function renderWelcomePage(
   let rewriter = new HTMLRewriter();
 
   if (entitlement) {
+    // Per D1.7 v3' remediation (Marketing 2026-06-23): welcome surface is
+    // flowing prose only — acknowledgment + orientation + next-action. The
+    // tier label / swimlanes / billing-next / portal-link / upsell-card
+    // hooks are intentionally NOT rendered here per spec "What this surface
+    // IS (and is not)" — those affordances live at the subscriber portal.
+    // Entitlement type still carries those fields per the /api/entitlement
+    // contract; the welcome surface just doesn't display them.
+    const tierCopy = TIER_COPY[entitlement.tier];
     rewriter = rewriter
       .on(
-        '[data-hook="entitlement-tier"]',
-        new TextNodeHandler(entitlement.tierLabel),
+        '[data-hook="entitlement-shell"]',
+        new DataTierHandler(
+          entitlement.tier === CLAY_TIER ? entitlement.tier : "",
+        ),
       )
       .on(
-        '[data-hook="entitlement-billing-next"]',
-        new TextNodeHandler(entitlement.billingNextIso),
+        '[data-hook="entitlement-acknowledgment"]',
+        new TextNodeHandler(tierCopy.acknowledgment),
       )
       .on(
-        '[data-hook="entitlement-portal-link"]',
-        new HrefHandler(entitlement.portalUrl),
+        '[data-hook="entitlement-orientation"]',
+        new TextNodeHandler(tierCopy.orientation),
       )
       .on(
-        '[data-hook="entitlement-swimlanes"]',
-        new SwimlanesHandler(entitlement.swimlanes),
-      )
-      .on(
-        '[data-hook="entitlement-upsell-card"]',
-        new UpsellOmitHandler(entitlement.tier),
+        '[data-hook="entitlement-next-action"]',
+        new TextNodeHandler(tierCopy.nextAction),
       );
+  } else if (!failure) {
+    // No entitlement AND no failure → Q-WP4.c entitlement-read-failed
+    // fallback: shell shows the static defaults, which already carry the
+    // Q-WP4.c copy verbatim. No mutation needed.
   }
 
   if (failure) {
+    const copy = FAILURE_COPY[mapWorkerCodeToFailureCase(failure)];
     rewriter = rewriter
       .on('[data-hook="entitlement-failure"]', new UnhideHandler())
       .on(
+        '[data-hook="entitlement-failure-headline"]',
+        new TextNodeHandler(copy.headline),
+      )
+      .on(
         '[data-hook="entitlement-failure-message"]',
-        new TextNodeHandler(failure.message),
+        new TextNodeHandler(copy.body),
+      )
+      .on(
+        '[data-hook="entitlement-failure-next-action"]',
+        new TextNodeHandler(copy.nextAction),
       );
   }
 
   return rewriter.transform(shellResponse);
+}
+
+/** Discriminate Worker error code → spec failure case (Q-WP5.a/b/c). */
+export function mapWorkerCodeToFailureCase(
+  failure: WelcomeFailure,
+): "session_invalid" | "stripe_unreachable" | "mismatched_account" {
+  switch (failure.code) {
+    case "stripe_session_retrieve_failed":
+      return "stripe_unreachable";
+    case "entitlement_lookup_failed":
+      return "mismatched_account";
+    case "session_id_missing":
+    case "session_id_malformed":
+    case "session_id_invalid":
+    default:
+      return "session_invalid";
+  }
 }
 
 class TextNodeHandler {
@@ -165,3 +213,12 @@ class UnhideHandler {
     el.removeAttribute("hidden");
   }
 }
+
+class DataTierHandler {
+  constructor(readonly value: string) {}
+  element(el: Element): void {
+    el.setAttribute("data-tier", this.value);
+  }
+}
+
+export { ENTITLEMENT_READ_FAILED_COPY };

@@ -10,7 +10,15 @@
     <span class="el-hero__wordmark">Elevationary</span>
     <span class="el-hero__accent-line" aria-hidden="true"></span>
   </div>
+  {# Q-WP1/V6 restraint register (D1.7 v3' remediation 2026-06-23): the
+     welcome surface's prominence-moment is the entitlement-shell
+     acknowledgment, not a hero H1. SEO/a11y H1 stays as sr-only so the
+     surface still announces a heading. #}
+  {% if variant == 'welcome' %}
+  <h1 class="sr-only">{{ promise }}</h1>
+  {% else %}
   <h1 class="el-hero__promise">{{ promise }}</h1>
+  {% endif %}
   {% if ctaSlot %}
   <div class="el-hero__cta-slot">
     {{ ctaSlot | safe }}
