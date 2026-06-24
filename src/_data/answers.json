@@ -1,81 +1,847 @@
 {
-  "version": "0.1.0-scaffold",
-  "lastUpdated": "2026-06-23",
-  "sourceContract": "brand/aeo_geo/phase_b_kickoff_brief_2026_06_23.md §3-§4 (Marketing-locked structure; copy populated incrementally per Phase C cadence)",
+  "version": "0.2.0-phase-c-synced",
+  "lastUpdated": "2026-06-24",
+  "sourceContract": "Synced from brand/aeo_geo/_phase_c_working/<slug>.md via scripts/sync_phase_c_to_data.mjs",
   "index": {
     "title": "Answers — Elevationary on Agentic AI Deployment",
-    "intro": "__PLACEHOLDER_MARKETING_AUTHORED__ 80-word intro per brief §5; do NOT lift; awaits Marketing Phase C drop."
+    "intro": "Working-buyer answers from Elevationary on agentic AI deployment across departments. Practitioners' perspective on what installs, what costs, what works, and when to bring outside help."
   },
   "depts": [
     {
       "slug": "finance",
       "name": "Finance",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__ 60-100 word dept brief per brief §3 anatomy",
-      "qa": []
+      "deptBrief": "Finance buyers come here looking for clarity on what AI deployment costs, what it changes, and where it slows close cycles. CFOs and controllers want concrete numbers and honest scope — not vendor pitches, not abstract transformation narratives. Elevationary works with Finance teams on the specific workflows where agent ownership produces measurable improvement: month-end close, accounts payable, FP&A forecast modeling, audit-trail compilation. The eight answers below cover the questions Finance leaders bring to us most often, with the patterns that work and the honest constraints that hold.",
+      "qa": [
+        {
+          "id": "fin-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in a Finance team?",
+          "answer": "Agentic AI deployment in Finance installs agents that own specific workflows under human supervision — workers processing invoices, reconciling accounts, and surfacing variance for controller review, not chatbots answering questions. CFOs see three concrete changes within the first quarter: month-end close cycle-time compressed by 30–50%, manual-entry errors dropped, and analyst hours redirected from reconciliation toward forecast work. Elevationary installs one workflow at a time on the L2→L3 transition (documented manual work moving to automated with human-in-the-loop), then expands toward L4 as Finance gains comfort with agent oversight.",
+          "capability": "Deployment + Assessment",
+          "outcome": "Speed gain + Cost reduction",
+          "action": "none"
+        },
+        {
+          "id": "fin-002",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent in our accounts-payable process?",
+          "answer": "Start with one invoice type, one approval threshold, and one human reviewer in the loop — not the whole AP system at once. Elevationary's Deployment capability begins by mapping your AP workflow at L2 (documented, manual), identifying the rote-keystroke work an agent can take, and installing the agent with explicit handoff gates back to the human reviewer. Most Finance teams reach L3 (automated with human-in-the-loop) on a single invoice type within 6–8 weeks, then expand to additional types as agent accuracy and team trust both grow. Book a 30-minute consulting conversation to scope this against your actual AP volume and tooling.",
+          "capability": "Deployment",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "fin-003",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent in our month-end close process?",
+          "answer": "Target one close-cycle bottleneck — account reconciliation, accrual scoping, or variance analysis — and install an agent that handles that specific work with controller-review gates. Elevationary's Deployment capability pairs with Measurement here: the close clock is your KPI, so per-agent instrumentation captures days-saved against baseline from day one. Finance teams typically compress month-end close by 2–4 days within the first close after L3 deployment on a single workflow, then expand to second and third workflows over successive quarters. Book a 60-minute working session to identify the right close-cycle entry point against your current close timeline and tooling.",
+          "capability": "Deployment + Measurement",
+          "outcome": "Speed gain + Decision quality",
+          "action": "consulting-60"
+        },
+        {
+          "id": "fin-004",
+          "type": "when-should-I",
+          "question": "When should our Finance team hire a Director of AI versus partnering with an outside firm?",
+          "answer": "With one or two Finance workflows in flight, an outside partner moves faster than internal hiring — your existing Finance team almost always has full plate without taking on AI program management alongside their close work. The in-house hire makes economic sense once three or more workflows reach L3 and the new-deployment pipeline keeps generating quarterly work that justifies a full-time owner. Elevationary's pattern with CFOs: we install the first two or three deployments, document the playbook, then either step back as your hired-AI-lead operates from the playbook OR continue as a fractional partner if you don't want full-time AI headcount. Most Finance teams find the math pencils out around the third or fourth workflow at L3 — that's when the deployment cadence reaches steady-state and the dedicated hire has enough surface to own.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "fin-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents in our Finance operations?",
+          "answer": "Finance breaks the cost question differently than other departments because the agent's payback shows up in decision quality, not headcount — forecast accuracy lift, close-cycle compression, audit-trail completeness — and those decision-quality gains feed material capital allocation choices. Elevationary's per-L-transition fixed-fee model lets the CFO model engagement spend against expected close-cycle delta, with runtime opex (agent inference + audit-log storage) staying predictable against transaction volume. First Finance engagements typically pay back within the third close cycle post-L3 — that's when accuracy lift compounds enough across forecast, variance, and reconciliation outputs to register as material. Subscribe to the Elevationary newsletter for ongoing CFO-cost-pattern thinking as AI-finance discipline matures.",
+          "capability": "Assessment + Measurement",
+          "outcome": "Cost reduction + Decision quality",
+          "action": "subscribe"
+        },
+        {
+          "id": "fin-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I prove to our CFO that AI deployment in Finance actually moved close-cycle time and forecast accuracy?",
+          "answer": "Without baseline numbers from before deployment, no Finance measurement narrative holds — capture the pre-deployment close-cycle days, forecast-accuracy MAPE, and reconciliation-error rate now if your team hasn't yet. Elevationary's Measurement capability instruments these three Finance-specific metrics from L2 baseline, so the agent's contribution is provable from day one of L3, not retroactively. Finance teams typically show defensible close-cycle compression by the second close-cycle after L3 (3-day reduction is common); forecast-accuracy lift takes longer — three quarters minimum — because the agent needs cycle observations to refine its variance signals. The proof conversation lands when you show baseline-vs-post comparison, not just post-deployment absolute numbers.",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "fin-007",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for FP&A forecast modeling without losing analyst ownership?",
+          "answer": "Limit the agent to scenario-generation and variance-explanation work — running parameter sweeps the analyst defines, explaining drivers behind variances the analyst flags — and keep the analyst as the single point of forecast-assumption ownership. Elevationary's Deployment capability ships the FP&A agent with explicit analyst-review gates: every scenario the agent runs requires analyst sign-off before reaching the CFO deck, and every driver-explanation the agent generates traces to source data the analyst can verify. Most FP&A teams reach L3 on scenario-generation within 8-10 weeks; the model-accuracy lift comes from analyst-and-agent collaboration, not agent-replacement of analyst judgment. Book a 30-minute consulting conversation to scope this against your current FP&A stack.",
+          "capability": "Deployment + Measurement",
+          "outcome": "Decision quality + Speed gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "fin-008",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for audit-trail compilation across our Finance workflows?",
+          "answer": "Start with the documentation side — agent compiles audit-trail artifacts from transaction logs, approval records, and policy attachments at audit-prep time — and keep the auditor (internal or external) on every interpretive decision about audit scope or finding response. Elevationary's Deployment and Governance capabilities pair on Finance audit work: the agent's compilation output ships with source-of-truth references for every artifact pulled, so the auditor's evidence chain holds without manual cross-checking. Finance teams typically reach L3 on audit-trail compilation within 6 weeks; auditor-hour reallocation shifts from documentation gathering to substantive testing, where the value actually is.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Capacity gain",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "legal",
       "name": "Legal",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "General Counsel teams arrive here with three concerns: agent authority on contract interpretation, governance scaffolding before deployment, and the audit-trail integrity that holds when external parties review the work. Elevationary's Deployment and Governance capabilities pair on Legal because both halves of the equation have to ship together — agent-authority boundaries documented before any review goes live, audit-log traceability per agent action, and General Counsel sign-off discipline at every external send. The eight answers below cover what Legal leaders ask most often, framed by the workflows where governance and AI velocity reinforce rather than fight.",
+      "qa": [
+        {
+          "id": "leg-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in a Legal team?",
+          "answer": "Agentic AI deployment in Legal installs agents that handle specific contract-review or compliance-monitoring work under General Counsel supervision — agents that read, flag, and propose redlines on defined contract types, with human gates before any external send. Governance scaffolding ships before the deployment goes live: every agent action lands in an audit log, every redline traces to source-clause and rationale, and the GC keeps final sign-off authority. Legal teams typically reach L3 (automated with human-in-the-loop) on NDAs or vendor MSAs within 8–10 weeks, then expand to higher-stakes contract types as the governance log builds organizational trust.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "leg-002",
+          "type": "how-do-I",
+          "question": "How do I deploy AI safely in our Legal contract-review workflow?",
+          "answer": "Define the document types where the agent has authority, the redline categories it can propose versus escalate, and the human gate before any external send — then deploy on a single contract type first. Elevationary's Deployment and Governance capabilities pair on Legal: governance scaffolding (audit log per agent action, redline traceability, GC-approval gate) ships before any deployment goes live. General Counsel teams typically reach L3 on NDAs or vendor MSAs within 8–10 weeks, then expand to higher-stakes contract types as the governance log builds trust. Book a 60-minute working session to walk your current review workflow and identify the right L2→L3 entry point.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "consulting-60"
+        },
+        {
+          "id": "leg-003",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for vendor-contract compliance monitoring?",
+          "answer": "Start with one compliance clause class — data-handling, SLA, or termination — and install an agent that monitors active contracts for breach signals against that clause set. Elevationary's Governance capability provides the scaffolding: per-contract clause-map, per-signal escalation logic, and a Legal-team-reviewable monitoring dashboard. Most General Counsel teams reach L3 on a single clause class within 6–8 weeks, with compliance review cycle time dropping 40–60% as agents handle first-pass screening and Legal handles only flagged exceptions. Book a 30-minute consulting conversation to scope this against your active vendor count and clause priorities.",
+          "capability": "Deployment + Governance + Measurement",
+          "outcome": "Risk reduction + Capacity gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "leg-004",
+          "type": "when-should-I",
+          "question": "When should our Legal team hire a Director of AI versus partnering with an outside firm?",
+          "answer": "In-house hiring becomes the right answer once your Legal team has hit L3 on three or more contract types and the new-type pipeline keeps producing fresh deployment work each quarter. Earlier than that — first or second contract type, irregular new-type volume — outside partner capacity moves faster and avoids burning General Counsel bandwidth on AI-program management. Elevationary's pattern: we install two or three contract-type deployments, document the governance playbook, then either scale down to fractional advisory or hand fully to a hired Director of AI working from that playbook. The economic crossover usually shows up at the third contract type's L3 — that's when the new-type pipeline produces enough deployment work to keep a dedicated AI lead busy alongside the existing Legal queue.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "leg-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents in our Legal operations?",
+          "answer": "Legal's cost calculus accounts for both sides of the ledger — agent deployment cost AND the risk-cost of NOT deploying (missed contract redlines, slower vendor-compliance turnaround, hours General Counsel spends on routine review instead of strategic counsel). Elevationary's per-L-transition fixed-fee model frames engagement-cost predictably; the harder calculation is quantifying the avoided-risk side, which most Legal teams underweight at scoping time. First Legal engagements typically pay back within two quarters of L3 on contract-review or compliance-monitoring workflows — and the materially larger win shows up in the second-year picture once the agent has detected enough cross-contract patterns the human queue missed. Subscribe to the Elevationary newsletter for ongoing Legal-cost-pattern thinking.",
+          "capability": "Assessment + Governance",
+          "outcome": "Cost reduction + Risk reduction",
+          "action": "subscribe"
+        },
+        {
+          "id": "leg-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I prove to our General Counsel that AI deployment in Legal actually moved review velocity and compliance posture?",
+          "answer": "Pick three specific claims your General Counsel can defend in a board-level conversation — contract-review cycle time on defined contract types, compliance-clause coverage rate on monitored vendor contracts, and Legal-team-hour reallocation toward strategic counsel — and instrument those metrics from L2 baseline. Elevationary's Measurement capability ships per-contract-type and per-clause-class KPI tracking so the General Counsel narrates specifics: \"NDA review compressed from 4 days to 1.5 days; vendor-compliance coverage improved from 60% to 85% within Q3 of L3 deployment.\" That's the board-defensible narrative. The proof conversation fails when General Counsel can only describe pattern improvement without per-metric specifics.",
+          "capability": "Measurement + Governance",
+          "outcome": "Decision quality + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "leg-007",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for IP and trademark portfolio monitoring?",
+          "answer": "Define the monitoring scope upfront — which IP classes, which jurisdictions, which competitor sets — and have the agent run periodic searches against trademark databases, public filings, and product launches, surfacing flagged items to General Counsel for interpretive judgment on enforcement actions. Elevationary's Deployment capability ships the IP-monitoring agent with explicit search-source allow-lists and configurable confidence thresholds per IP class. Most Legal teams reach L3 on trademark monitoring within 6 weeks; enforcement-decision time drops because flagged-item context is pre-compiled rather than research-from-scratch. The discipline that protects judgment: the agent flags candidates, the GC decides response — that boundary stays sacred regardless of agent confidence score.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Capacity gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "leg-008",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for regulatory-change tracking across our compliance footprint?",
+          "answer": "Restrict the agent to monitoring designated regulatory sources — agency websites, official gazettes, named-jurisdiction RSS or API surfaces — and producing change-summary briefings for Legal review, not regulatory interpretation. Elevationary's Deployment and Governance capabilities pair on regulatory tracking: per-source allow-list, per-change confidence scoring, and an explicit handoff gate where Legal team interprets impact rather than the agent inferring it. Most Legal teams reach L3 on regulatory tracking within 8 weeks; General Counsel attention shifts from monitoring to interpretation — where the legal judgment value actually is. The honest discipline: agents summarize change, humans interpret consequence.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "hr",
       "name": "HR (People)",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "The HR AI conversation lives in sensitive territory — employee data, policy interpretation, performance review framing, recruiting-pipeline bias. CHROs and HRBPs come here looking for deployment patterns that respect this reality without slowing the operational improvements AI can deliver. Elevationary works with HR teams where Governance scaffolding pairs with Deployment from L2 forward: explicit data-access allow-lists, manager-cohort calibration tracking, joint Legal-HR sign-off on workflows touching first-party records. The eight answers below cover what CHROs bring to us most often, with the discipline that keeps people-data protected through agent rollout.",
+      "qa": [
+        {
+          "id": "hr-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in an HR team?",
+          "answer": "Agentic AI deployment in HR installs agents that handle specific people-process work under CHRO supervision — recruiting-pipeline screening, onboarding-document generation, or first-pass policy-question routing, with sensitive-data handling gates ahead of every interaction. Governance scaffolding ships before any deployment goes live: explicit allow-lists for what data the agent reads, audit logs per decision, and a People-team-reviewable escalation path for any edge case the agent doesn't recognize. HR teams typically reach L3 on a single recruiting workflow (resume-to-screen or scheduling-coordination) within 6–8 weeks, then expand toward onboarding and performance workflows as governance trust builds.",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "hr-002",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent in our recruiting pipeline without bias risk?",
+          "answer": "Define the screening criteria the agent applies, the demographic-data fields it explicitly cannot read, and the human-in-the-loop checkpoint before any candidate decision routes to a hiring manager. Elevationary's Governance capability ships the bias-audit scaffolding alongside the Deployment: per-decision logging of which criteria fired, periodic outcome-distribution review against your hiring goals, and a clear path to pull the agent from any role where outcome drift appears. Most CHROs reach L3 on resume-screening for one job-family within 8–10 weeks. Book a 60-minute working session to scope this against your actual hiring volume, ATS, and bias-audit requirements.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "consulting-60"
+        },
+        {
+          "id": "hr-003",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for employee onboarding workflows?",
+          "answer": "Target one onboarding-week bottleneck — document-generation, system-access provisioning, or new-hire question routing — and install an agent that handles that work end-to-end with HRBP-review on any non-standard case. Elevationary's Deployment capability maps your current onboarding workflow at L2, identifies the rote-coordination work an agent can take, and installs the agent with clear escalation gates. Most HR teams reach L3 on onboarding-document generation within 4–6 weeks; new-hire time-to-productive drops 15–25% as administrative drag falls. Book a 30-minute consulting conversation to scope this against your hiring volume and onboarding-stack tooling.",
+          "capability": "Deployment",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "hr-004",
+          "type": "when-should-I",
+          "question": "When should HR partner with Legal before deploying AI on people-data workflows?",
+          "answer": "Always — for any workflow touching sensitive employee data, joint Legal-HR scoping is the L2-stage discipline before deployment. Elevationary's Governance capability assumes Legal review on the data-handling specification, the consent posture, and the breach-response path before any agent reads first-party employee records. CHROs and General Counsel align on three artifacts before deployment: the data-access allow-list, the audit-log retention policy, and the escalation path for any agent decision that materially affects an employee outcome. The honest framing: HR AI deployments that skip Legal-pairing at scoping time hit governance rework cycles later that cost more time than the partnership saves.",
+          "capability": "Governance + Assessment",
+          "outcome": "Risk reduction",
+          "action": "none"
+        },
+        {
+          "id": "hr-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents across our HR operations?",
+          "answer": "The cost question in HR breaks down to time-recovered for the People team rather than direct cost-reduction in headcount — agent runtime plus Elevationary's per-L-transition engagement fee should pencil out as positive only when paired against measurable HRBP-hour reallocation toward strategic talent work, not just operational expense reduction. Most CHROs find first-engagement payback around month 9-12 when the agent is handling recruiting-pipeline screening or onboarding-coordination at L3 — the time gained per HRBP becomes the load-bearing value, not the headcount line. Subscribe to the Elevationary newsletter for ongoing HR-cost-pattern thinking as the people-ops AI surface matures.",
+          "capability": "Assessment + Measurement",
+          "outcome": "Cost reduction + Capacity gain",
+          "action": "subscribe"
+        },
+        {
+          "id": "hr-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I prove to our CHRO that AI deployment in HR moved hiring quality and employee retention?",
+          "answer": "The CHRO will ask \"would this have happened anyway\" — design measurement around that counterfactual rather than just tracking absolute movement. Hold a control cohort: roles or business units where AI hasn't deployed yet, and compare hiring-quality scores (90-day performance review of new hires) plus retention rates (12-month employee retention by hiring source) between agent-screened and human-screened candidates. Elevationary's Measurement capability instruments per-hire and per-tenure tracking from L2 baseline, so the cohort comparison data exists from day one. The honest framing on HR specifically: outcomes lag deployment by quarters, not weeks — proof conversations land at the 6-9 month mark, not earlier.",
+          "capability": "Measurement + Assessment",
+          "outcome": "Decision quality + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "hr-007",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents for performance-review workflows without bias amplification?",
+          "answer": "Audit historical review data the agent would learn from for systematic patterns — gender-skewed adjectives, demographic-correlated rating distributions, manager-cohort calibration drift — and treat any flagged pattern as a data-cleansing project BEFORE deployment, not a post-deployment monitoring concern. Elevationary's Governance capability ships the bias-audit framework alongside Deployment: per-rating-cycle distribution monitoring, manager-cohort calibration tracking, and the documented escalation path for any review the agent flags as outlier-pattern. CHROs and General Counsel co-sign the audit framework before any L3 deployment touches a review. Book a 60-minute working session to walk your historical review data and identify the audit scope.",
+          "capability": "Deployment + Governance + Measurement",
+          "outcome": "Risk reduction + Decision quality",
+          "action": "consulting-60"
+        },
+        {
+          "id": "hr-008",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for employee-policy question routing without losing accuracy?",
+          "answer": "Restrict the agent to retrieval and synthesis on documented policies — the question-to-policy-section matching workflow — and keep human HRBP review on any answer involving exceptions, ambiguity, or interpretation. Elevationary's Deployment capability ships the agent with explicit retrieval-source allow-lists: which policies the agent can read, which require HRBP routing, and which policies are scoped out of agent authority entirely (compensation specifics, performance-issue framing, anything legal-adjacent). Most HR teams reach L3 on policy-retrieval within 4-6 weeks; first-response time drops 60-80% while answer-accuracy holds against human-routed baseline. The discipline that protects accuracy: tight retrieval-source scope, not unbounded LLM generation.",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "operations",
       "name": "Operations",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Throughput and SLAs sit at the center of every Operations AI conversation. COOs and ops leaders come here looking for agent deployment patterns that compress cycle times without breaking the SLA promises customers are paying for. Elevationary works with Operations on the specific workflows where Deployment and Scaling capabilities pair to protect throughput while shifting work: order classification, exception routing, fulfillment-workflow expansion sequencing, ERP integration scope. The eight answers below cover what COOs ask most often, with the SLA-impact discipline that keeps near-misses surfacing same-shift, not at month-end review.",
+      "qa": [
+        {
+          "id": "ops-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in an Operations team?",
+          "answer": "Agentic AI deployment in Operations means installing agents that run specific workflow steps end-to-end — order routing, exception triage, vendor follow-up — while the operations team owns SLA decisions and edge-case escalations. The COO sees three changes within the first quarter: throughput rising without headcount growth, manual-step error rates declining as agents standardize work humans previously did by feel, and ops-manager hours redirected from queue work to root-cause and capacity planning. At Elevationary we install one workflow at a time on the L2→L3 transition, then move toward L4 as the agent earns trust on exception handling.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "ops-002",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent in our order-fulfillment workflow without breaking SLA commitments?",
+          "answer": "Deploy on the order-classification and exception-routing steps first — the standardizable middle of the workflow — and keep human ops staff on every step that touches an SLA-sensitive promise until the agent's exception-rate clears your threshold. Elevationary's Deployment and Governance capabilities pair here: an SLA-impact log on every agent action ships before the agent goes live, so any near-miss surfaces to the ops manager same-shift, not at month-end review. Most operations teams reach L3 on order classification within 6–8 weeks; expansion to fulfillment routing happens once the exception data clears two consecutive months. **Book a 30-minute consulting conversation to walk your current SLA structure and identify the right L2→L3 entry point.**",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Risk reduction",
+          "action": "consulting-30"
+        },
+        {
+          "id": "ops-003",
+          "type": "how-do-I",
+          "question": "How do I scale AI agents across multiple operations workflows without losing process visibility?",
+          "answer": "Scale one workflow at a time on a fixed sequence — workflow N must hit L3 with two months of clean exception data before workflow N+1 begins deployment — and instrument a unified action log across all agents so the COO sees the full operations posture in one view, not per-agent dashboards. Elevationary's Scaling and Governance capabilities pair on multi-workflow operations: per-agent action logs roll up to a single operations-dashboard surface, with cross-workflow exception patterns flagged automatically. Most operations orgs run three to five agents in parallel by month nine when this discipline holds; teams that skip the sequencing and instrument retroactively typically rebuild the logging layer at month six. **Book a 60-minute consulting conversation to scope your current workflow inventory and the right deployment sequence.**",
+          "capability": "Scaling + Governance",
+          "outcome": "Capacity gain + Decision quality",
+          "action": "consulting-60"
+        },
+        {
+          "id": "ops-004",
+          "type": "when-should-I",
+          "question": "When should our operations team build an internal AI capability versus stay with an outside partner?",
+          "answer": "Internal capability becomes the right answer once your operations team has hit L3 on three or more workflows and the per-quarter pace of new deployments justifies a full-time owner. Earlier than that — first or second workflow, in-house ops manager already at capacity on existing throughput — outside partner capacity moves faster and protects the ops manager from being pulled into AI-program management. Elevationary's pattern with COOs: we install the first two workflows, document the deployment playbook, then either step back as your hired-AI-operations-lead runs from that playbook or continue as a fractional partner. The honest framing for most operations teams: 9–15 months of partner capacity before the in-house hire makes economic sense.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "ops-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents in our operations workflows?",
+          "answer": "Cost compared to building the same operations-agent capability internally typically runs lower in the first 12 months — Elevationary's fixed-fee per L-transition concentrates the engagement cost into known scope, while the internal-build path absorbs hiring, training, and lifecycle overhead that doesn't show up in the engineering-team budget until quarter three or four. Runtime opex (agent inference + observability infrastructure) lands comparable across both paths; the differential is the upfront work and the ongoing AI-program management overhead. COOs comparing the two paths most often find the build-vs-buy crossover moves to year two, not year one. **Book a 60-minute consulting conversation to model your specific build-vs-buy economics against actual operations workflow scope.**",
+          "capability": "Deployment + Assessment",
+          "outcome": "Cost reduction",
+          "action": "consulting-60"
+        },
+        {
+          "id": "ops-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I show our COO that AI deployment in operations actually improved throughput and error rates?",
+          "answer": "Track throughput per workflow, exception rate, and reallocated ops-manager hours — and capture the baseline before deployment, not after. Elevationary's Measurement capability instruments per-agent KPI tracking from day one so the COO has clean before/after data: order-routing cycle-time compressed by N hours, exception escalations down N percent, ops-manager hours shifted from queue triage into capacity-planning and vendor-relationship work. The operations review lands when you show three numbers (throughput, error rate, hours reallocated) traced to specific agent deployments rather than a vague \"we're operating more efficiently\" narrative. The honest framing: deployments without baseline instrumentation cannot prove lift; instrument first, deploy second.",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Cost reduction",
+          "action": "none"
+        },
+        {
+          "id": "ops-007",
+          "type": "how-do-I",
+          "question": "How do I integrate AI agents with our existing operations tooling (ERP, ticketing, scheduling)?",
+          "answer": "Integrate against the system-of-record API surfaces first — read-only at L2, read-write at L3 with explicit transaction-logging — and avoid building bespoke connectors when your existing iPaaS or ERP middleware already exposes the workflows the agent needs. Elevationary's Deployment capability maps your operations stack at L2 and identifies which integrations are agent-ready, which need an iPaaS shim, and which need a custom connector built. Most operations teams reach L3 against an existing ERP within 6–10 weeks when the ERP surfaces clean APIs; legacy or custom systems typically add 2–4 weeks for connector work. **Subscribe to Elevationary's newsletter for ongoing operator-level moves on operations-stack integration patterns.**",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Risk reduction",
+          "action": "subscribe"
+        },
+        {
+          "id": "ops-008",
+          "type": "how-do-I",
+          "question": "How do I coordinate AI agents across operations shifts to maintain consistent decision-making 24/7?",
+          "answer": "Codify the decision rules the agent applies as version-controlled artifacts that don't change between shifts — same rules at 2 AM as at 2 PM — and instrument shift-transition handoffs so the incoming ops manager sees what the agent did during the prior shift in a single review screen. Elevationary's Governance and Scaling capabilities pair on 24/7 operations: per-decision rule traceability ensures consistency across shifts, and shift-summary instrumentation gives the new manager a 3-minute catch-up rather than a queue-rebuild exercise. Most operations teams reach L3 on shift-consistent agent operation within 8 weeks of single-shift L3; the bottleneck is usually shift-handoff governance, not agent behavior. The honest framing: 24/7 consistency is a governance design problem before it is an agent design problem.",
+          "capability": "Governance + Scaling",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "marketing",
       "name": "Marketing",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Brand voice and AI velocity are usually framed as opposites — they aren't, and this page works through why. CMOs and marketing-ops leaders come here looking for deployment patterns that compress content production without losing the brand-voice judgment that took years to build. Elevationary works with Marketing where Deployment and Governance capabilities pair on the workflows that drive content output: segment-specific drafting under brand-voice gates, multi-channel attribution stitching, paid-media bid optimization with brand-safety enforcement. The eight answers below cover what CMOs ask most often, with the discipline that protects brand voice through agent rollout.",
+      "qa": [
+        {
+          "id": "mkt-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in a Marketing team?",
+          "answer": "Agentic AI deployment in Marketing means installing agents that own specific content and campaign workflows — segment-specific email drafting, attribution-stitching across channels, brand-voice QA on outbound copy — while the marketing team owns positioning, calendar, and creative judgment. The CMO sees three changes within the first quarter: content velocity rising without freelancer spend growth, attribution gaps closing as agents reconcile signal across ad platforms and the CRM, and marketing-manager hours redirected from production work to audience research and campaign architecture. At Elevationary we install one workflow at a time on the L2→L3 transition, with explicit brand-voice gates before any agent output reaches a customer.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "mkt-002",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents in our email-marketing workflow without losing brand voice?",
+          "answer": "Deploy on segment-specific drafting and A/B variant generation first — the high-volume middle of email production — and keep a brand-voice QA gate (human reviewer or a brand-voice agent trained on your tone library) on every outbound until the variance settles. Elevationary's Deployment and Governance capabilities pair on Marketing: a brand-voice action log captures every agent edit so the CMO sees where voice drifts most before it reaches the inbox, not after subscribers flag it. Most marketing teams reach L3 on segmented drafting within 6 weeks; expansion to fully-automated send happens only after two consecutive sends clear the brand-voice gate without manual override. **Book a 30-minute consulting conversation to walk your current tone library and identify the right L2→L3 entry point.**",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Risk reduction",
+          "action": "consulting-30"
+        },
+        {
+          "id": "mkt-003",
+          "type": "how-do-I",
+          "question": "How do I stitch attribution across paid, organic, and CRM channels using AI agents?",
+          "answer": "Install an attribution-stitching agent that runs end-of-day reconciliation across ad platforms, web analytics, and the CRM — joining on touchpoint signatures the agent learns over the first two weeks — then surface the multi-touch path per converted lead to the CMO and the head of demand-gen in one daily view. Elevationary's Measurement and Deployment capabilities pair here: the agent ships with a deterministic-match baseline (UTM + first-party identifier) and graduates to probabilistic stitching only after the deterministic-match rate clears 70% on a per-channel basis. Most marketing orgs reach L3 on attribution stitching within 8–10 weeks, with measurable lift in correctly-credited channel ROI from week four forward. **Book a 60-minute consulting conversation to scope your current attribution stack and the right deployment sequence.**",
+          "capability": "Measurement + Deployment",
+          "outcome": "Decision quality + Speed gain",
+          "action": "consulting-60"
+        },
+        {
+          "id": "mkt-004",
+          "type": "when-should-I",
+          "question": "When should our marketing team build internal AI capability versus partner externally?",
+          "answer": "With one or two marketing workflows in flight, partnership capacity fits the org-shape better than full-time AI headcount; the in-house hire comes into focus once L3 lands on three or more workflows AND the team has both a brand-voice owner and a measurement owner with bandwidth to govern agent outputs. Elevationary's pattern with CMOs: we install the first two workflows — typically email drafting plus attribution stitching — document the brand-voice governance playbook, then either step back as your hired-AI-marketing-lead operates from that playbook or continue as a fractional partner. The honest answer for most marketing teams: 9–12 months of partner capacity before the in-house hire makes sense.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "mkt-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents across our marketing workflows?",
+          "answer": "Volume tier — channels touched, audience cohorts, content output per week — is the dominant cost driver in marketing AI deployment, not workflow complexity. Two-channel single-cohort deployments fit a defined first-engagement scope; full-funnel attribution-plus-content-plus-brand-voice deployments scale roughly linearly per channel added rather than super-linearly with channel-mix complexity. Elevationary's fixed-scope engagement model lets the CMO model marketing-AI spend against the marketing-ops calendar without surprise overruns, and the runtime opex (agent inference + brand-voice audit infrastructure) stays predictable against output volume. **Subscribe to Elevationary's newsletter for ongoing pricing-pattern thinking as channel-mix complexity shifts.**",
+          "capability": "Deployment + Assessment",
+          "outcome": "Cost reduction",
+          "action": "consulting-30"
+        },
+        {
+          "id": "mkt-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I show our CMO and CEO that AI deployment in marketing actually moved the pipeline?",
+          "answer": "Track three pipeline metrics per deployment — content velocity to pipeline-stage progression, attribution-accuracy lift, and qualified-lead cycle time — and capture the baseline before deployment, not after. Elevationary's Measurement capability ships per-agent KPI tracking from day one so the CMO has clean before/after data on each deployment: drafted-asset throughput, channel-credited revenue accuracy, and time-from-touchpoint to qualified-lead. The board-level marketing conversation lands when you show specific numbers — \"attribution accuracy improved from 60% to 85% after L3 attribution-stitching went live in week 6\" — rather than a vague \"AI is helping marketing perform better\" narrative. **Subscribe to Elevationary's newsletter for ongoing operator-level moves on marketing measurement and AI deployment ROI.**",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Speed gain",
+          "action": "subscribe"
+        },
+        {
+          "id": "mkt-007",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents for paid-media optimization without losing brand control?",
+          "answer": "Deploy on bid-optimization and audience-pruning agents first — the high-frequency adjustments where human reaction time is the bottleneck — and keep human approval gates on creative selection, brand-safety placement decisions, and budget reallocation above defined thresholds. Elevationary's Deployment and Governance capabilities pair on paid-media: a per-platform decision log captures every agent bid and audience change, with a daily brand-control review the CMO can scan in under 5 minutes. Most marketing teams reach L3 on bid-optimization within 6 weeks; creative-selection agents typically require an additional governance review cycle before they cross into customer-facing exposure. The honest framing: paid-media agents save money fast but require explicit brand-safety gates — the savings are not worth a brand-safety incident.",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Risk reduction",
+          "action": "none"
+        },
+        {
+          "id": "mkt-008",
+          "type": "how-do-I",
+          "question": "How do I unify content production across marketing channels using AI agents?",
+          "answer": "Centralize the brand-voice and asset-library tooling first — single source of truth for tone, claims, and approved imagery — then deploy channel-specific content agents (email / landing / social / sales-enablement) that all pull from that shared substrate. Elevationary's Deployment and Scaling capabilities pair here: the shared substrate ships at L2, channel agents deploy at L3 one channel at a time, and cross-channel consistency stays governable because every agent draws from the same canonical assets. Most marketing teams reach L3 on the first two channels within 8 weeks; channels three and four add 2–3 weeks each as the substrate matures. The honest framing: trying to deploy channel agents without a shared substrate produces voice drift that costs more rework than the agents save.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "sales",
       "name": "Sales",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Dept brief authoring in progress.",
+      "qa": [
+        {
+          "id": "sal-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in a Sales org?",
+          "answer": "Agentic AI deployment in Sales means installing agents that own specific pre-call and post-call workflows — account research, proposal drafting, CRM hygiene, follow-up sequencing — while AEs and CSMs own relationship work, close conversations, and strategic-account judgment. The CRO sees three changes within the first quarter: time-to-first-proposal compressing as agents do the research-and-draft pre-work, CRM data quality rising because agents capture call notes AEs previously skipped, and AE hours redirected from administrative tasks to active selling conversations. At Elevationary we install one workflow at a time on the L2→L3 transition, with explicit gates on any agent action that would touch a customer in a sensitive deal stage.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "sal-002",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents for account research without producing generic outreach?",
+          "answer": "Train the research agent on your specific qualifying criteria, your ICP definition, and your prior account-research artifacts — not the generic \"find their pain point\" prompt — and require the AE to review the top section of every agent-produced brief before it informs outreach. Elevationary's Deployment and Governance capabilities pair on Sales account research: a per-account research-quality log captures which agent-generated insights the AE actually used, feeding back into agent training so brief quality improves across the next account cohort. Most Sales teams reach L3 on account research within 6–8 weeks, with AE pre-call prep time dropping 50–70% while outreach personalization quality stays AE-controlled. **Subscribe to Elevationary's newsletter for ongoing operator-level moves on Sales AI deployment patterns.**",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Decision quality",
+          "action": "subscribe"
+        },
+        {
+          "id": "sal-003",
+          "type": "how-do-I",
+          "question": "How do I use AI agents to keep our CRM data clean without adding AE administrative overhead?",
+          "answer": "Deploy a post-call agent that listens to recorded sales calls (with consent), extracts the conversation summary, identifies next-step commitments, and writes the structured update directly to the CRM — without asking the AE to type or click. Elevationary's Deployment and Governance capabilities pair on CRM hygiene: a transcript-to-CRM audit log captures every agent write with source-quote, so the CRO and Sales-ops lead review accuracy without re-listening to calls, and AEs correct any field where the agent's interpretation diverged. Most Sales teams reach L3 on call-to-CRM workflow within 6 weeks; CRM fill-rate on key fields typically rises from 40–60% to 90%+ as AE administrative time drops. The honest framing: AEs hate CRM data entry, so removing it produces the fastest team adoption of any Sales AI deployment.",
+          "capability": "Deployment + Governance",
+          "outcome": "Capacity gain + Decision quality",
+          "action": "none"
+        },
+        {
+          "id": "sal-004",
+          "type": "when-should-I",
+          "question": "When should our Sales org build internal AI capability versus stay with an outside partner?",
+          "answer": "Sales pipeline quality and AE focus are the two assets to protect — they degrade fastest when AI ownership is scattered across part-time stakeholders, so the rule for bringing AI in-house is: when scattered ownership starts costing you measurable pipeline quality, hire dedicated. Until that pain shows up, outside partner capacity gives your Sales-ops team back the cycles they would otherwise spend coordinating AI rollouts. Elevationary's pattern with CROs: we install the first two workflows — typically account research plus call-to-CRM — document the playbook, then either step back as your hired-AI-revenue-lead runs from that playbook or continue as a fractional partner. The honest answer for most Sales orgs: 9–15 months of partner capacity before the in-house hire makes economic sense.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "sal-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents across our Sales workflows?",
+          "answer": "The cost question for Sales AI breaks differently than other departments because the payback math is unusually fast — AE-time-saved on research and CRM hygiene translates to direct selling capacity within the first quarter — so the relevant question is engagement-size relative to the AE hours your team is currently losing to administrative work. Elevationary engages on a phased basis: first workflow lands at a defined scope and fee, second workflow scales fee proportionally only if the first L3 cleared a measurable AE-time-saved threshold. **Subscribe to Elevationary's newsletter for ongoing operator-level pricing-pattern thinking on Sales AI engagement structure.**",
+          "capability": "Deployment + Assessment",
+          "outcome": "Cost reduction",
+          "action": "subscribe"
+        },
+        {
+          "id": "sal-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I show our CRO and CEO that AI deployment in Sales actually moved revenue?",
+          "answer": "Track three revenue-tied metrics per deployment — AE-time-saved (and reinvested in active selling), proposal-to-close acceptance rate on agent-augmented opportunities, and pipeline-qualification accuracy at the SDR-to-AE handoff — and baseline all three before the agent goes live. Elevationary's Measurement capability ships per-agent KPI tracking from day one so the CRO has clean before/after data: time-to-first-proposal, qualified-lead rate, and the cleanest leading indicator — AE selling hours per week. The board revenue conversation lands when you show specific numbers — \"AE selling hours per week increased from 22 to 31 after L3 deployment of account research plus call-to-CRM\" — rather than a vague \"Sales is more efficient with AI\" narrative.",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "sal-007",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for outbound prospecting without running into CAN-SPAM, GDPR, or CASL exposure?",
+          "answer": "Wire the compliance gate into the agent's send path, not the human review — the agent checks consent state, jurisdictional rules, and unsubscribe history against the prospect record before drafting reaches the queue, with explicit refusal logs for any prospect the rules don't permit reaching. Elevationary's Governance capability ships the compliance-routing logic as part of the prospecting deployment: per-jurisdiction rule set, per-prospect consent state, and audit log every Legal team can review on demand. CROs and General Counsel co-sign before the agent goes live. Regulations shift; subscribe to the Elevationary newsletter for ongoing thinking on agent compliance posture as enforcement patterns evolve.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction",
+          "action": "subscribe"
+        },
+        {
+          "id": "sal-008",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for inbound lead scoring without amplifying historical bias in our pipeline data?",
+          "answer": "Audit the historical scoring data the agent learns from before deployment — flagging the segments where existing conversion patterns reflect upstream marketing or sourcing bias rather than actual fit — and set the agent's score weights to neutralize those features at training time. Elevationary's Governance capability runs the bias audit as a pre-deployment artifact and ships ongoing-distribution monitoring so the CRO sees when the agent's score distribution diverges from a fit-only baseline. Most Sales teams reach L3 on inbound scoring within 6–8 weeks; ongoing-monitoring catches drift before it shows up in unqualified-pipeline noise. Book a 30-minute consulting conversation to walk your historical pipeline data and identify which features need the bias-neutralization treatment.",
+          "capability": "Deployment + Governance + Measurement",
+          "outcome": "Risk reduction + Decision quality",
+          "action": "consulting-30"
+        }
+      ]
     },
     {
       "slug": "it",
       "name": "IT (Engineering)",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Dept brief authoring in progress.",
+      "qa": [
+        {
+          "id": "it-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in an IT or Engineering team?",
+          "answer": "Agentic AI deployment in IT means installing agents that handle specific operations and engineering work under SRE or platform-team supervision — code-change PR review, on-call signal correlation, infrastructure-cost analysis — alongside human engineers who keep ownership of architectural decisions and production cutovers. CIOs and CTOs see three concrete changes within the first quarter: MTTR on routine incidents compressing as agents handle the first-five-minutes signal-gathering work, engineering hours reallocated from operational toil toward platform investment, and code-review throughput rising without proportional headcount growth. At Elevationary we install one agent against one workflow at a time on the L2→L3 transition, with agent action logs streaming to the same observability stack the team already operates against.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "it-002",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents for code-review and pull-request triage without losing engineering ownership?",
+          "answer": "Restrict the agent to first-pass review on defined check classes — style, test coverage, basic security pattern detection, dependency vulnerability scanning — and keep human engineers on every approval gate that affects production behavior or external-facing interfaces. Elevationary's Deployment capability ships the agent with explicit allow-lists per repository: which check classes the agent can comment on, which it can suggest changes for, and which it must escalate to the human reviewer. Engineering teams typically reach L3 on style and coverage checks within 4–6 weeks; expansion to security-pattern checks follows after the security team validates the agent's signal quality. Subscribe to the Elevationary newsletter for ongoing engineering-team integration patterns as they emerge.",
+          "capability": "Deployment + Governance",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "subscribe"
+        },
+        {
+          "id": "it-003",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent for on-call incident response signal correlation?",
+          "answer": "Wire the agent to the same observability stack the on-call uses — logs, traces, metrics — and restrict it to the read-and-correlate steps of an incident with explicit no-write boundaries on production systems. Elevationary's Deployment capability ships the agent with an on-call-aligned signal taxonomy: which signal classes the agent correlates across, what confidence threshold triggers a paged-human handoff, and what context it writes to the incident channel for the on-call to act on. Engineering teams typically reach L3 on signal correlation within 6 weeks; MTTR on routine incidents compresses 20–30% as on-call engineers spend the first 10 minutes acting rather than gathering. Book a 60-minute working session to scope this against your current on-call runbook and observability stack.",
+          "capability": "Deployment + Measurement",
+          "outcome": "Speed gain + Risk reduction",
+          "action": "consulting-60"
+        },
+        {
+          "id": "it-004",
+          "type": "when-should-I",
+          "question": "When should our engineering team build internal AI agent capability versus partner with a vendor?",
+          "answer": "Most engineering orgs land at internal AI ownership 12–18 months after their first agent hits L3 — partner with a vendor through early L2→L3 transitions when your platform team is still building the operations playbook, then bring work in-house once you have two agents stable, a dedicated SRE with bandwidth for agent lifecycle, and a deployment pipeline that justifies full-time ownership. Elevationary's pattern with CIOs and CTOs: we install the first two engineering agents with your platform team as observers, document the playbook, then hand over fully or continue as fractional partner on agent governance. The honest framing: bandwidth is the determining signal — orgs that take the operations layer in-house before the platform team has cycles to own it create lifecycle gaps that cost more than vendor-managed continuity.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain + Decision quality",
+          "action": "none"
+        },
+        {
+          "id": "it-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy and run AI agents in our engineering infrastructure?",
+          "answer": "Per-L-transition fixed engagement fees scale with workflow surface, not vendor-hours billed — Elevationary structures pricing this way so the CIO sees a known kickoff number and the CFO can model the agent's run-cost separately as an opex line. Runtime costs split three ways: agent inference (LLM token spend), observability backend (additional metric and trace volume), and any cloud-storage or queue infrastructure the agent's state requires. Typical first engineering engagement (single agent, single workflow like PR review) runs in a defined range; multi-agent deployments scale near-linearly with agent count rather than super-linearly with integration complexity once the observability scaffolding is in place. Subscribe to the Elevationary newsletter for ongoing engineering-cost pattern thinking as inference-cost economics shift.",
+          "capability": "Assessment + Measurement",
+          "outcome": "Cost reduction + Decision quality",
+          "action": "subscribe"
+        },
+        {
+          "id": "it-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I prove to our CIO that our AI agent deployment in engineering actually shifted MTTR and platform velocity?",
+          "answer": "Track three engineering-tied numbers per agent — incident MTTR on the routine-class incidents the agent participates in, deploy-frequency change on services using agent-assisted code review, and platform-engineer-hour reallocation from operational toil toward platform improvement work — and capture the baseline before deployment. Elevationary's Measurement capability instruments these from day one: per-incident agent contribution log, per-PR review-time delta, and a quarterly hour-reallocation surface the engineering leadership team sees. The CIO conversation lands when you show specific numbers tied to specific agents — \"MTTR on database-connection incidents dropped from 18 minutes to 11 minutes after the signal-correlation agent shipped in week three\" — rather than a vague \"operations is more efficient\" narrative.",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "it-007",
+          "type": "how-do-I",
+          "question": "How do I deploy an AI agent in our incident-response runbooks without losing accountability?",
+          "answer": "Restrict the agent to the diagnostic and documentation steps of an incident — pulling logs, correlating signals, drafting the post-incident write-up — and keep human on-call ownership for the decision-and-action steps that page other teams or roll back production. Elevationary's Governance capability ships an incident-action log alongside the Deployment: every agent step lands in the same incident-management system the on-call uses, so accountability stays where it always was. Most engineering teams reach L3 on diagnostic-and-documentation work within 4–6 weeks; reduced mean-time-to-detect drops 20–35% as agents handle the signal-correlation work that previously waited on the human's first 10 minutes.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "it-008",
+          "type": "how-do-I",
+          "question": "How do I monitor AI agent activity in our existing observability stack?",
+          "answer": "Treat each agent as a first-class service in your observability stack — same metric pipeline, same trace context, same alerting framework as any other production service — rather than building a parallel \"AI dashboard\" the on-call has to remember to check. Elevationary's Measurement capability defines the canonical metric set per agent (decision rate, escalation rate, latency per step, accuracy against ground truth) and routes them to Prometheus or whatever your stack already runs. CIOs and SRE leads find the integration runs 1–2 weeks once metric definitions land; the harder work is agreeing the metric set ahead of time, which is where the Measurement scoping conversation pays back.",
+          "capability": "Measurement + Governance",
+          "outcome": "Risk reduction + Decision quality",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "customer-success",
       "name": "Customer Success (Support)",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Dept brief authoring in progress.",
+      "qa": [
+        {
+          "id": "cs-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like in a Customer Success team?",
+          "answer": "Agentic AI deployment in Customer Success means installing agents that handle the rote middle of support workflows — ticket classification, knowledge-base retrieval for tier-1 responses, escalation routing to the right CSM — while human CSMs own the trust-building, account-strategy, and crisis conversations. The Chief Customer Officer sees three changes within the first quarter: ticket deflection on tier-1 questions rising as the agent retrieves cleaner answers from the KB than humans do under time pressure, time-to-first-response compressing, and CSM hours redirected from queue work to renewal-risk conversations. At Elevationary we install one workflow at a time on the L2→L3 transition, with explicit human gates on any agent action that would touch an at-risk customer indicator.",
+          "capability": "Deployment + Scaling",
+          "outcome": "Speed gain + Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "cs-002",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents in our support-ticket workflow without losing customer trust?",
+          "answer": "Deploy on the internal-facing ticket steps first — classification, routing, KB retrieval for the CSM's draft reply — and keep human voice on every customer-facing message until the agent's accuracy and tone clear two consecutive months of CSM review. Elevationary's Deployment and Governance capabilities pair on Customer Success: a tone-and-accuracy log captures every agent draft so the Chief Customer Officer sees where reply quality drifts before it reaches a customer, not after a churn signal surfaces. Most CS teams reach L3 on ticket classification and KB retrieval within 6 weeks; expansion to agent-drafted customer replies happens only after the L3 data clears the trust threshold. **Book a 30-minute consulting conversation to walk your current ticket-flow and identify the right L2→L3 entry point.**",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "consulting-30"
+        },
+        {
+          "id": "cs-003",
+          "type": "how-do-I",
+          "question": "How do I use AI agents to surface customer-health signal earlier than our current dashboards?",
+          "answer": "Install a customer-health signal agent that runs end-of-day across support tickets, product-usage events, and CSM call notes — joining on account-id and surfacing the leading-indicator pattern (deflection-rate dropping, sentiment shifting, feature-adoption stalling) to the CSM and Chief Customer Officer in a single morning view. Elevationary's Measurement and Deployment capabilities pair here: the agent ships with a deterministic-rule baseline on the three or four signals the team already trusts, then graduates to probabilistic pattern-detection only after the deterministic rules clear two months of validated early-warning calls. Most CS orgs see actionable early-warning on at-risk accounts within 8 weeks of L3, often two to four weeks ahead of where the existing dashboard would have surfaced the same signal.",
+          "capability": "Measurement + Deployment",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "none"
+        },
+        {
+          "id": "cs-004",
+          "type": "when-should-I",
+          "question": "When should our customer success org bring AI capability in-house versus stay with an outside partner?",
+          "answer": "The decision rides on CS-ops bandwidth: when the CS-ops headcount can carry AI governance alongside their other work, distribute the AI capability across existing roles; when it can't, hire. Elevationary's signal for the in-house hire: three or more CS workflows at L3 plus a dedicated CS-ops owner already governing agent outputs across renewal cycles. We install the first two workflows with Chief Customer Officers — typically ticket classification plus customer-health signal — document the governance playbook, then either step back as your hired-AI-CS-lead runs from that playbook or continue as a fractional partner. The honest answer for most CS teams: 9–12 months of partner capacity before the in-house hire makes sense.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain",
+          "action": "none"
+        },
+        {
+          "id": "cs-005",
+          "type": "what-does-it-cost",
+          "question": "What does it cost to deploy AI agents in our customer success operation?",
+          "answer": "Milestone-tied engagement structure fits customer success cleanly: first milestone is ticket-classification L3 (typical 6-week window), second milestone is customer-health-signal L3 (8-week window), each milestone with a defined fee tied to the L-transition completion rather than vendor-hours billed against an open meter. The Chief Customer Officer sees the budget shape as \"two payments tied to two L3 gates\" instead of an open consulting commitment, which makes the CS-ops finance conversation straightforward. Runtime cost stays predictable against ticket volume — agent inference scales linearly with classified-ticket count, observability scales with action log volume. **Book a 30-minute consulting conversation to walk the milestone shape against your CS-ops timeline.**",
+          "capability": "Deployment + Assessment",
+          "outcome": "Cost reduction",
+          "action": "consulting-30"
+        },
+        {
+          "id": "cs-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I show our Chief Customer Officer that AI deployment in CS actually moved retention and CSAT?",
+          "answer": "Track three retention-tied metrics per deployment — gross retention rate on accounts the agent touched, CSAT delta on agent-deflected versus human-handled tickets, and CSM-hour reallocation toward proactive renewal work — and capture the baseline before deployment, not after. Elevationary's Measurement capability instruments per-agent KPI tracking from day one so the Chief Customer Officer has clean before/after data: ticket-deflection rate, CSAT scores by ticket type, time-to-first-response. The QBR conversation lands when you show specific numbers — \"gross retention improved from 92% to 95% in the cohort whose tier-1 tickets went through the deflection agent\" — rather than a vague \"CS is more efficient\" narrative. **Subscribe to Elevationary's newsletter for ongoing operator-level moves on CS measurement and retention attribution.**",
+          "capability": "Measurement",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "subscribe"
+        },
+        {
+          "id": "cs-007",
+          "type": "how-do-I",
+          "question": "How do I deploy AI agents for proactive customer outreach without coming across as spammy?",
+          "answer": "Deploy on the trigger logic and content generation first, but keep human CSM approval on every outbound until the agent's voice and timing clear two consecutive months of CSM review. Elevationary's Deployment and Governance capabilities pair on proactive outreach: a per-message decision log captures the trigger that fired and the message body, so the Chief Customer Officer sees where agent judgment drifts before any tone-deaf message reaches a customer. Most CS teams reach L3 on trigger detection (renewal-window flags, usage-stall flags, sentiment-shift flags) within 6 weeks; the send-gate stays human-in-the-loop another 4–6 weeks before transition to L3 on the outbound itself. The honest framing: proactive outreach is harder than reactive deflection because the agent owns when to interrupt, not just how to respond.",
+          "capability": "Deployment + Governance",
+          "outcome": "Risk reduction + Speed gain",
+          "action": "none"
+        },
+        {
+          "id": "cs-008",
+          "type": "how-do-I",
+          "question": "How do I use AI agents to scale our customer success motion without scaling headcount linearly?",
+          "answer": "Deploy on the high-frequency tier-1 work first — KB retrieval, ticket classification, scheduling coordination — and reinvest the CSM hours saved into expansion-motion or strategic-account work rather than absorbing them as headcount savings. Elevationary's Scaling capability assumes hour-reinvestment, not headcount-elimination: the CSM-hours-redirected metric is a deliverable equal in priority to cost, because CSM headcount cuts in the agent transition produce account-health regression within two quarters. Most CS organizations support 30–50% account-count growth per existing CSM after L3 on tier-1 deflection plus customer-health signaling; the honest framing is that the unlock is CSM capacity for relationship work, not CSM elimination. The retention impact of doing this right is materially larger than the headcount-cost impact of doing it wrong.",
+          "capability": "Scaling + Deployment",
+          "outcome": "Capacity gain + Cost reduction",
+          "action": "none"
+        }
+      ]
     },
     {
       "slug": "executive",
       "name": "Executive (Leadership)",
-      "deptBrief": "__PLACEHOLDER_MARKETING_AUTHORED__",
-      "qa": []
+      "deptBrief": "Dept brief authoring in progress.",
+      "qa": [
+        {
+          "id": "exe-001",
+          "type": "what-is",
+          "question": "What does agentic AI deployment look like at the CEO and board level?",
+          "answer": "Agentic AI deployment at the executive level means owning three things: which workflows the org commits to L3+, what governance scaffolding (audit logs, approval gates, risk thresholds) the board sees, and how AI-driven outcomes show up in the standard quarterly reporting rhythm. The CEO sees three changes within the first two quarters: a per-deployment metric trail the board can interrogate without consultant translation, a cross-departmental capacity gain showing up as headcount reallocated to higher-altitude work, and a coherent narrative about where AI is and is not yet operating in the business. At Elevationary we install one cross-departmental deployment at a time, with the governance reporting layer built in from L2, not retrofitted at L4.",
+          "capability": "Governance + Assessment",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "none"
+        },
+        {
+          "id": "exe-002",
+          "type": "how-do-I",
+          "question": "How do I set an org-wide AI deployment strategy as CEO without micromanaging every department?",
+          "answer": "Set the rules — which L-transitions count as success, what governance every deployment must ship before going live, who in the C-suite owns each workflow — then let department heads pick which workflows to install against those rules. Elevationary's Assessment and Governance capabilities pair on executive strategy: we work with the CEO and the leadership team to author the deployment standard (the cross-departmental rules every department's AI work must clear) and the quarterly review cadence (the dashboard the board sees), then step back as departments execute against the standard. Most leadership teams have the standard authored and the first two deployments scoped within 8 weeks. **Book a 90-minute consulting conversation to walk your current AI surface with your full leadership team.**",
+          "capability": "Assessment + Governance",
+          "outcome": "Decision quality",
+          "action": "consulting-90"
+        },
+        {
+          "id": "exe-003",
+          "type": "how-do-I",
+          "question": "How do I communicate the AI deployment story to our board without overpromising or hedging?",
+          "answer": "Bring three numbers per deployment to every board meeting — cost, speed, decision-quality delta — traced to specific workflows at specific L-transitions, paired with one honest line about what is not yet working. Elevationary's Governance and Measurement capabilities pair on board communication: each deployed agent ships with a per-board-cycle KPI block the CEO can drop into the deck without consultant translation, including a candor section flagging where the AI is mid-trust-build or where the operating model has not yet caught up. Most CEOs reach a confident board-cadence narrative within the first two quarters of L3 across two or three workflows. **Subscribe to Elevationary's newsletter for ongoing operator-level moves on executive-grade AI deployment storytelling.**",
+          "capability": "Governance + Measurement",
+          "outcome": "Decision quality",
+          "action": "subscribe"
+        },
+        {
+          "id": "exe-004",
+          "type": "when-should-I",
+          "question": "When should our company hire a Chief AI Officer versus distribute AI ownership across the existing C-suite?",
+          "answer": "Four or more departments at L3+ on AI deployment is the rough threshold where a Chief AI Officer's coordination work justifies the dedicated seat; below that count, distributed ownership across the existing C-suite usually fits better because each department head still has bandwidth for their own AI surface alongside the rest of their role. Elevationary's pattern with CEOs: we install the first cross-departmental deployments through existing department heads, document the cross-org coordination playbook, then either support the hired CAIO as they run from that playbook or continue as a fractional cross-org partner if the CAIO role does not fit the org-shape. The honest answer for most companies: distributed ownership for 12–18 months before the CAIO hire makes sense.",
+          "capability": "Assessment + Scaling",
+          "outcome": "Capacity gain + Decision quality",
+          "action": "none"
+        },
+        {
+          "id": "exe-005",
+          "type": "what-does-it-cost",
+          "question": "What does an enterprise-wide AI deployment program cost the CEO and board over the first year?",
+          "answer": "First-year cost lands in three buckets the CEO should model separately: per-deployment kickoff engagement fees (scope-fixed, predictable per L-transition), agent runtime opex (LLM inference, observability tooling, infrastructure), and internal-team capacity reallocation (the hours department heads and their teams reinvest in AI program management rather than other work). Elevationary's pattern with CEOs running multi-department programs: total first-year spend typically lands within a range tied to the program's department scope and target L-transitions, with the internal-team reallocation often the largest hidden cost early. Subscribe to Elevationary's newsletter for ongoing thinking on AI-program cost-modeling patterns as boards refine their reporting expectations.",
+          "capability": "Assessment + Measurement",
+          "outcome": "Cost reduction + Decision quality",
+          "action": "subscribe"
+        },
+        {
+          "id": "exe-006",
+          "type": "how-do-I-prove-it-worked",
+          "question": "How do I show our board that our AI deployment program actually improved business performance?",
+          "answer": "The board conversation lands on outcomes already tracked: cumulative ROI delta against pre-deployment baselines, governance incidents and their resolution outcomes, and where workflows sit on the L-stage trajectory. Frame each as a number rather than a status — \"Finance compressed month-end close by three days after L3 deployment in Q3\" beats \"Finance AI program is progressing.\" Elevationary's Measurement and Governance capabilities pair on this exact altitude: each deployed agent ships with a per-board-cycle KPI block the CEO can drop into the deck without consultant translation, including a candor line per workflow flagging where the AI is mid-trust-build or where the operating model has not yet caught up. Most boards reach confident reporting cadence within two or three quarters of standing program reporting.",
+          "capability": "Measurement + Governance",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "none"
+        },
+        {
+          "id": "exe-007",
+          "type": "how-do-I",
+          "question": "How do I lead organizational change management when AI agents shift roles across departments?",
+          "answer": "Treat the AI rollout as a workforce transformation, not a tool deployment — name the role shifts each department head needs to drive (which tasks employees stop doing, which they take on, how performance frameworks adjust), and invest in the manager-level conversations that translate org-wide AI strategy to individual employee impact. Elevationary's Deployment capability includes a per-department change-management surface: which roles see scope change, what new skills they need, and a 90-day manager-cadence for guiding the workforce through it. CEOs find the change-management conversation lands when it's framed as expansion of work value rather than reduction in headcount — and the honest framing is that this requires deliberate communication discipline from CEO through department head through frontline manager.",
+          "capability": "Deployment + Assessment",
+          "outcome": "Capacity gain + Decision quality",
+          "action": "none"
+        },
+        {
+          "id": "exe-008",
+          "type": "how-do-I",
+          "question": "How do I scope our first cross-departmental AI deployment as a CEO new to agentic AI?",
+          "answer": "Pick one workflow that touches two departments where both department heads already see operational drag and want investment — finance close plus operations reporting, or sales qualification plus marketing attribution — and treat that as the program's first deployment rather than running parallel single-department pilots. Elevationary's Assessment capability includes a workflow-scoping conversation with the CEO and the two relevant department heads in one session, mapping current state at L2, identifying the L2→L3 transition, and producing a phased deployment plan all three leaders co-sign before any technical work starts. Most first cross-departmental scoping conversations land in 90 minutes; the value is the alignment, not the technical artifact. Book a 90-minute enterprise scoping session for your leadership team.",
+          "capability": "Assessment + Governance",
+          "outcome": "Decision quality + Risk reduction",
+          "action": "consulting-90"
+        }
+      ]
     }
   ],
   "crossFunctional": {
     "slug": "cross-functional",
     "name": "Cross-Functional",
-    "intro": "__PLACEHOLDER_MARKETING_AUTHORED__ intro framing per brief §4 (Marketing solo-author for voice coherence)",
-    "qa": []
+    "intro": "Cross-functional answers on agentic AI deployment — questions that span two or more departments.",
+    "qa": [
+      {
+        "id": "xf-001",
+        "type": "how-do-I",
+        "question": "How do I align CFO and General Counsel on AI deployment scope?",
+        "answer": "Lock alignment on three artifacts before any deployment plan goes to your board: the workflow-by-workflow scope list both functions agree to, the governance scaffolding both functions sign off on, and the cost-and-risk model that quantifies each decision. Elevationary's Assessment and Governance capabilities pair on this exact question: we facilitate the joint CFO-General Counsel scoping session, document each workflow's cost-versus-risk profile, and produce a phased deployment plan both leaders co-sign. The honest framing: misalignment between CFO and GC at scoping time produces the most expensive rework — getting the joint sign-off done up-front beats discovering a governance gap mid-deployment. Book a 90-minute enterprise scoping session if you want both leaders in one room with us.",
+        "capability": "Assessment + Governance",
+        "outcome": "Risk reduction + Decision quality",
+        "action": "consulting-90"
+      },
+      {
+        "id": "xf-002",
+        "type": "when-should-I",
+        "question": "When does AI deployment become a board-level decision rather than departmental?",
+        "answer": "When deployment spans three or more departments, touches material customer-facing decisions, or commits more than 5% of annual operating budget — those are the lines where executive and board oversight becomes load-bearing rather than performative. Elevationary's Assessment capability includes a board-readiness review that maps each candidate deployment against these three thresholds and produces the executive briefing materials that CFOs and CEOs need to surface AI work at board level. Most organizations cross the first threshold (multi-departmental scope) within 12–18 months of their first L3 deployment, which is the natural point to formalize board-level AI governance.",
+        "capability": "Assessment + Governance",
+        "outcome": "Risk reduction + Decision quality",
+        "action": "none"
+      },
+      {
+        "id": "xf-003",
+        "type": "how-do-I",
+        "question": "How do governance scaffolding and engineering security audits overlap when deploying agents?",
+        "answer": "Governance scaffolding answers \"what is the agent allowed to do,\" security audit answers \"is the agent doing what it's allowed to do\" — they're complementary, not redundant. Elevationary's Governance capability documents the agent's authority surface, audit-log schema, and human-gate logic; IT/Engineering's security audit verifies the implementation against that specification and against your broader security posture (authentication, network egress, secret handling). General Counsel and CIOs co-own the joint review: GC signs the authority surface, CIO signs the security verification. Most deployments need a 2–3 week joint review cycle before L3 production cutover. Book a 60-minute working session to scope the joint review against your governance and security posture.",
+        "capability": "Governance + Deployment",
+        "outcome": "Risk reduction",
+        "action": "consulting-60"
+      },
+      {
+        "id": "xf-004",
+        "type": "what-is",
+        "question": "What changes for employees when AI agents take over rote workflow steps?",
+        "answer": "Employee work shifts from execution to oversight and exception-handling on the affected workflows — fewer keystrokes, more judgment calls. Elevationary's Deployment capability includes a workforce-impact assessment alongside the technical deployment: which roles see scope change, what new skills they need, and how the team's quarterly performance review framework adjusts to reflect agent-augmented work. CHROs and COOs co-own this conversation because workflow change and people change are the same change. Most teams find the affected roles see 20–40% time reallocated from rote work toward higher-judgment work within two quarters of L3 deployment; the honest framing is that this requires deliberate role-redesign, not passive absorption.",
+        "capability": "Deployment + Assessment",
+        "outcome": "Capacity gain + Decision quality",
+        "action": "none"
+      },
+      {
+        "id": "xf-005",
+        "type": "how-do-I-prove-it-worked",
+        "question": "How do we measure AI-driven revenue lift across Marketing and Sales pipelines?",
+        "answer": "Pick three measurable channels — pipeline qualification rate, contact-to-opportunity velocity, and proposal-to-close acceptance — and baseline each across Marketing and Sales before the agent deployment goes live. Elevationary's Measurement capability instruments agent contribution at the touchpoint level, so the CMO and CRO see a unified attribution picture rather than each function reporting from a different definition. Most organizations see meaningful lift signal by week eight; the honest framing is that revenue-metric lift lags workflow improvements by 4–6 weeks because the pipeline still needs to flush. Subscribe to the Elevationary newsletter for ongoing measurement-pattern case work as we publish it.",
+        "capability": "Measurement + Deployment",
+        "outcome": "Decision quality + Capacity gain",
+        "action": "subscribe"
+      },
+      {
+        "id": "xf-006",
+        "type": "how-do-I",
+        "question": "How do support-ticket-deflection agents coordinate with operational throughput agents?",
+        "answer": "They share a unified work-state log — every ticket the support agent deflects writes to the same operations queue the throughput agent reads, so root-cause patterns in support translate to operations-side workflow fixes within the same week, not the next quarter. Elevationary's Deployment capability ships this cross-agent integration as the COO and Chief Customer Officer joint deliverable: one log schema, one escalation taxonomy, one dashboard that surfaces \"this support pattern would close if operations fixed that workflow.\" Most teams find 20–30% of recurring support tickets disappear within two quarters once the operations side acts on the signal. Book a 60-minute working session to scope cross-agent integration against your current support and operations tooling.",
+        "capability": "Deployment + Scaling",
+        "outcome": "Capacity gain + Cost reduction",
+        "action": "consulting-60"
+      },
+      {
+        "id": "xf-007",
+        "type": "when-should-I",
+        "question": "What's the right org structure for owning AI deployments across departments?",
+        "answer": "Centralized at first — a small AI-program-management group reporting to the CTO or COO that runs the playbook with each department through their first L2→L3 transition — then federated after each department has reached L3 on at least one workflow and built internal capacity. Elevationary's Assessment capability includes an org-readiness review that maps your current decision-rights structure against this pattern and flags the departments where federation will be premature versus ready. CIOs and CEOs co-own this conversation because deployment ownership shapes how AI investment shows up on the org chart. Most organizations run centralized for 12–18 months before federating; that's the honest pattern, not the aspirational one.",
+        "capability": "Assessment + Scaling",
+        "outcome": "Decision quality",
+        "action": "none"
+      },
+      {
+        "id": "xf-008",
+        "type": "how-do-I",
+        "question": "How do we budget for AI deployments when both run-cost and capacity gains scale together?",
+        "answer": "Treat the first two deployments as fixed-scope projects with capex-style budgeting, then switch to a per-workflow opex line item only after L3 stability is proven on each — that way the CFO sees a known number per deployment while the CIO builds run-cost data the budget conversation will need next year. Elevationary's Assessment and Measurement capabilities pair to produce the per-deployment cost model: agent run-cost, governance overhead, internal-team time saved, and the net delta against the workflow's pre-deployment cost baseline. Most Finance and IT pairs need three deployments before the opex model carries enough data to project forward confidently. Book a 60-minute working session to walk both your current budgeting framework and your IT cost stack.",
+        "capability": "Assessment + Measurement",
+        "outcome": "Cost reduction + Decision quality",
+        "action": "consulting-60"
+      },
+      {
+        "id": "xf-009",
+        "type": "how-do-I",
+        "question": "What does board-level AI governance look like once we've passed L3 on multiple workflows?",
+        "answer": "A quarterly AI-governance report that surfaces three things at board level: which workflows are at which L-stage, what governance incidents occurred and how they were resolved, and what the cumulative ROI delta is against pre-deployment baselines. General Counsel and the CEO co-author the framing because the report reads at the same altitude as financial audit committee material — not too technical, not too aspirational. Elevationary's Governance capability includes a board-reporting template tuned to this altitude. Organizations typically formalize board-level AI governance after two or three workflows hit L3, which is when the cumulative deployment touches enough of the business to warrant standing reporting rather than ad-hoc updates.",
+        "capability": "Governance + Measurement",
+        "outcome": "Risk reduction + Decision quality",
+        "action": "none"
+      },
+      {
+        "id": "xf-010",
+        "type": "how-do-I",
+        "question": "How do we handle sensitive employee data when AI agents touch HR workflows?",
+        "answer": "Three artifacts gate every agent that reads first-party employee records: an explicit data-access allow-list reviewed by both CHRO and General Counsel, a consent-posture spec aligned to your jurisdiction's employee-privacy framework, and a breach-response runbook that names who acts in the first 60 minutes. Elevationary's Governance capability ships these alongside any HR deployment as standard scaffolding, not optional add-ons. Legal and HR co-own enforcement: Legal signs the data-handling spec, HR signs the consent posture, both review the breach-response runbook before deployment. The honest framing: HR AI work without this scaffolding hits governance rework cycles that cost more than the partnership setup.",
+        "capability": "Governance + Deployment",
+        "outcome": "Risk reduction",
+        "action": "none"
+      },
+      {
+        "id": "xf-011",
+        "type": "how-do-I",
+        "question": "How do account-research agents and ticket-deflection agents share signal about the same customer?",
+        "answer": "Through a unified customer-context object that both agents read and write — the account-research agent enriches the object with deal-stage and competitive-mention signal from Sales touchpoints, the ticket-deflection agent enriches it with friction-point and feature-request signal from Support tickets, and both agents query it before responding so the customer doesn't receive contradicting messages from Sales and Customer Success in the same week. Elevationary's Deployment capability ships this shared-context architecture as a CRO and CCO joint deliverable. Most cross-functional Sales and CS deployments need this in place before either agent moves past L2 — without it, customer-facing voice fragments. Book a 30-minute consulting conversation to scope the shared-context object against your CRM and ticketing tools.",
+        "capability": "Deployment + Governance",
+        "outcome": "Decision quality + Capacity gain",
+        "action": "consulting-30"
+      },
+      {
+        "id": "xf-012",
+        "type": "how-do-I",
+        "question": "How do I tell the story of our AI deployment to external stakeholders without overclaiming?",
+        "answer": "Lead with workflow specifics rather than AI generalities — \"We compressed month-end close by three days using an agent that handles account reconciliation under controller review\" reads honest; \"We deployed AI in Finance\" reads like every other company's announcement. Elevationary's pattern with CMOs and CEOs: name the workflow, name the concrete change, name the L-stage if your audience knows the framework, and skip the \"transformational journey\" arc. Customer-facing communications stay at this altitude through the first year of deployment so trust builds with each specific claim rather than eroding with each vague one. Subscribe to the Elevationary newsletter for ongoing examples of how this voice lands in real external comms.",
+        "capability": "Assessment + Scaling",
+        "outcome": "Risk reduction + Decision quality",
+        "action": "subscribe"
+      }
+    ]
   },
   "qaItemSchema": {
-    "_description": "Reference shape for items in dept.qa[] and crossFunctional.qa[] (do not consume programmatically — this is documentation).",
-    "id": "<dept-slug>-<3-digit-zero-pad> e.g. fin-001",
+    "_description": "Reference shape for items in dept.qa[] and crossFunctional.qa[].",
+    "id": "<dept-slug-prefix>-<3-digit> e.g. fin-001",
     "type": "what-is | how-do-I | when-should-I | what-does-it-cost | how-do-I-prove-it-worked",
-    "question": "Q line — H3 in render (deep_navy)",
-    "answer": "A paragraph (body, deep_navy on cream)",
-    "capability": "metadata caption fragment — what capability this answers about",
-    "outcome": "metadata caption fragment — what outcome this enables",
-    "action": "subscribe | consulting-15 | consulting-30 | consulting-60 | consulting-90 | none — drives CTA presence + target URL"
+    "question": "Q line",
+    "answer": "A paragraph",
+    "capability": "metadata caption fragment",
+    "outcome": "metadata caption fragment",
+    "action": "subscribe | consulting-15 | consulting-30 | consulting-60 | consulting-90 | none"
   }
 }
