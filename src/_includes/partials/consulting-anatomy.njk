@@ -1,0 +1,82 @@
+{# Reusable 4-section consulting anatomy renderer per Marketing brief §6.
+   On duration pages: 4 sections = Who It's For / Key Benefits / What You
+   Get / Session Expectations. On dept pages: Section 4 (Session
+   Expectations) replaces with the 4-tier ladder of duration links.
+
+   Required context:
+     - whoItsFor: string (1 paragraph)
+     - keyBenefits: array<string> (4 bullets)
+     - whatYouGet: array<string> (4 bullets)
+   And ONE of:
+     - sessionExpectations: array<string> (duration page)
+     - durations: array<duration object> (dept page; renders ladder)
+
+   Renders graceful placeholders on empty arrays. #}
+
+{% macro consulting_anatomy(whoItsFor, keyBenefits, whatYouGet, sessionExpectations, durations) %}
+
+<section class="el-consulting__anatomy">
+  <article class="el-consulting__section" data-hook="consulting-who-its-for">
+    <h2 class="el-consulting__section-title">Who It's For</h2>
+    <div class="el-consulting__section-body">
+      {% if whoItsFor %}<p>{{ whoItsFor }}</p>{% else %}<p class="el-consulting__placeholder">Audience description landing in this section.</p>{% endif %}
+    </div>
+  </article>
+
+  <article class="el-consulting__section" data-hook="consulting-key-benefits">
+    <h2 class="el-consulting__section-title">Key Benefits</h2>
+    <div class="el-consulting__section-body">
+      {% if keyBenefits and keyBenefits | length > 0 %}
+      <ul>
+        {% for item in keyBenefits %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+      {% else %}
+      <p class="el-consulting__placeholder">Key benefits landing in this section.</p>
+      {% endif %}
+    </div>
+  </article>
+
+  <article class="el-consulting__section" data-hook="consulting-what-you-get">
+    <h2 class="el-consulting__section-title">What You Get</h2>
+    <div class="el-consulting__section-body">
+      {% if whatYouGet and whatYouGet | length > 0 %}
+      <ul>
+        {% for item in whatYouGet %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+      {% else %}
+      <p class="el-consulting__placeholder">Concrete deliverables landing in this section.</p>
+      {% endif %}
+    </div>
+  </article>
+
+  {% if durations %}
+  <article class="el-consulting__section el-consulting__section--ladder" data-hook="consulting-tier-ladder">
+    <h2 class="el-consulting__section-title">Choose a session length</h2>
+    <ol class="el-consulting__ladder">
+      {% for d in durations %}
+      <li class="el-consulting__ladder-item" data-duration-minutes="{{ d.minutes }}">
+        <a href="/book/consulting/{{ d.slug }}/" class="el-consulting__ladder-link">
+          <span class="el-consulting__ladder-minutes">{{ d.minutes }}-min</span>
+          <span class="el-consulting__ladder-shape">{{ d.shape | capitalize }}</span>
+          <span class="el-consulting__ladder-desc">{{ d.shapeDescription }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </article>
+  {% else %}
+  <article class="el-consulting__section" data-hook="consulting-session-expectations">
+    <h2 class="el-consulting__section-title">Session Expectations</h2>
+    <div class="el-consulting__section-body">
+      {% if sessionExpectations and sessionExpectations | length > 0 %}
+      <ul>
+        {% for item in sessionExpectations %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+      {% else %}
+      <p class="el-consulting__placeholder">Session-shape expectations landing in this section.</p>
+      {% endif %}
+    </div>
+  </article>
+  {% endif %}
+</section>
+{% endmacro %}

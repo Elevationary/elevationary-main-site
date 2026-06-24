@@ -1,0 +1,28 @@
+{# BuyAction JSON-LD — Phase D Decision #6 fallback potentialAction for
+   Q&A answers where the action enum is one of consulting-15/30/60/90.
+   Routes to the matching booking surface.
+   Consumer template MUST set:
+     - buy_action_id: stable URL fragment id
+     - buy_action_target_url: booking page URL
+     - buy_action_price_currency: typically "USD"
+     - buy_action_object_name: what's being purchased #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BuyAction",
+  "@id": "{{ buy_action_id }}",
+  "target": {
+    "@type": "EntryPoint",
+    "urlTemplate": "{{ buy_action_target_url }}",
+    "actionPlatform": [
+      "https://schema.org/DesktopWebPlatform",
+      "https://schema.org/MobileWebPlatform"
+    ]
+  },
+  "object": {
+    "@type": "Service",
+    "name": {{ buy_action_object_name | dump | safe }}
+  },
+  "priceCurrency": "{{ buy_action_price_currency or 'USD' }}"
+}
+</script>

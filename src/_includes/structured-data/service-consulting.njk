@@ -1,0 +1,30 @@
+{# Service JSON-LD — Phase D Day-4 consulting surface.
+   Used on /book/consulting/<duration>/ and /book/consulting/<dept>/ pages.
+   Consumer template MUST set:
+     - service_name: "AI Strategy Consultation (15-minute)" or similar
+     - service_description: short description
+     - service_url: canonical absolute URL of the surface
+     - service_provider_url: typically site.url
+     - service_area: typically "Worldwide" #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "{{ service_url }}#service",
+  "name": {{ service_name | dump | safe }},
+  "description": {{ service_description | dump | safe }},
+  "url": "{{ service_url }}",
+  "serviceType": "AI Strategy Consulting",
+  "provider": {
+    "@type": "Organization",
+    "@id": "{{ site.orgId }}",
+    "name": "{{ site.name }}",
+    "url": "{{ site.url }}"
+  },
+  "areaServed": {{ (service_area or "Worldwide") | dump | safe }},
+  "audience": {
+    "@type": "BusinessAudience",
+    "audienceType": "Executive leadership teams adopting agentic AI"
+  }
+}
+</script>

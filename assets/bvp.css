@@ -732,3 +732,132 @@ h1 { letter-spacing: 0.01em; }
   color: var(--el-os-electric-blue);
   font-weight: 600;
 }
+
+/* ---- /book/consulting/ family — Phase D Day-4 (2026-06-24) ----
+   4-section anatomy + 4-tier ladder substitution on dept pages.
+   Marketing copy lands per Phase C+E cadence. */
+
+.el-consulting {
+  max-width: 80ch;
+  margin: 0 auto;
+  padding: var(--el-space-8) var(--el-space-6);
+}
+.el-consulting__title {
+  font-size: var(--el-type-h1);
+  line-height: var(--el-lh-h1);
+  font-weight: 700;
+  color: var(--el-text-primary);
+  margin: 0 0 var(--el-space-4) 0;
+}
+.el-consulting__lede {
+  font-size: var(--el-type-h3);
+  line-height: var(--el-lh-h3);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-6) 0;
+}
+.el-consulting__cta,
+.el-consulting__cta-secondary {
+  display: inline-block;
+  padding: var(--el-space-3) var(--el-space-6);
+  border-radius: var(--el-radius);
+  text-decoration: none;
+  font-weight: 600;
+  min-height: 44px;
+  line-height: 1.4;
+}
+.el-consulting__cta {
+  background: var(--el-os-electric-blue);
+  color: var(--el-soft-cream);
+}
+.el-consulting__cta:hover,
+.el-consulting__cta:focus-visible {
+  background: var(--el-deep-navy);
+  color: var(--el-soft-cream);
+}
+.el-consulting__cta-secondary {
+  border: 1px solid var(--el-os-electric-blue);
+  color: var(--el-os-electric-blue);
+  background: transparent;
+}
+.el-consulting__cta-top,
+.el-consulting__cta-bottom {
+  margin: var(--el-space-6) 0;
+}
+.el-consulting__anatomy {
+  margin: var(--el-space-10) 0;
+}
+.el-consulting__section {
+  margin: 0 0 var(--el-space-10) 0;
+}
+.el-consulting__section-title {
+  font-size: var(--el-type-h2);
+  line-height: var(--el-lh-h2);
+  font-weight: 600;
+  color: var(--el-text-primary);
+  margin: 0 0 var(--el-space-4) 0;
+}
+.el-consulting__section-body p {
+  font-size: var(--el-type-body);
+  line-height: var(--el-lh-body);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-4) 0;
+}
+.el-consulting__section-body ul {
+  margin: 0;
+  padding-left: var(--el-space-6);
+}
+.el-consulting__section-body li {
+  font-size: var(--el-type-body);
+  line-height: var(--el-lh-body);
+  color: var(--el-text-body);
+  margin: 0 0 var(--el-space-3) 0;
+}
+.el-consulting__placeholder {
+  color: var(--el-text-muted);
+  font-style: italic;
+}
+.el-consulting__ladder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--el-space-4);
+}
+.el-consulting__ladder-link {
+  display: block;
+  padding: var(--el-space-4);
+  border: 1px solid var(--el-card-border);
+  border-radius: var(--el-radius);
+  background: var(--el-card-bg);
+  color: inherit;
+  text-decoration: none;
+}
+.el-consulting__ladder-link:hover,
+.el-consulting__ladder-link:focus-visible {
+  border-color: var(--el-os-electric-blue);
+}
+.el-consulting__ladder-minutes {
+  display: block;
+  font-size: var(--el-type-h3);
+  font-weight: 700;
+  color: var(--el-text-primary);
+}
+.el-consulting__ladder-shape {
+  display: block;
+  font-size: var(--el-type-caption);
+  text-transform: uppercase;
+  color: var(--el-text-muted);
+  letter-spacing: 0.05em;
+  margin: var(--el-space-1) 0;
+}
+.el-consulting__ladder-desc {
+  display: block;
+  font-size: var(--el-type-body);
+  color: var(--el-text-body);
+}
+.el-consulting__deliverable-note {
+  font-size: var(--el-type-caption);
+  color: var(--el-text-muted);
+  margin-top: var(--el-space-8);
+}

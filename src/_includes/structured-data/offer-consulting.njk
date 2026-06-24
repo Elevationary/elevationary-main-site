@@ -1,0 +1,33 @@
+{# Offer JSON-LD — Phase D Day-4 consulting surface.
+   Used on /book/consulting/<duration>/ pages. The dept context-setter
+   pages route to all 4 duration pages and don't carry an Offer (they're
+   nav/qualifier surfaces, not commerce surfaces).
+   Consumer template MUST set:
+     - offer_name (e.g., "15-minute AI Strategy Consultation")
+     - offer_url (canonical surface URL)
+     - offer_booking_url (Google Calendar URL)
+     - offer_duration_iso (ISO 8601 duration, e.g., "PT15M")
+     - offer_availability_text (e.g., "InStock") #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Offer",
+  "@id": "{{ offer_url }}#offer",
+  "name": {{ offer_name | dump | safe }},
+  "url": "{{ offer_booking_url }}",
+  "availability": "https://schema.org/{{ offer_availability_text or 'InStock' }}",
+  "itemOffered": {
+    "@type": "Service",
+    "@id": "{{ offer_url }}#service"
+  },
+  "eligibleDuration": {
+    "@type": "QuantitativeValue",
+    "value": "{{ offer_duration_iso }}"
+  },
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "target": "{{ offer_booking_url }}",
+    "name": "Book this consultation"
+  }
+}
+</script>

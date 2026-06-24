@@ -73,3 +73,34 @@ layout: layouts/bvp-base.njk
 {% endset %}
 
 {{ bvp_footer('full', footerCta) }}
+
+{# Product + Offer × 3-tier JSON-LD per Stripe-aligned mapping (D1.7 spec
+   amendment 2026-06-23). Pricing placeholders match tier-card display;
+   final pricing confirms at task_b0d86b20 LIVE activation. #}
+{% set subscription_tiers = [
+  {
+    slug: 'individual',
+    name: 'Individual',
+    price: '29',
+    currency: 'USD',
+    description: 'One swimlane of weekly intelligence. Every Monday move + Sunday diagnostic.',
+    url: site.url + '/subscribe/#tier-individual'
+  },
+  {
+    slug: 'functional_bundle',
+    name: 'Functional Bundle',
+    price: '69',
+    currency: 'USD',
+    description: 'Three connected swimlanes for cross-functional leaders.',
+    url: site.url + '/subscribe/#tier-functional-bundle'
+  },
+  {
+    slug: 'all_access',
+    name: 'All-Access',
+    price: '149',
+    currency: 'USD',
+    description: 'Every swimlane. Every edition. Up to five shared teammates.',
+    url: site.url + '/subscribe/#tier-all-access'
+  }
+] %}
+{% include 'structured-data/product-subscription.njk' %}

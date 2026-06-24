@@ -1,0 +1,26 @@
+{# SubscribeAction JSON-LD — Phase D Decision #6 primary potentialAction
+   for subscription-shaped Q&A answers. Emitted on Q&A surfaces where the
+   answer's action enum is "subscribe".
+   Consumer template MUST set:
+     - subscribe_action_id: stable URL fragment id
+     - subscribe_action_target_url: subscription landing page
+     - subscribe_action_object_name: what's being subscribed to #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SubscribeAction",
+  "@id": "{{ subscribe_action_id }}",
+  "target": {
+    "@type": "EntryPoint",
+    "urlTemplate": "{{ subscribe_action_target_url }}",
+    "actionPlatform": [
+      "https://schema.org/DesktopWebPlatform",
+      "https://schema.org/MobileWebPlatform"
+    ]
+  },
+  "object": {
+    "@type": "Service",
+    "name": {{ subscribe_action_object_name | dump | safe }}
+  }
+}
+</script>

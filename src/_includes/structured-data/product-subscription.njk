@@ -1,0 +1,36 @@
+{# Product + Offer JSON-LD for /subscribe/ tier surface — Phase E (2026-06-24).
+   Stripe-aligned 3-tier mapping per CEO ratification of Q-WP4.a + D1.7 spec
+   amendment: {individual, functional_bundle, all_access}.
+   Pricing data lives in the page template (currently placeholder $29/$69/$149
+   until task_b0d86b20 LIVE activation confirms final pricing).
+   Consumer template MUST set:
+     - subscription_tiers: array of { slug, name, price, currency, description, url } #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": "{{ site.url }}/subscribe/#product",
+  "name": "Elevationary Newsletter Subscription",
+  "description": "Weekly editions on agentic AI deployment — three tiers from single-swimlane to all-access with shared seats.",
+  "brand": {
+    "@type": "Organization",
+    "@id": "{{ site.orgId }}"
+  },
+  "url": "{{ site.url }}/subscribe/",
+  "offers": [
+    {% for tier in subscription_tiers %}
+    {
+      "@type": "Offer",
+      "@id": "{{ site.url }}/subscribe/#offer-{{ tier.slug }}",
+      "name": {{ tier.name | dump | safe }},
+      "description": {{ tier.description | dump | safe }},
+      "url": "{{ tier.url }}",
+      "price": "{{ tier.price }}",
+      "priceCurrency": "{{ tier.currency }}",
+      "availability": "https://schema.org/InStock",
+      "category": "{{ tier.slug }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

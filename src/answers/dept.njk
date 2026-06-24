@@ -33,3 +33,18 @@ layout: layouts/bvp-base.njk
 {% set faqPageId = dept.slug + "-faqpage" %}
 {% set faqPageUrl = site.url + "/answers/" + dept.slug + "/" %}
 {% include 'structured-data/faq-page.njk' %}
+
+{# Page-level SubscribeAction (Decision #6 primary) + BuyAction (fallback)
+   declaring this surface offers paths to subscribe + to dept-specific
+   consulting. Per-Q&A inline CTAs in the qa-list macro provide UX paths;
+   these JSON-LD blocks declare them semantically for AEO/GEO. #}
+{% set subscribe_action_id = site.url + "/answers/" + dept.slug + "/#subscribe-action" %}
+{% set subscribe_action_target_url = site.url + "/subscribe/" %}
+{% set subscribe_action_object_name = "Elevationary Newsletter Subscription" %}
+{% include 'structured-data/subscribe-action.njk' %}
+
+{% set buy_action_id = site.url + "/answers/" + dept.slug + "/#buy-action" %}
+{% set buy_action_target_url = site.url + "/book/consulting/" + dept.slug + "/" %}
+{% set buy_action_price_currency = "USD" %}
+{% set buy_action_object_name = "AI Strategy Consultation for " + dept.name %}
+{% include 'structured-data/buy-action.njk' %}

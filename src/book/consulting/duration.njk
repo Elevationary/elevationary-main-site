@@ -1,0 +1,39 @@
+---
+pagination:
+  data: consulting_depts.durations
+  size: 1
+  alias: duration
+permalink: "/book/consulting/{{ duration.slug }}/index.html"
+eleventyComputed:
+  title: "{{ duration.minutes }}-minute AI Strategy Consultation — Elevationary"
+  description: "Book a {{ duration.minutes }}-minute {{ duration.shape }} consultation with Elevationary. {{ duration.shapeDescription | capitalize }}."
+layout: layouts/bvp-base.njk
+---
+
+{% from 'partials/consulting-anatomy.njk' import consulting_anatomy %}
+
+<section class="el-consulting el-consulting--duration">
+  <header class="el-consulting__header">
+    <h1 class="el-consulting__title">{{ duration.minutes }}-minute consultation — {{ duration.shape | capitalize }}</h1>
+    <p class="el-consulting__lede">{{ duration.shapeDescription | capitalize }}.</p>
+    <p class="el-consulting__cta-top"><a href="{{ duration.calendarUrl }}" class="el-consulting__cta" data-hook="consulting-cta-top" data-action="book">Book a {{ duration.minutes }}-minute session &rarr;</a></p>
+  </header>
+
+  {{ consulting_anatomy(duration.whoItsFor, duration.keyBenefits, duration.whatYouGet, duration.sessionExpectations, null) }}
+
+  <p class="el-consulting__cta-bottom"><a href="{{ duration.calendarUrl }}" class="el-consulting__cta" data-hook="consulting-cta-bottom" data-action="book">Book a {{ duration.minutes }}-minute session &rarr;</a></p>
+
+  <p class="el-consulting__deliverable-note">Deliverable timeframe: {{ duration.deliverableBusinessDays }} business day{% if duration.deliverableBusinessDays != 1 %}s{% endif %}.</p>
+</section>
+
+{# Service + Offer JSON-LD for this duration page. #}
+{% set service_name = duration.minutes + "-minute AI Strategy Consultation" %}
+{% set service_description = duration.shapeDescription | capitalize %}
+{% set service_url = site.url + "/book/consulting/" + duration.slug + "/" %}
+{% include 'structured-data/service-consulting.njk' %}
+
+{% set offer_name = duration.minutes + "-minute AI Strategy Consultation" %}
+{% set offer_url = site.url + "/book/consulting/" + duration.slug + "/" %}
+{% set offer_booking_url = duration.calendarUrl %}
+{% set offer_duration_iso = "PT" + duration.minutes + "M" %}
+{% include 'structured-data/offer-consulting.njk' %}
