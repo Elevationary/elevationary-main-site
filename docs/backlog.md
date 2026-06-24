@@ -3,27 +3,27 @@
 > **Project Source of Truth:** Always verify the active project phases and deliverables within the P4D3 database before beginning a session.
 > **Backlog tags:** `[CODE]` = Website code work | `[BRAND]` = needs Elevationary_Marketing approval | `[PROCESS]` = COO operational | `[JAMES]` = human action required | `[WEB]` = current BVP / Day 3 Website work. Website marks only its own items complete.
 
-> **⚡ 2026-06-22 BVP DAY 3 EOD STATE:** Fleet-wide Claude restart triggered by CEO for clean PTY clear. Welcome-flow Day-2-shippable surface = PASS in preview. Marketing dispatch queue cleared (#1/#3/#4 verdicted PASS; #2 D1.7 partial impl awaiting tier-enum mapping reply). LIVE activation gated on `task_b0d86b20`.
+> **⚡ 2026-06-24 PHASE D + E + G PREP COMPLETE STATE:** 3 local commits today (`79f7156` + `ef78d8f` + `0601246`) — NONE PUSHED. 24 new AEO/GEO routes (`/answers/` × 11 + `/book/consulting/` × 13) + Pages Functions middleware + Marketing's 84 Phase C Q&A loaded via new sync script + Subscription Product JSON-LD. D1.7 v3' welcome PASS attested by Marketing 2026-06-23. 6 ORS logs today (all PASS). Push gates on COO/CEO Phase F brand-gate review OR direct push call.
 
 ## Restart Priority Order (post-restart)
 
 1. Onboarding Scan + read `docs/build_handover.md` end-to-end.
-2. Check inbox for Marketing's pending verdicts:
-   - D1.7 tier-enum mapping (3 options A/B/C dispatched, msg `cef45339-...`)
-   - knowsAbout replacement mapping (incoming on `d_ceo_4_knowsabout_followup_2026_06_22`)
-3. If Marketing tier-mapping reply present → wire per-tier copy, regenerate welcome PNG, reply with verdict-ready surface.
-4. If knowsAbout mapping present → apply find-and-replace in `organization.njk`, rebuild, verify; PNG re-render skippable (JSON-LD-only change).
-5. Standing-by for COO Day 3 active-drive signal (production deploy gated on `task_b0d86b20`).
+2. `git log --oneline -5` — check if today's 3 commits are visible on `origin/main`.
+3. If pushed: production smoke `curl -sI https://elevationary.com/answers/finance/` + AI-bot header verify via `curl -H "User-Agent: GPTBot/1.0"` + Cloudflare Pages dashboard middleware logs.
+4. If NOT pushed: ask CEO/COO whether Phase F brand-gate or production push is the next gate.
+5. Standing-by for `task_b0d86b20` LIVE activation (parallel track; not blocking AEO/GEO).
 
 ## Active
 
-- [ ] **[CODE / WEB] LIVE activation sequence (`task_b0d86b20` in P4D3)** — paint-by-numbers per `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`. STRIPE_READ_KEY + CF Access service token already pushed to both envs; production Worker `subscribe-checkout` exists as empty shell. Needs: LIVE Founding Coupon + ELEVATE50 promo creation, deactivate 100 stale PREVIEW codes, LIVE write-scope restricted API key, configure_worker_secrets.py --env production, uncomment production routes block, add production `[[services]]` mirror of ENTITLEMENT_WORKER, `wrangler deploy`, e2e smoke against real cs_live_ session, append Secret Consumer Registry rows × 3, flip `task_1c9bc273` 🟢 + `task_b0d86b20` 🟢, detailed-rigor ORS.
+- [ ] **[CODE / WEB] LIVE activation sequence (`task_b0d86b20` in P4D3)** — paint-by-numbers per `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`. STRIPE_READ_KEY + CF Access service token already pushed to both envs; production Worker `subscribe-checkout` exists as empty shell. Needs: LIVE Founding Coupon + ELEVATE50 promo creation, deactivate 100 stale PREVIEW codes, LIVE write-scope restricted API key, configure_worker_secrets.py --env production, uncomment production routes block, add production `[[services]]` mirror of ENTITLEMENT_WORKER, `wrangler deploy`, e2e smoke against real cs_live_ session, append Secret Consumer Registry rows × 3, flip `task_1c9bc273` 🟢 + `task_b0d86b20` 🟢, detailed-rigor ORS. **Subscription Product JSON-LD on /subscribe/ ships with placeholder pricing ($29/$69/$149) until this lands.**
 
-- [ ] **[WEB / BRAND] D1.7 welcome page per-tier copy implementation** — code prep + tier-agnostic items shipped 2026-06-22 (Q-WP1, Q-WP2, Q-WP3 default-no-Clay, Q-WP5.a, Q-WP6, Q-WP-MO, Q-WP-FT). Blocked on Marketing tier-mapping decision: Stripe enum `{individual, functional_bundle, all_access}` vs spec enum `{Free, Newsletter, All-Access}`. Three options dispatched (A: drop Free, map individual+functional_bundle→Newsletter; B: 1:1 Stripe rows; C: 4-row matrix). After reply: ~15 min for Worker logic + Q-WP4.a copy + Q-WP5.b/c failure branches + Q-WP3 tier-badge for All-Access + welcome PNG regen + Marketing brand-gate review request.
+- [ ] **[CODE / WEB] Phase G production push** — 3 local commits await push (`79f7156`/`ef78d8f`/`0601246`). Cloudflare Pages auto-deploys on push to `main`. Gates: (1) Marketing Phase F brand-gate review of 24 routes per cadence Day-6; (2) CEO Day-7 LIVE deploy confirm. AEO/GEO push CAN proceed independently of `task_b0d86b20` per COO directive 2026-06-24. Post-push: schema.org validator pass + Search Console FAQPage submission + Pages Functions middleware log inspection.
 
-- [ ] **[WEB / BRAND] knowsAbout array replacement** — Marketing reviewing 7 entries row-by-row. Replacements arrive on corr `d_ceo_4_knowsabout_followup_2026_06_22`. Apply find-and-replace in `src/_includes/structured-data/organization.njk`, rebuild, grep-verify in `_site/`. PNG re-render likely skippable (JSON-LD-only).
+- [ ] **[CODE — Newsletter Drift D1 migration]** `task_08f36f8d` Paywall map Free 3-2-1 links + `task_8d9318fc` Render Do-Follow SEO vendor links into Premium website summary — both filed under `P4_Entitlement_Worker_and_Gated_Routes / P4_D2_Gated_Route_Pages`, Status Future 🔲. Folded into LIVE-activation workstream (not AEO/GEO scaffolding).
 
-- [ ] **[WEB / BRAND] D-CEO-4 P2 AEO/GEO authoring** — clean slate confirmed (zero AEO/GEO content in workspace). Marketing drafts scope from scratch; when scope lands, Website authors `src/_includes/structured-data/faq.njk` (or `qa.njk`) with FAQPage type, includes from `/aeo/` + `/geo/` surfaces.
+- [ ] **[WEB / CONTENT] Marketing dept-brief authoring** for sales / it / customer-success / executive — Q&A already complete in those depts (8 each); Marketing brief is last artifact per their workflow. Re-run `node scripts/sync_phase_c_to_data.mjs` after Marketing updates.
+
+- [ ] **[WEB / BRAND] Marketing Phase F brand-gate review on 24 AEO/GEO surfaces** — runs against `~/Antigravity/Elevationary_Marketing/brand/review_gates/bvp_brand_gate_checklist.md`. Add `! grep -r __PLACEHOLDER_MARKETING_AUTHORED__ _site/` gate to checklist per Phase D Day-1 ORS R-2 carry-forward.
 
 - [ ] **[COO] Subscription_Revenue_Pipeline — Website owns P3 + P4 + P9_D3** — CEO-ratified 2026-05-30 (P3 + P4) and 2026-06-01 (P9). P4D3 path: `Operations / Fleet_Governance / Subscription_Revenue_Pipeline`. Status as of 2026-06-22:
     - [X] All P3 + P4_D1 + P4_D2 + P9_D3 tasks 🟢 from prior sessions (see git history).
@@ -33,6 +33,12 @@
     - [ ] `task_d02e87e8` 🟢 (shipped Day 2; Eleventy `/subscribe/` lane-picker + welcome page).
 
 - [ ] **[COO/JAMES] Fleet Secret Consumer Registry rows** — append rows to `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` at LIVE activation for: (a) Worker-side `STRIPE_SECRET_KEY` (subscriber-content, scope `subscriptions:read`); (b) subscribe-checkout production `STRIPE_SECRET_KEY` (scope `write:checkout.sessions`); (c) subscribe-checkout `STRIPE_READ_KEY` (scope `checkout.sessions:read` + `subscriptions:read`, pushed both envs 2026-06-22); (d) subscribe-checkout `CF_ACCESS_CLIENT_ID` + `CF_ACCESS_CLIENT_SECRET` pair (service token `subscribe_checkout_to_subscriber_content`, pushed both envs 2026-06-22). Names + smoke test only; never values.
+
+- [X] **2026-06-24 — [WEB / CODE] Phase G LIVE-prep smoke PASS** (commit `0601246`) — Phase C → _data sync script ships; 84/84 Marketing+Newsletter Q&A loaded; master /answers/ FAQPage 84 mainEntity verified; per-dept 8; cross-functional 12; all JSON-LD blocks parse-valid across 5 representative surfaces; AIO query sim on 3 Q&A confirms AIO-ready authoring. ORS PASS Standard at `ORS_phase_g_live_prep_smoke_2026_06_24.md`.
+
+- [X] **2026-06-24 — [WEB / CODE] Phase D Day-4 consulting routes + Pages Functions middleware + Subscription Product JSON-LD** (commit `ef78d8f`) — 13 new routes (`/book/consulting/` × 4 duration + × 9 dept) + 5 JSON-LD modules (Service/Offer/SubscribeAction/BuyAction/Product-subscription) + `functions/_middleware.ts` (16-pattern AI-bot UA detection across 8 vendors) + `/subscribe/` Product+Offer×3 + ~130 CSS lines for `.el-consulting__*`. ORS PASS Detailed at `ORS_phase_d_day4_consulting_routes_and_middleware_2026_06_23.md`.
+
+- [X] **2026-06-23 — [WEB / CODE + BRAND] D1.7 v3' welcome flow PASS + Phase D Day-1 + Day-3 ahead-of-cadence** (commit `79f7156`) — D1.7 v3' Marketing PASS msg `7b3797fc`; 11 /answers/ routes + 3 _data shells + robots.txt allowlist + 5 dead Worker handlers removed; 88/88 vitest; preview Worker `ea69e351-...`; 16 v3' PNGs at `bvp_d_ceo_1_2026_06_22_v3p/`. ORS chain: pre-stage Standard + cutover Detailed + Day-1 Detailed + Day-3 Standard.
 
 - [X] **2026-06-22 — [WEB / CODE] Welcome-flow Day-2-shippable surface PASS** — Stripe scope widening + dual-env secret push, ENTITLEMENT_WORKER service binding live preview (Worker `508cd6b3-...`), CF Access service token Option II wired both envs, subscriber-content `/api/entitlement` endpoint shipped (86/86 vitest), welcome handler progressive-enhancement via `liveFlowReady()`, preview smoke controlled-PASS (rk_live_ + cs_test_ separation), runbook at `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`.
 
@@ -111,13 +117,9 @@
 - [ ] Drop `company_id` from Worker types (metadata-only post-v2).
 - [ ] Replace `window.prompt()` email collection in `assets/bvp-checkout.js` with Marketing-blessed inline form once D1.2 promotes a form component.
 
-## Completed (last 8 — full history in session_log.md)
-
+## Completed (last 5 — full history in session_log.md)
 - [X] **2026-06-22 — Welcome-flow Day-2-shippable surface PASS** — see Active section above.
 - [X] **2026-06-22 — Marketing remediation cycle (D-CEO-1 + D-CEO-4 P1 + AEO/GEO clean-slate + D1.7 partial)** — Marketing byte-verified PASS on D-CEO-4 P1; PASS on D-CEO-1 + D1.1 fidelity.
 - [X] **2026-06-22 — D1.4 brand-gate self-review submitted + Marketing PASS** — 35/37 self-PASS, 5 inline remediations.
 - [X] **2026-06-21 — BVP Triad Day 2 sprint shipped** — 4 contemporary surfaces, D1.5 schema lock, D2.1 hooks lock, D2.4 Website-half pre-stage, Stripe CTA hook pre-stage.
 - [X] **2026-06-04 — Stage 2.6(b) live-fire runbook prep — paint-by-numbers 11-cell.** ORS PASS Standard.
-- [X] **2026-06-04 — P9_D3 Detailed Red-Team Pass 2.** Worker v2.2 deployed; F-Q-1 nbf JWT fix; 77/77 vitest pass. ORS PASS Detailed.
-- [X] **2026-06-02 evening — P9_D3 Stage 3 induction + Stage 4 remediation.** 3 bugs (1 critical XSS); ORS PASS Detailed post-remediation.
-- [X] **2026-06-02 — P9_D3 Worker swimlane schema v2 migration.** ORS PASS Detailed.
