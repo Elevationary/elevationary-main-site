@@ -3,21 +3,23 @@
 > **Project Source of Truth:** Always verify the active project phases and deliverables within the P4D3 database before beginning a session.
 > **Backlog tags:** `[CODE]` = Website code work | `[BRAND]` = needs Elevationary_Marketing approval | `[PROCESS]` = COO operational | `[JAMES]` = human action required | `[WEB]` = current BVP / Day 3 Website work. Website marks only its own items complete.
 
-> **⚡ 2026-06-24 PHASE D + E + G PREP COMPLETE STATE:** 3 local commits today (`79f7156` + `ef78d8f` + `0601246`) — NONE PUSHED. 24 new AEO/GEO routes (`/answers/` × 11 + `/book/consulting/` × 13) + Pages Functions middleware + Marketing's 84 Phase C Q&A loaded via new sync script + Subscription Product JSON-LD. D1.7 v3' welcome PASS attested by Marketing 2026-06-23. 6 ORS logs today (all PASS). Push gates on COO/CEO Phase F brand-gate review OR direct push call.
+> **⚡ 2026-06-28 PHASE G LIVE STATE:** All 3 Phase D+E+G commits (`79f7156` + `ef78d8f` + `0601246`) + wrap commit `672bffb` are on `origin/main`. Cloudflare Pages auto-deployed. 24 AEO/GEO routes serve production HTTP/2 200 (`/answers/finance/`, `/book/consulting/`, `/subscribe/` smoke-verified 2026-06-28). **Material gap:** Pages Functions middleware not firing on the wire — `User-Agent: GPTBot/1.0` against `/answers/finance/` returns 0 `X-AI-Bot*` response headers; `cf-cache-status: DYNAMIC` rules out cache-stripping. Static JSON-LD layer healthy; Functions layer needs investigation. Triad re-engagement confirmed.
 
 ## Restart Priority Order (post-restart)
 
 1. Onboarding Scan + read `docs/build_handover.md` end-to-end.
-2. `git log --oneline -5` — check if today's 3 commits are visible on `origin/main`.
-3. If pushed: production smoke `curl -sI https://elevationary.com/answers/finance/` + AI-bot header verify via `curl -H "User-Agent: GPTBot/1.0"` + Cloudflare Pages dashboard middleware logs.
-4. If NOT pushed: ask CEO/COO whether Phase F brand-gate or production push is the next gate.
+2. **NEW PRIORITY — Middleware investigation:** `ls -la functions/` + Cloudflare Pages dashboard Functions binding check + Pages build log for commit `ef78d8f`. Hypotheses A (TS not compiled to JS), B (CDN cache stripping headers — weakened by DYNAMIC cf-cache-status), C (file location wrong). Open fresh ORS log `ORS_middleware_investigation_<YYYY_MM_DD>.md`.
+3. Marketing Phase F brand-gate review of 24 routes — now executable against live URLs (was preview-only); coordinate with Marketing peer.
+4. validator.schema.org pass against `/answers/finance/` + `/book/consulting/15min/` — production URLs now reachable.
 5. Standing-by for `task_b0d86b20` LIVE activation (parallel track; not blocking AEO/GEO).
 
 ## Active
 
+- [ ] **[CODE / WEB] Pages Functions middleware investigation (NEW 2026-06-28)** — `functions/_middleware.ts` shipped in `ef78d8f` and is on `origin/main`, but production `User-Agent: GPTBot/1.0` requests to `/answers/finance/` return zero `X-AI-Bot` / `X-AI-Bot-Engine` headers. `cf-cache-status: DYNAMIC` indicates origin hit (cache-stripping unlikely). Investigate: (a) Pages may not auto-compile `.ts` middleware — rename to `.js` or add esbuild step; (b) Pages dashboard Functions binding state for the project; (c) Pages build log for commit `ef78d8f` references to `_middleware`. Fresh ORS log on next session. **This is the deferred verification from `ORS_phase_g_live_prep_smoke_2026_06_24.md` now upgraded to ACTIVE.**
+
 - [ ] **[CODE / WEB] LIVE activation sequence (`task_b0d86b20` in P4D3)** — paint-by-numbers per `~/Antigravity_Data/Website/docs/plans/welcome_flow_day3_runbook_2026_06_22.md`. STRIPE_READ_KEY + CF Access service token already pushed to both envs; production Worker `subscribe-checkout` exists as empty shell. Needs: LIVE Founding Coupon + ELEVATE50 promo creation, deactivate 100 stale PREVIEW codes, LIVE write-scope restricted API key, configure_worker_secrets.py --env production, uncomment production routes block, add production `[[services]]` mirror of ENTITLEMENT_WORKER, `wrangler deploy`, e2e smoke against real cs_live_ session, append Secret Consumer Registry rows × 3, flip `task_1c9bc273` 🟢 + `task_b0d86b20` 🟢, detailed-rigor ORS. **Subscription Product JSON-LD on /subscribe/ ships with placeholder pricing ($29/$69/$149) until this lands.**
 
-- [ ] **[CODE / WEB] Phase G production push** — 3 local commits await push (`79f7156`/`ef78d8f`/`0601246`). Cloudflare Pages auto-deploys on push to `main`. Gates: (1) Marketing Phase F brand-gate review of 24 routes per cadence Day-6; (2) CEO Day-7 LIVE deploy confirm. AEO/GEO push CAN proceed independently of `task_b0d86b20` per COO directive 2026-06-24. Post-push: schema.org validator pass + Search Console FAQPage submission + Pages Functions middleware log inspection.
+- [X] **2026-06-28 — [CODE / WEB] Phase G production push LIVE** — all 3 commits (`79f7156`/`ef78d8f`/`0601246`) on `origin/main`; Cloudflare Pages auto-deploy succeeded; `/`, `/answers/finance/`, `/book/consulting/`, `/subscribe/` all HTTP/2 200. Middleware verification carved into separate active item (above).
 
 - [ ] **[CODE — Newsletter Drift D1 migration]** `task_08f36f8d` Paywall map Free 3-2-1 links + `task_8d9318fc` Render Do-Follow SEO vendor links into Premium website summary — both filed under `P4_Entitlement_Worker_and_Gated_Routes / P4_D2_Gated_Route_Pages`, Status Future 🔲. Folded into LIVE-activation workstream (not AEO/GEO scaffolding).
 
