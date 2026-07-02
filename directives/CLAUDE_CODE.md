@@ -23,7 +23,7 @@
 1. `cd "~/Antigravity/Website" && python3 ~/.gemini/antigravity/skills/time_keeper/scripts/time_keeper.py START` — begin time tracking
 2. `cat docs/build_handover.md` — where Website work stopped
 3. `ls -lt /Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/ | head -5` then **READ the most recent ORS log file end-to-end** — confirm its final Result is `ORS PASS` (or `ORS FAIL` with a documented disposition). If the most recent log is `PROVISIONAL PASS`, incomplete, or has unchecked Stage 2.6 human live-fire items, **STOP** and resolve it before starting new work. Trust anchor: code after last ORS PASS is unverified; do not build on unverified ground.
-4. Query P4D3 MCP (`elevationary_p4d3`) — Website-relevant deliverables. Proxy: `cat docs/backlog.md`. If P4D3 MCP tools don't appear in deferred tools, type `/mcp` to reconnect.
+4. Query P4D3 MCP (`elevationary_p4d3`) — Website-relevant deliverables. P4D3 is authoritative; `docs/build_handover.md` is the offline fallback. If P4D3 MCP tools don't appear in deferred tools, type `/mcp` to reconnect.
 5. `$PYTHON $ROUTER status` — memory stack health
 6. `curl -sI https://elevationary.com/ | head -5` — production smoke test (Cloudflare reachable, HTTP 200)
 
@@ -53,6 +53,8 @@
 **Blocker-Check:** Before escalating to COO/James, `$PYTHON $ROUTER recall "<error>"`.
 **Precision:** Count inputs. Count outputs. Verify match. Test before marking complete.
 **P4D3 Tasks:** Use `elevationary_p4d3_insert_task` / `update_status` MCP tools.
+**P4D3 Project Audits — Four-Surface Review Required:** Any time you audit, classify, reassign, supersede, or cascade-close a P4D3 project — NOT just at ORS-PASS status-hygiene sweep time — you MUST explicitly inventory and dispose all FOUR entity surfaces: **Deliverables / Tasks / Decisions / Dependencies.** Skipping Decisions or Dependencies is the recurring failure mode (CEO surfaced 2026-06-17; doctrine paired with L3 FLEET `four_surface_review_required_at_project_audit_time_not_just_sweep_time` 9 vec + the original `P4D3 status-hygiene sweeps must touch all 4 entity surfaces` 12 vec). Document per-row disposition in the audit artifact. **Project cannot be marked Completed or Superseded while OPEN-status Decisions (🔴) or IN-FORCE Dependencies (🔴) remain orphaned — close, reassign, or migrate them to the supersedor.** Status semantics: Decisions 🔴 = OPEN-awaiting-resolution (not \); Dependencies 🔴 = IN-FORCE (not \); 🟢 = closed/satisfied; 🔲 = future/not-yet-active.
+**Current-State P4D3 Surface — Team Elevation doctrine:** Every active teammate has a current-state P4D3 surface at ALL TIMES — never an absence, never markdown-only. The surface can be in any of these legitimate states: (1) in-flight Phase with current Deliverable + current Task populated; (2) Probation/Monitoring deliverable open with rolling horizon (watching a recently-shipped deliverable for defects); (3) Between-phases with the next Phase pre-filed as Future + explicit trigger criteria documented; (4) Explicit-idle / awaiting-scope Project for reserved-but-unengaged teammates; (5) Steady-state Operations Project with rolling per-period deliverables for teammates without discrete phases. **Forbidden:** operating dispatch-to-dispatch without any P4D3 Project anchoring your work — silent absence breaks team visibility. Paired with L3 FLEET `every_active_teammate_has_a_current_state_p4d3_project_at_all_times` (11 vec, 2026-06-17). At wrap-up: verify current Project's current row state reflects what you shipped this session; update if drift exists. At provisioning: your first action as a new teammate is to file an initial P4D3 Project before any other work. Project scope_text MUST name the M.O.S.T. Objective(s) + Strategy(ies) it ladders to (canonical M.O.S.T. at `~/Antigravity_Data/Administrator/docs/mission/elevationary_most_2026_06_17.md`); Initiative attribution is manual discipline until P4D3 v3 Initiative Dimension ships.
 **Divergence:** Classify per `directives/divergence_protocol.md` (L1–L4) before proceeding.
 
 ## Stripe Subscription Infrastructure (Backlog Priority)
@@ -109,17 +111,17 @@ Use `memory_router` as the single entry point. Run `status` during onboarding.
 - `docs/build_handover.md` — Website ONLY. Read at onboarding step 2, written at wrap-up step 3.
 
 **Shared files:**
-- `docs/backlog.md` — Website backlog. Tags: `[CODE]` = Website code work, `[PROCESS]` = COO operational, `[JAMES]` = human action, `[BRAND]` = needs Elevationary_Marketing approval.
+- `docs/backlog.md` — **ELIMINATED 2026-07-01** (CEO ratified, supersedes 2026-06-29 D3.2 transient-only doctrine). Where things live now: between-session state → `docs/build_handover.md`; persistent/trigger-gated work → P4D3 (authoritative); doctrine → this file; live in-session checklist → harness session task-list (TaskCreate/TaskUpdate). **Do NOT recreate `backlog.md`.** Historical snapshot preserved at `docs/backlog.archive.20260701.md`.
 - `/Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/` — Website ORS logs.
 - `session_log.md` — at `/Users/jamesszmak/Antigravity_Data/Website/docs/` (StateManager resolves via CLIENT_ROSTER if registered).
 
 ## Wrap-Up Protocol
 1. **Update P4D3** — `update_status` completed tasks with today's date.
 2. **Commit + push** — `git add ... && git commit ...`. Cloudflare Pages auto-deploys on push.
-3. **Write handover** — read current `docs/build_handover.md`, then rewrite with What Was Done + Remaining.
-4. **Update backlog** — read current, mark `[X]`, add new pending.
+3. **Write handover** — read current `docs/build_handover.md`, then rewrite with What Was Done + Remaining. Between-session state lives here; dormant/trigger-gated items that don't warrant a P4D3 task get a line here.
+4. **Walkthrough discipline (Team Elevation Group B, 2026-07-02) — walkthrough-at-PASS, not deferred to wrap-up-scan:** Every ORS PASS ships with a companion walkthrough written at the moment of PASS. The wrap-up script Step 0.7 REFUSES to close if today's ORS PASS(es) lack companion walkthroughs. Adjudicated waiver: (a) machine-checkable trivial-change auto-waiver if `git diff --stat HEAD` shows ≤10 changed lines AND no `docs/templates/` / `scripts/` / `directives/` paths touched; (b) explicit `--skip-walkthrough-gate --waive-walkthrough-reason "<why>"` (audited). Rationale: fleet walkthrough:ORS ratio was ~30% at 2026-07-02.
 5. **Scan for learning moments** — (a) Behavior change? → fleet lesson → L3. (b) Plan/ORS/walkthrough produced? → `vault_upload.py` → L4. (c) New structured facts? → `store_fact` → L2.
-6. **Run wrap-up script:**
+5. **Run wrap-up script:**
    ```bash
    python3 ~/.gemini/antigravity/skills/morning_muster/scripts/claude_wrap_up.py \
      --agent "Website" \
