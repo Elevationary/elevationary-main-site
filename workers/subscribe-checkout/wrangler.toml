@@ -4,20 +4,63 @@ compatibility_date = "2026-05-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ============================================================================
-# SKELETON STATE — 2026-06-09
+# PARTIAL LIVE STATE — reconciled 2026-07-06 (CEO ratified via ESC-015)
 # ============================================================================
-# Routes, R2 bindings, and KV namespaces are COMMENTED below until CEO Q6
-# unblocks Stripe Products + restricted API key provisioning. To activate:
-#   1. CEO provisions restricted Stripe key + 3 (or 6 if Q4 ratifies annual)
-#      Stripe Price IDs in Dashboard.
-#   2. `wrangler kv:namespace create "IDEMPOTENCY_KV"` + `--env preview`
-#      → paste IDs into env blocks below.
-#   3. `wrangler secret put STRIPE_SECRET_KEY` (Live) +
-#      `wrangler secret put STRIPE_SECRET_KEY --env preview` (Test).
-#   4. `wrangler secret put STRIPE_PRICE_*_MONTHLY` for each tier × env.
-#   5. Uncomment routes block; run `wrangler deploy --env preview` first.
-#   6. Execute Test Mode round-trip (per spec § 3.10 dry-run flow).
-#   7. Flip preview → production via `wrangler deploy` (no env flag).
+# Backfill: ORS_stripe_partial_live_backfill_2026_07_06.md
+# CEO statement via Amanda A2A (correlation_id=stripe_live_status_check_2026_07_06):
+#   "We are not in test mode. We switched to live activation a month ago."
+#
+# What is VERIFIED LIVE at the Cloudflare edge as of 2026-07-06 (via
+# `wrangler secret list --name subscribe-checkout` + `deployments list`):
+#   ✓ Worker DEPLOYED to production 2026-06-22 (first upload), last event
+#     2026-06-23T03:25:06Z. Current version: b1c95b6f-6d3e-4bd7-a81c-fb346697aad7.
+#   ✓ Production secrets provisioned: CF_ACCESS_CLIENT_ID,
+#     CF_ACCESS_CLIENT_SECRET, STRIPE_READ_KEY.
+#   ✓ Welcome-flow READ path (src/welcome_stripe_client.ts): OPERATIONAL —
+#     STRIPE_READ_KEY consumed for GET /v1/checkout/sessions/{id} +
+#     GET /v1/subscriptions/{sub_id}. Whether key value is rk_live_* or
+#     rk_test_* NOT verifiable from this side (wrangler cannot read values);
+#     CEO's assertion is the source-of-truth for LIVE-mode.
+#   ✓ KV namespaces exist in account inventory:
+#       IDEMPOTENCY_KV (production)  id = 9c504f7ad12f48118df4d0f8f686f489
+#       IDEMPOTENCY_KV (preview)     id = dd29099b31b5431fba7cfe6aa32242f5
+#     (Preview binding is wired below; production binding intentionally left
+#     commented — the WRITE path that would consume it is not yet provisioned.)
+#
+# What is NOT yet LIVE / STILL SKELETON (task_b0d86b20 open scope):
+#   ✗ STRIPE_SECRET_KEY absent from production Worker env — CHECKOUT WRITE
+#     path (POST /api/checkout/session, src/stripe.ts:180) CANNOT create
+#     Stripe sessions in LIVE without this. src/types.ts:116 declares this
+#     non-optional; runtime would throw on WRITE path invocation.
+#   ✗ STRIPE_PRICE_INDIVIDUAL_MONTHLY, STRIPE_PRICE_BUNDLE_MONTHLY,
+#     STRIPE_PRICE_ALL_ACCESS_MONTHLY (+ _ANNUAL siblings) absent from
+#     production env — no product references available for LIVE checkout.
+#   ✗ [[routes]] on elevationary.com/api/checkout/* NOT claimed at edge.
+#     Verified 2026-07-06: POST returns HTTP 405 content-length 0 (edge
+#     default), GET returns Elevationary homepage HTML (Pages fallback) —
+#     neither is Worker-emitted.
+#   ✗ Founding Coupon + ELEVATE50 provisioning in LIVE — unverifiable.
+#   ✗ 100 PREVIEW coupons (dTwd1p8S, TEyye1SG) deactivation — unverifiable.
+#   ✗ Detailed-rigor implementation ORS for the WRITE path — not written.
+#
+# To CLOSE the WRITE-path scope (task_b0d86b20 remainder — pending CEO
+# ratification of scope via Amanda A2A):
+#   1. CEO provisions in Stripe Dashboard (LIVE mode): restricted API key
+#      with write:checkout.sessions scope; Founding Coupon + ELEVATE50;
+#      deactivate PREVIEW codes.
+#   2. `wrangler secret put STRIPE_SECRET_KEY --name subscribe-checkout`
+#      (paste rk_live_… restricted key).
+#   3. `wrangler secret put STRIPE_PRICE_*_MONTHLY --name subscribe-checkout`
+#      for each of individual / bundle / all_access. (Add _ANNUAL siblings
+#      per Q4 ratification.)
+#   4. Uncomment the top-level [[routes]] + [[kv_namespaces]] blocks below
+#      (id already known: 9c504f7ad12f48118df4d0f8f686f489).
+#   5. `wrangler deploy` (no --env flag = production).
+#   6. Detailed-rigor ORS + append the STRIPE_SECRET_KEY row to
+#      ~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md.
+#
+# The READ-path activation is captured in the secret_consumer_registry
+# under the Stripe section — see that file for the smoke test.
 # ============================================================================
 
 # --- Production routes — UNCOMMENT AT ACTIVATION ---

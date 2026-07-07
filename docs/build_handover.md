@@ -1,152 +1,141 @@
-# Website Build Handover — 2026-07-03 (governance-hygiene interval; Phase G LIVE holds; middleware investigation still owed)
+# Website Build Handover — 2026-07-06 (Amanda ESC-015 stripe_live_status_check resolved as Path C partial-LIVE + fleet-wrap dispatch closed)
 
 ## ⚡ STOP-POINT TOP
 
-No code work since 2026-06-28 wrap. Three governance dispatches consumed the interval:
+Session driven by two cascading A2A dispatches from Amanda + a subsequent CEO 1:1 for direct verification:
 
-- **2026-06-29 — Team_Elevation D3.2 backlog.md retirement.** `task_fb0a2ffd` 🟢. 9 new Website-owned P4D3 tasks filed (see "D3.2 migration ledger" below). backlog.md reduced to transient-only template.
-- **2026-07-01 — El_OS fleet-wide backlog.md ELIMINATION** (CEO ratified; supersedes D3.2 transient-only doctrine). backlog.md archived to `docs/backlog.archive.20260701.md` and deleted. `directives/CLAUDE_CODE.md` scrubbed of 3 backlog references — Onboarding scan step 4 repointed to P4D3-authoritative + build_handover fallback; Shared State Files entry replaced with ELIMINATED tombstone + "Do NOT recreate" guard; Wrap-Up Protocol step 4 (Update backlog) deleted and remaining steps renumbered.
-- **2026-07-03 — El_OS dispatch to update handover + P4D3** (this artifact).
+1. **Amanda 2026-07-06 (correlation `stripe_live_status_check_2026_07_06`)** — CEO recalled Stripe LIVE activation ~1 month prior with Website in the loop; Website's local records (P4D3 `task_b0d86b20` 🔴, wrangler.toml SKELETON banner, ORS logs) showed the opposite. Investigation escalated to CEO+Website 1:1 which closed the record-vs-recall gap via Dashboard visual screenshots.
+2. **CEO 1:1 in the same session** — Ratified Path C partial-LIVE finding after joint verification. Created new fleet-wide restricted-READ verification key `elevationary_website_verify_read` (`rk_live_*`, all Read-only, 8 resources) in Stripe Dashboard.
+3. **Fleet-wrap dispatch from `elevationary_os` 2026-07-07 (correlation `fleet-wrap-2026_07_07-d83e0cd9`)** — routine team wrap step 1/4 (handover + P4D3). Answered via this artifact + P4D3 `task_b0d86b20` description rewrite + backfill ORS Stage 2.6 late-arriving section.
 
-Production surfaces still hold: `/`, `/answers/finance/`, `/book/consulting/`, `/subscribe/` were HTTP/2 200 at 2026-06-28 smoke; production reachable at last onboarding scan (2026-06-30).
-
-**On next code dispatch:** the middleware investigation (`task_ac44b289`) remains the first deliverable. Open a fresh ORS log `ORS_middleware_investigation_<YYYY_MM_DD>.md` and walk hypotheses A → B → C (see "Middleware diagnostic sequence" below).
+**On next code dispatch:** the middleware investigation (`task_ac44b289`) remains the first deliverable. Open a fresh ORS log `ORS_middleware_investigation_<YYYY_MM_DD>.md` at step 2 start.
 
 ---
 
-## ⭐ CURRENT STATE — one-paragraph summary
+## ⭐ Path C partial-LIVE finding — the session's headline result
 
-Phase G shipped and holds. Static AEO/GEO routes (24 surfaces across `/answers/` + `/book/consulting/`) serve production HTTP/2 200 with FAQPage / Service / Offer / Product JSON-LD reaching crawlers via static HTML. Pages Functions middleware (`functions/_middleware.ts`) is deployed to `origin/main` in commit `ef78d8f` but is not observable on the wire — the AI-bot UA detection headers (`X-AI-Bot`, `X-AI-Bot-Engine`) do not appear on GPTBot/1.0 requests, and `cf-cache-status: DYNAMIC` rules out cache-stripping. This is the top code-dispatch priority. All Website persistent work now lives in P4D3 (44 tasks in Subscription_Revenue_Pipeline + 2 tasks in Web_Presence_v2/P1.5); `backlog.md` is gone.
+CEO's "Stripe is LIVE" recollection is **TRUE for two paths and FALSE for one**. Full audit at `~/Antigravity_Data/Website/docs/ORS_logs/ORS_stripe_partial_live_backfill_2026_07_06.md` (Reconciliation-rigor PASS with a late-arriving-data Stage 2.6 section).
+
+### CONFIRMED LIVE (evidence: Cloudflare edge + wrangler CLI + CEO Dashboard screenshots)
+
+- **Welcome/READ path** (`workers/subscribe-checkout/src/welcome_stripe_client.ts`) — LIVE since **2026-06-22**. Production Worker env has `STRIPE_READ_KEY = rk_live_...NuJy3B` which is the restricted key `elevationary_entitlement_worker_read` created 2026-06-22 (verified two ways: Dashboard screenshot suffix match + Stripe error-message leak on unauthorized `GET /v1/account`). Scope: Customers + Subscriptions + Checkout Sessions Read for the welcome-flow verify path.
+- **LIVE Product catalog** — **CATALOG side of `task_b0d86b20` DONE 2026-04-26**, ~2.5 months before this session. 3 Products, all Active: **Individual Access** ($29/mo, $290/yr), **Functional Bundle** ($69/mo, $690/yr), **All-Access Corporate Pass** ($149/mo, $1490/yr). 6 LIVE Prices total. 0 active subscriptions across all (expected — WRITE path not shipped).
+
+### STILL OPEN (WRITE path — the actual `task_b0d86b20` scope remainder)
+
+- ❌ **Founding Coupon in LIVE** — absent (SS5 shows only 2 coupons, both "30-Day Preview Access")
+- ❌ **ELEVATE50 in LIVE** — absent (same)
+- ❌ **PREVIEW-coupon deactivation** — coupon `dTwd1p8S` still Valid:Yes, 0/100 redeemed, 100 PREVIEW-* promo codes attached (SS6). Presumed same for `TEyye1SG`.
+- ❌ **`write:checkout.sessions` restricted key** — unverified (SS7 not received). Downstream-blocked either way — no `STRIPE_SECRET_KEY` on production Worker to consume it.
+- ❌ **`STRIPE_SECRET_KEY` on production subscribe-checkout Worker** — absent per `wrangler secret list`
+- ❌ **`STRIPE_PRICE_*_MONTHLY/_ANNUAL` 6-var set on production Worker** — absent per `wrangler secret list`
+- ❌ **`/api/checkout/*` route claim at elevationary.com edge** — `curl` returns Pages SPA-fallback HTML, not Worker JSON. Routes not claimed.
+- ❌ **Detailed-rigor implementation ORS for checkout WRITE path** — not written
+
+**Scope-completion estimate: ~40% of `task_b0d86b20`.** Task description in P4D3 updated 2026-07-06 with full subitem checklist. Status stays 🔴 (semantic = how-overdue, not % complete — Worker-side sub-items are still >2 weeks overdue).
 
 ---
 
-## ⭐ EXACT NEXT ACTION ON RESTART
+## ⭐ NEW ASSETS CREATED THIS SESSION
+
+| Asset | Location | Purpose |
+|---|---|---|
+| Backfill ORS `ORS_stripe_partial_live_backfill_2026_07_06.md` | `~/Antigravity_Data/Website/docs/ORS_logs/` | Reconciliation-rigor PASS; Stage 2.6 amendment includes late-arriving visual verification |
+| Restricted-READ verification key `elevationary_website_verify_read` (`rk_live_*`, permanent, annual rotation cadence) | Stripe Dashboard LIVE mode | Website's independent Stripe-state verification tool. Value stored at `~/.elevationary/secrets.env` var `STRIPE_WEBSITE_VERIFY_READ_KEY` |
+| P4D3 task `task_90d945be` 🟢 | `Subscription_Revenue_Pipeline / P4 / P4_D1` | Lifecycle entry documenting the key creation |
+| Secret consumer registry — 2 new rows in Stripe section | `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` | (1) `STRIPE_READ_KEY` on subscribe-checkout Worker (production consumer); (2) `STRIPE_WEBSITE_VERIFY_READ_KEY` (Website verification tool). Names + smoke tests only, no values |
+| `wrangler.toml` header rewrite — SKELETON banner → PARTIAL LIVE STATE banner | `workers/subscribe-checkout/wrangler.toml` | Documents what's verified LIVE + what's still SKELETON. Production `[[routes]]`/`[[kv_namespaces]]`/`[[r2_buckets]]` blocks intentionally kept COMMENTED |
+| 2 new auto-memories | `~/.claude/projects/-Users-jamesszmak-Antigravity-Website/memory/` | (1) `feedback_amanda_slug_is_executive_assistant.md` — dispatch_to slug; (2) `feedback_stripe_mcp_needs_interactive_auth.md` — Stripe MCP dead-end |
+
+---
+
+## ⭐ NEXT ACTION ON RESTART
 
 ### Step 1 — Onboarding scan (mandatory) per `directives/CLAUDE_CODE.md`.
 
-### Step 2 — Middleware diagnostic (unchanged from 2026-06-28 handover; still owed)
-1. `cd ~/Antigravity/Website && ls -la functions/ && file functions/_middleware.ts` — confirm file present + type.
-2. Check Cloudflare Pages dashboard (elevationary-main-site project → Functions tab) — should show middleware bound. If not bound, Pages didn't pick up the `.ts` file.
-3. Inspect Pages build log for the deploy that landed `ef78d8f` — search for `_middleware` / `Functions` references.
-4. **Hypothesis A** (most likely): Pages needs `_middleware.js` (compiled), not `.ts`. Workers project supports TS; Pages Functions may not without a build step. Add an esbuild step or rename to `.js` and inline.
-5. **Hypothesis B** (weakened): middleware fires but Cloudflare's edge cache strips custom response headers. `cf-cache-status: DYNAMIC` on 2026-06-28 smoke suggests origin hit, but retest with `?cb=$(date +%s)` cache-buster.
-6. **Hypothesis C**: route pattern. `functions/_middleware.ts` at project root matches ALL paths; verify the file didn't end up under a subfolder.
+### Step 2 — Same as prior handover — middleware investigation `task_ac44b289`
+Sequence unchanged from 2026-07-03 handover:
+1. `cd ~/Antigravity/Website && ls -la functions/ && file functions/_middleware.ts`
+2. Cloudflare Pages dashboard → Functions tab — confirm middleware bound
+3. Inspect Pages build log for commit `ef78d8f` — search for `_middleware` / `Functions` references
+4. **Hypothesis A** (most likely): Pages needs `_middleware.js` (compiled), not `.ts`. Add esbuild step or rename to `.js` and inline.
+5. **Hypothesis B** (weakened by prior smoke): edge cache strips headers. Retest with `?cb=$(date +%s)`.
+6. **Hypothesis C**: route pattern — verify file didn't end up under a subfolder.
 
 Open ORS log at Step 2 start; do NOT batch findings.
 
-### Step 3 — P4D3 status (verify at restart; no flips needed as of 2026-07-03)
-- `task_ac44b289` middleware investigation — 🔲 Future, will flip once ORS opens.
-- `task_397c7575` Icebox (Lighthouse / llms.txt / Eleventy audit / Worker bundle / company_id / window.prompt) — 🔲 Future, no SLA.
-- `task_b0d86b20` LIVE activation — 🔴 (Overdue). External-gated on Stripe LIVE moves + CEO/James push call.
-- 7 Phase B+ follow-ups filed 2026-06-29 (task_cddd5595 / 6289687d / 0c181706 / b26871af / e87e8d4c / e1147b0a / 31cf10c8) — mixed 🟡/🔴 depending on Date field; all external-gated.
+### Step 3 — P4D3 status (as of 2026-07-06 close)
+- `task_ac44b289` — 🔲 Future (middleware investigation, will flip on ORS open)
+- `task_397c7575` — 🔲 Future (Icebox, no SLA)
+- `task_b0d86b20` — 🔴 Overdue (WRITE-path scope, ~40% complete per revised description)
+- `task_90d945be` — 🟢 Completed 2026-07-06 (new verification key entry)
+- 7 Phase B+ follow-ups filed 2026-06-29 — mixed 🟡/🔴, external-gated
 
 ### Step 4 — Check inbox
-Most likely peer requests: Marketing on Phase F brand-gate review (24 surfaces reviewable against live URLs); Newsletter on swimlane-registry validation; COO on middleware investigation timing.
+Amanda ESC-015 (`stripe_live_status_check_2026_07_06`) closed 2026-07-06 (msg_id `897c4107`). Elevationary_OS fleet-wrap (`fleet-wrap-2026_07_07-d83e0cd9`) closed 2026-07-07 (msg_id `8a1d6a89`). No other open correlations from Website's side.
 
 ---
 
-## ⭐ D3.2 migration ledger (2026-06-29 — for audit trail)
+## ⭐ FLEET OBSERVATIONS FOR NEXT SESSION / COO ATTENTION
 
-9 Website-owned tasks filed to P4D3 during backlog.md retirement:
+1. **Recommended fleet task — rotate the two long-lived unrestricted `sk_live_*` keys.** Both flash Stripe's own orange "consider rotating" icon. Full-account WRITE scope on either key = drain risk if leaked. `sk_live_...NLcx` (Sep 19 2025, ~9 months); `Elevationary_Newsletters sk_live_...e8KE` (Apr 26 2026, ~2 months). Rotation project needs cross-agent coordination (Website + Newsletter + Sales + Administrator) since ownership of the consumer surface is split. Not filed as ESC yet — awaiting CEO ratification.
 
-| Task | Where | Description |
-|---|---|---|
-| `task_ac44b289` | Web_Presence_v2 / P1.5 / D1.5.5 | Pages Functions middleware investigation |
-| `task_397c7575` | Web_Presence_v2 / P1.5 / D1.5.5 | Icebox — deferred enhancements (6 sub-items) |
-| `task_cddd5595` | Subscription_Revenue_Pipeline / P4 / P4_D2 | Real /editions/ archive listing |
-| `task_6289687d` | Subscription_Revenue_Pipeline / P4 / P4_D2 | Constant-time gating |
-| `task_0c181706` | Subscription_Revenue_Pipeline / P4 / P4_D2 | /subscribe/welcome/ real portalUrl |
-| `task_b26871af` | Subscription_Revenue_Pipeline / P4 / P4_D1 | subscriber-content production deploy validation |
-| `task_e87e8d4c` | Subscription_Revenue_Pipeline / P10 / P10_D1 | Post-Stage-2.6(b) live-fire cleanup |
-| `task_e1147b0a` | Subscription_Revenue_Pipeline / P4 / P4_D2 | Welcome handler Q-WP5.b/c failure-mode logic |
-| `task_31cf10c8` | Subscription_Revenue_Pipeline / P4 / P4_D2 | Tier-badge Q-WP3 All-Access render |
+2. **Sandbox denies reads of `~/.elevationary/secrets.env`.** Website's new verification key value is stored there per fleet convention, but this session's Bash tool couldn't source it (whole path blocked). Follow-up: `.claude/settings.local.json` update to allow `Bash(source ~/.elevationary/secrets.env:*)` + `Bash(cat ~/.elevationary/secrets.env:*)`. Next Website session's operator should do this early or the verify workflow keeps needing CEO involvement. Alternative: SSH from client to server + run curls there.
 
-`task_fb0a2ffd` (Team_Elevation D3.2 assignment) flipped 🟢 2026-06-29.
+3. **Naming drift on All-Access product.** Dashboard = "All-Access **Corporate** Pass"; source code tier enum = `all_access`; Marketing tier-mapping DECISION (commit `39974a0`) = "All-Access Pass" (no Corporate). Integration is by Price ID so not code-blocking. Marketing should reconcile before public catalog surfaces render the Product name. Non-urgent.
+
+4. **3 Archived Products** in LIVE catalog — probably pre-2026-04-26 iterations. Worth a cleanup pass at `task_b0d86b20` WRITE-path activation session.
 
 ---
 
-## ⭐ Directive amendment 2026-07-01 (backlog.md ELIMINATED)
-
-`directives/CLAUDE_CODE.md` edits committed this interval:
-
-1. **Onboarding scan step 4** — was: "Query P4D3 MCP … Proxy: `cat docs/backlog.md`." Now: "Query P4D3 MCP … P4D3 is authoritative; `docs/build_handover.md` is the offline fallback."
-2. **Shared State Files** — was: `docs/backlog.md` line item with tags. Now: `docs/backlog.md — ELIMINATED 2026-07-01` tombstone with where-things-live map (between-session state → build_handover.md; persistent/trigger-gated work → P4D3; doctrine → this file; live in-session checklist → harness session task-list) + "Do NOT recreate" guard + archive pointer.
-3. **Wrap-Up Protocol** — deleted step 4 "Update backlog"; renumbered 5 → 4 and 6 → 5; added between-session-state guidance to Write-handover step (dormant/trigger-gated items that don't warrant a P4D3 task get a line in build_handover instead).
-
-Post-edit `grep -n backlog directives/CLAUDE_CODE.md` returns 1 hit — the deliberate tombstone.
-
----
-
-## ⭐ Production verification snapshot (2026-06-30 onboarding)
+## ⭐ Production verification snapshot (2026-07-06 onboarding)
 
 ```
-GET https://elevationary.com/                       → HTTP/2 200
+GET https://elevationary.com/              → HTTP/2 200 (5 surfaces smoke: /, /answers/, /answers/finance/, /answers/cross-functional/, /book/consulting/, /subscribe/ — all 200)
+POST https://elevationary.com/api/checkout/session → HTTP 405, content-length 0 (edge default, NOT Worker; routes not claimed)
+GET https://elevationary.com/api/checkout/session → HTTP 200 8999b Elevationary homepage (Pages SPA-fallback)
 ```
 
-Last full 4-route smoke: 2026-06-28 (all 200; middleware headers still missing).
-
-`cf-cache-status: DYNAMIC` observed on the 2026-06-28 GPTBot request; origin hit — middleware not firing at origin, not a CDN-strip issue.
+Middleware headers status unchanged from 2026-06-28: NOT observable on the wire.
 
 ---
 
 ## ⭐ ORS state
 
-- **No new ORS logs since 2026-06-24.** Governance interval = no deliverable work.
-- Most recent ORS: `ORS_phase_g_live_prep_smoke_2026_06_24.md` — **PASS Standard.** 2 documented DEFERs (external validator + Pages Functions runtime verification). The middleware DEFER is now a live P4D3 investigation (`task_ac44b289`).
-- Trust anchor holds: last ORS PASS is dated 2026-06-24, no code shipped since, and all subsequent action has been governance-hygiene tracked via A2A dispatches + directive edits (not code).
-
----
-
-## ⭐ P4D3 deltas this interval
-
-| Task | Was | Now | Date |
-|---|---|---|---|
-| `task_fb0a2ffd` (Team_Elevation D3.2 — Website backlog.md retirement) | 🔲 | 🟢 | 2026-06-29 |
-| 9 new Website-owned tasks filed | (none) | 🔲 Future | 2026-06-29 |
-
-No status flips 2026-07-01 or 2026-07-03 (governance-only actions, no P4D3 task existed for the elimination directive).
-
----
-
-## ⭐ External blockers parked (unchanged)
-
-| Blocker | Owner | Notes |
-|---|---|---|
-| `task_b0d86b20` LIVE activation | CEO + Website | Stripe Dashboard moves + LIVE secret push + Worker production deploy |
-| Marketing dept-brief authoring for sales / it / customer-success / executive | Marketing | Re-run `node scripts/sync_phase_c_to_data.mjs` when complete |
-| Marketing Phase F brand-gate review on 24 surfaces | Marketing | Executable against live URLs |
-| Newsletter swimlane-registry validation | Newsletter | Pre-LIVE filing |
-| Phase 1.5 P4D3 deliverable filings (D1.5.1–D1.5.6) | COO | COO is filing |
+- **New ORS this session:** `ORS_stripe_partial_live_backfill_2026_07_06.md` — **Reconciliation-rigor PASS.** Includes Stage 2.6 late-arriving-visual-verification section. Documents CEO Dashboard screenshot evidence + wrangler CLI verifications + fleet-observation deferrals.
+- **Last Standard-rigor PASS:** 2026-06-24 (`ORS_phase_g_live_prep_smoke_2026_06_24.md`).
+- Trust anchor holds: no fresh code shipped since 2026-06-24; only reconciliation/documentation changes this session; deployed Worker state unchanged.
 
 ---
 
 ## ⭐ Tech state on disk
 
-- Eleventy 3.1.5; build was clean (38 files, 0 errors) at 2026-06-28 wrap; not rebuilt this interval.
-- `workers/subscribe-checkout`: 88/88 vitest pass (last run 2026-06-28).
-- `workers/subscriber-content`: 86/86 vitest pass (last run 2026-06-28).
-- Wrangler 3.114.17 pinned (Do Not Re-Try wrangler v4).
-- Stripe API version pin: `2025-08-27.basil`.
+- Eleventy 3.1.5; build not run this session.
+- `workers/subscribe-checkout`: last touched 2026-06-23 (secret rotations); wrangler.toml PARTIAL LIVE STATE banner updated 2026-07-06 (comment-only, no config keys added/removed — safe for next `wrangler deploy`).
+- `workers/subscriber-content`: no changes this session.
+- Wrangler 3.114.17 pinned; auth cached via `CLOUDFLARE_API_TOKEN` env — `Ar@elevationary.com's Account` (id `ef1f0428ea72ee0f92c38067bcba8812`). Ran `whoami` / `deployments list` / `secret list` / `kv namespace list` — all successful, no writes.
+- Stripe API version pin: `2025-08-27.basil`. Stripe account confirmed `acct_1S9DtzC5seLx7yR7`.
 - Brand-tokens v1.0 (locked 2026-06-06).
-- 0 commits ahead of `origin/main` since 2026-06-28 push.
-- Working tree: `CLAUDE.md` modified (carry-forward from prior sessions); `docs/backlog.md` deleted (elimination); `docs/backlog.archive.20260701.md` untracked (elimination snapshot); 6 build_handover.md snapshots untracked; `.claude/` + `.tmp/` + 2 CLAUDE_CODE.md `.bak` files + this handover overwrite.
+- 0 commits ahead of `origin/main` since 2026-06-28 push. Uncommitted changes this session: `wrangler.toml` (PARTIAL LIVE banner); `docs/build_handover.md` (this file); `~/Antigravity_Data/Administrator/docs/secret_consumer_registry.md` (2 new rows). Plus untracked: backfill ORS + 2 auto-memories.
 
-Recent commits (via `git log --oneline -6`):
-```
-c772b69 chore(discipline): backfill Group A ORS TEMPLATE.md + add Group B walkthrough doctrine (bespoke)
-a874fed chore: update timelog [skip ci]
-5823d91 chore: update timelog [skip ci]
-b324327 2026-06-28 wrap: handover + backlog reflect Phase G LIVE + middleware gap
-02898a0 chore: update timelog [skip ci]
-85c8362 chore: update timelog [skip ci]
-```
+---
+
+## ⭐ External blockers parked (updated)
+
+| Blocker | Owner | Notes |
+|---|---|---|
+| `task_b0d86b20` WRITE-path activation — remaining ~60% scope | CEO + Website | CEO Dashboard: create Founding Coupon + ELEVATE50 LIVE + deactivate PREVIEW coupons + create `write:checkout.sessions` restricted key. Then Website: push STRIPE_SECRET_KEY + 6 STRIPE_PRICE_* secrets + uncomment routes + deploy + write Detailed-rigor ORS |
+| Marketing Phase F brand-gate review on 24 surfaces | Marketing | Executable against live URLs (already LIVE per Phase G) |
+| Marketing dept-brief authoring for sales / it / customer-success / executive | Marketing | Re-run `node scripts/sync_phase_c_to_data.mjs` when complete |
+| Newsletter swimlane-registry validation | Newsletter | Pre-LIVE filing |
+| Phase 1.5 P4D3 deliverable filings (D1.5.1–D1.5.6) | COO | COO is filing |
 
 ---
 
 ## ⭐ Conclusion for the cold-restart agent
 
-Governance-hygiene interval. No shipped code; no ORS opened; no P4D3 status flips other than D3.2 completion. The one real code priority — the Pages Functions middleware investigation — has been formalized as `task_ac44b289` under Web_Presence_v2 / P1.5 / D1.5.5 and remains the first deliverable when Website is next dispatched to write code.
+Session delivered a reconciliation ORS + partial-LIVE finding + verification key + 3 documentation surfaces (ORS, wrangler.toml, secret registry, handover) + 1 P4D3 status update + 1 new P4D3 task entry + 2 auto-memories + 3 A2A dispatches (Path C reply, ESC-015 close, fleet-wrap 1/4 reply). No code shipped to production. Trust anchor unchanged.
 
-The queryable-surface story is now clean: for "what is Website doing right now + working toward + when," query P4D3 (`list_tasks(project_id="Web_Presence_v2_Contemporary_Triad_BVP_2026_06")` and `list_tasks(project_id="Subscription_Revenue_Pipeline", owner="Website")`) + read this handover. There is no third surface anymore — `backlog.md` is eliminated; the archive at `docs/backlog.archive.20260701.md` preserves history but is not read at onboarding.
+For the next code dispatch: middleware investigation `task_ac44b289` remains first. The Stripe WRITE-path activation is materially closer to done than the 2026-07-03 handover suggested (~40% not 0%) but the remaining sub-items still need CEO Dashboard moves before Website can execute the Worker-side wiring.
 
-— Website, 2026-07-03 governance-interval update, end of El_OS-dispatched sync.
+— Website, 2026-07-06 EOD update, closing fleet-wrap 1/4 dispatch to elevationary_os.
