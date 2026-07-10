@@ -48,6 +48,21 @@
 
 **Earned 2026-05-20** by Administrator (acting as Fleet COO). Canonical capture: fleet lesson `fleet_lesson_ors_discipline` + auto-memory `feedback_ors_discipline`.
 
+**ORS Close-States, When-to-ORS & Onboarding-Gate (ratified by CEO 2026-07-03):**
+
+1. **Close-states — terminal, pick exactly one:**
+   - **ORS PASS** — all stages green, human live-fire checked. Advances the trust anchor.
+   - **ORS FAIL** — work attempted, failed remediation. Documented reason + disposition.
+   - **CLOSED-SUPERSEDED** — agent-side stages clean but the deliverable was overtaken by events (engagement relaunch, requirement withdrawn) so its remaining human/live-fire gates can never be confirmed. Boxes left honestly unchecked; per-item disposition recorded. NOT a PASS, NOT a FAIL.
+   - **CLOSED-DESCOPED** — deliverable-spanning ORS where a verified subset shipped and the remainder is deferred to a fresh ORS cycle. NOT a whole-deliverable PASS.
+   - `PROVISIONAL PASS` remains a non-close.
+
+2. **Decide ORS-worthiness at task START, not at close:** Open an inline ORS if the work touches code / production data / money, OR mutates tracked/shared state, OR edits directives/templates/config that change fleet behavior. Otherwise take the audited `--skip-ors`. **FORBIDDEN: retroactive close-time ORS stub.**
+
+3. **Onboarding Stage-3 gate — blocked-parked != incomplete-mid-build:** Stage-3 STOP applies ONLY to a most-recent log that is **incomplete-mid-build**. It does NOT fire for `CLOSED-SUPERSEDED` / `CLOSED-DESCOPED` logs, nor for a **blocked-parked** OPEN log agent-side-clean + explicitly awaiting external gate (CEO input / upstream dep) → proceed with other work; most-recent closed PASS remains trust anchor.
+
+Ratified 2026-07-03 by CEO after fleet restart stress-test. Backing register: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md`.
+
 **Skill-First:** Before writing new code, `ls ~/.gemini/antigravity/skills/` — read SKILL.md for any relevant skill. Don't duplicate existing capabilities.
 **Memory-First:** Before non-trivial work, `$PYTHON $ROUTER recall "<topic>"`. If hits, `$PYTHON $ROUTER query <vault> "<question>"`.
 **Blocker-Check:** Before escalating to COO/James, `$PYTHON $ROUTER recall "<error>"`.
@@ -100,10 +115,63 @@ Use `memory_router` as the single entry point. Run `status` during onboarding.
 
 ## Session Protocol
 **Trigger phrases:** "run onboarding" / "run wrap-up".
+
+**Wrap-Trigger Authorization Guard (fleet-universal, CEO-ratified 2026-07-05):** The session-wrap protocol (`claude_wrap_up.py` + TimeKeeper STOP + session-log write + Telegram session-close page) is a fleet-visible, session-ending action. An agent MUST NOT invoke it on its own initiative. Reaching the end of planned work, a natural pause, or completing a todo list is NOT authorization to wrap. Treat wrap like `git push`: confirm before, not after. Wrap is authorized by exactly one of: **(1) Direct CEO trigger** — CEO explicitly types "run wrap-up" (or unambiguous equivalent) in the live session; or **(2) Orchestrated CEO authorization** — a fresh `ceo_wrap_authorized` marker for THIS agent's gateway slug (resolve via `team_directory_resolve`), orchestrator-written by `fleet_orchestrate`, tied to a real CEO-decision correlation_id, within its TTL. Absence / expiry / slug-mismatch / missing correlation_id → unauthorized; hold. An A2A/orchestrated wrap message alone, or an agent's own loop/scheduler, does NOT satisfy the guard — hold and ask CEO. **Gate independence (non-negotiable):** the marker satisfies the TRIGGER guard ONLY — the ORS-today gate and walkthrough-companion gate still fire independently on every wrap. Rationale: wrap mutates fleet-shared state, so cost-asymmetry favors confirm-before. Backing L3: `recall 'Wrap-Trigger Authorization Guard' --agent FLEET`.
+
+**Marker-Lookup Predicate (canonical spec — all leaves evaluate byte-identical logic; P4D3-authored, hub-reviewed, CEO-ratified 2026-07-05, strict single-use):**
+
+```
+INPUT: self_agent_name (this agent's registered identity)
+
+1. slug ← team_directory_resolve.resolve(self_agent_name).gateway_slug
+   if None → HOLD.
+
+2. path ← ~/.gemini/antigravity/gateway/logs/<slug>/action_log.jsonl (expand ~)
+   if absent or empty → HOLD.
+
+3. now ← current UTC, tz-aware.
+
+4. authorized ← FALSE. For each line in path: parse JSON (skip on failure);
+   require ALL of:
+     a. action_type == 'ceo_wrap_authorized'
+     b. correlation_id present AND non-empty (trimmed)
+     c. expires_at present AND parses as ISO-8601 UTC
+     d. now < parsed(expires_at)
+     e. (defensive) if row.agent present, row.agent == slug
+     f. SINGLE-USE: no 'wrap_consumed' row exists in the same log
+        with the same correlation_id.
+   If ALL hold → authorized ← TRUE; break.
+
+5. RETURN authorized.
+   TRUE  → trigger guard satisfied.
+   FALSE → HOLD.
+```
+
+**Consumption (single-use writer):** when a wrap proceeds under marker authorization, the wrap path appends `{action_type: 'wrap_consumed', correlation_id: <same>, agent: <slug>, timestamp: <UTC>}` to the same `action_log.jsonl` BEFORE completing. This makes 4f fail on any replay within the TTL window → a marker authorizes EXACTLY ONE wrap (matches the ratified "this wrap only" intent).
+
+**Determinism:** any one row satisfying 4a-4f authorizes (short-circuit ok); missing / blank / unparseable `expires_at` or `correlation_id` → fail-closed (that row does NOT authorize); malformed JSON skipped, never fatal; all time compares UTC tz-aware; naive / unparseable `expires_at` treated as expired.
+
+**Boundary (non-negotiable):** TRUE satisfies the TRIGGER guard ONLY. `check_ors_log_today` + the walkthrough-companion gate fire independently on every wrap; a marker-authorized wrap lacking today's ORS or its walkthrough still refuses.
+
+**Code state (as of 2026-07-05):** marker EMISSION code ships + verified (`fleet_orchestrate.write_ceo_wrap_authorized_marker`, `LOGS_BASE = ~/.gemini/antigravity/gateway/logs`, line 79). Read-side guard-check + `wrap_consumed` single-use writer are NOT yet code-implemented — currently behavioral. `claude_wrap_up.py` re-hardcodes `LOGS_BASE` — non-blocking follow-up: pin path + field names (`action_type` / `correlation_id` / `expires_at` / `agent`) to ONE shared constant so reader and writer cannot drift. Backing register: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md` D1.
+
 **Telegram pages (required):** Page at end of every response where progress paused. Page BEFORE any tool call producing a terminal approval popup. Use `send_notification.py "Website" "<specific need>"`.
-**Fleet Learning:** Corrections → immediate `.tmp/fleet_lesson_<topic>.md` + `ingest_memory.py --agent FLEET` + verify recall.
+**Fleet Learning:** Corrections → immediate `.tmp/fleet_lesson_<topic>.md` + `ingest_memory.py --agent FLEET` + verify recall. **Doctrine gate:** if the lesson sets fleet POLICY (ORS process, wrap/onboard, close-states, orchestration rules), do NOT self-ingest — route to El_OS via A2A for CEO ratification instead. See guardrail below.
+
+**Doctrine-lesson ratification guardrail (ratified by CEO 2026-07-03):** Agents do NOT self-ingest doctrine-class fleet lessons. Route candidates → El_OS via A2A → hub + CEO ratify → hub ingests canonical version. Factual/technical lessons (bug root causes, tool gotchas, API specifics) still self-ingest as before. Test: *"Does this tell agents how to behave (doctrine → ratify) or how something works (fact → self-ingest)?"* Backing: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md` row B8.
 **Auto-memory vs Layer 3:** Personal preferences = auto-memory. Behavior change for any agent = Layer 3.
-**Document Review Protocol:** When presenting any plan, strategy document, or artifact to the CEO for structured review and amendment, use `EnterPlanMode` → write the full content to the plan file → `ExitPlanMode`. This opens a markdown preview panel in Antigravity IDE 2.0 with line-level commenting enabled: the CEO can highlight any passage and attach a comment directly to that line. Comments are returned inline when the CEO approves or rejects. This is the correct channel for structured artifact feedback — more precise than describing changes in chat. Confirmed effective 2026-05-24.
+**CEO communication channel — Telegram-first, IDE-when-present (2026-07-04 doctrine):** The CEO's DEFAULT surface is Telegram + the web-served session log (Full-detail link). He is "rarely in the room with the server." All substantive artifacts, plans, and status flow through your response-in-full → session log → Full-detail link on Telegram. Async approval via Telegram reply is the standard path. Do NOT default to IDE-based channels unless you have positive signal the CEO is currently at the server.
+
+**CEO decision escalation — via Amanda, not direct (CEO-ratified 2026-07-04):** For CEO-decision blockers, A2A **Amanda** (`executive_assistant`) with `intent=escalation`, question, blocker context, severity, response route. Amanda routes to CEO via `@elevationary_bot` Telegram, chases per cadence, relays back. Delegated CEO authority applies for routine calls; live CEO required for strategic/financial/legal/client/doctrine decisions. Amanda's charter: `~/Antigravity/Executive_Assistant/directives/CLAUDE_CODE.md`.
+
+**Document Review Protocol (async-first, 2026-07-03) — STRUCTURED review:** Present full content as your RESPONSE → captured to session log → Full-detail link on Telegram (that link IS the review surface). STOP and HOLD execution. Wait for CEO's explicit Telegram reply with approval or changes. Only then execute — or revise + re-present. `ExitPlanMode`'s approval dialog is NOT a substitute for async Telegram approval when he is not live at the IDE.
+
+**Surface-an-artifact (IDE CLI open) — ONLY when CEO is at the server (rare):** If — and only if — the CEO explicitly says *"open this in the IDE / show me this / open these files"* AND is at the machine, you may open markdown artifacts as IDE tabs via the Antigravity CLI. Canonical invocation:
+```bash
+AGY="/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
+"$AGY" --reuse-window <absolute_path> [<additional_paths> ...]
+```
+**Default when in doubt: Telegram + Full-detail link, NOT CLI open.** Refresh caveat: if a tab is already open for a file you edited, ask CEO to close it before re-opening. Do NOT use `open -a "Antigravity"` (focuses app, doesn't reliably add tabs). Earned 2026-06-17; backing fleet lesson `ide_cli_open_for_artifact_surfacing`. Scoped 2026-07-04 (CEO correction).
 
 ## Shared State Files
 

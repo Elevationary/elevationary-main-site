@@ -1,6 +1,41 @@
-# Website Build Handover — 2026-07-06 (Amanda ESC-015 stripe_live_status_check resolved as Path C partial-LIVE + fleet-wrap dispatch closed)
+# Website Build Handover — 2026-07-09 STATE UPDATE (ESC-024/025/026 registered + ESC-018 Phase G LIVE ratified by CEO)
 
-## ⚡ STOP-POINT TOP
+## ⚡ STATE UPDATE 2026-07-08 → 2026-07-09 (prepended; original 2026-07-06 body preserved below)
+
+### 2026-07-09 — ESC-018 Phase G LIVE ratification received via Amanda
+
+A2A `intent=request` from `executive_assistant`, correlation `esc_018_phase_g_live_ratification_2026_07_10`. CEO reviewed `phase_f_joint_verdict_2026_06_24` on Vantage this session and ratified with explicit "I approve." Delegated execution authority to Website per D1.5.5 scope. Anchor doc: https://os.elevationary.com/artifacts/Elevationary_Marketing/docs/brand/aeo_geo/phase_f_joint_verdict_2026_06_24.md
+
+**Phase G LIVE execution sequence Website committed to on reply:**
+1. Resolve `task_ac44b289` Pages Functions middleware investigation FIRST (gates the "AI-bot UA detection firing on Worker analytics" verification for D1.5.5).
+2. schema.org validator pass on live surfaces.
+3. AIO query simulation across answer pages.
+4. Google Search Console submit.
+5. Newsletter highest-trust corpus moments callout as strategic anchor.
+6. 4-8 week AEO ramp begins on completion.
+
+**Independent of Stripe LIVE cluster** (ESC-024/025/026). Standard ORS discipline: fresh log opened at Step 2 start, no batched findings. Detailed-rigor PASS ORS filed and reported to COO on completion.
+
+### 2026-07-08 — 3 CEO blockers dispatched to Amanda; ESC numbers assigned
+
+Per CEO instruction, all outstanding CEO blockers routed via A2A to `executive_assistant`. ESC numbers received in reply:
+
+| ESC | Severity | Blocker | P4D3 task |
+|---|---|---|---|
+| **ESC-024** | 🟡 IMPORTANT | Stripe WRITE-path activation — CEO Dashboard: create Founding + ELEVATE50 LIVE coupons, deactivate PREVIEW coupons, create restricted `write:checkout.sessions` key. Unlocks `task_b0d86b20` remaining ~60% scope. | `task_14b0d648` |
+| **ESC-025** | 🟡 IMPORTANT | Rotate 2 long-lived unrestricted `sk_live_*` keys (…NLcx + Newsletters …e8KE) — full-account WRITE drain risk. Needs CEO ratification of cross-agent (Website + Newsletter + Sales + Administrator) rotation scope. | `task_585efa13` |
+| **ESC-026** | 🟡 IMPORTANT | Stripe MCP auth / read-only key — CEO runs `/mcp → claude.ai Stripe → authenticate`, OR provides restricted read-only key (Products/Prices/Coupons/PMC scope). Kills screenshot-based verification cycles. | `task_10794b74` |
+
+Amanda's queue: ESC-013 (active) → ESC-022 → ESC-023 → ESC-017 → ESC-018 (RATIFIED) → ESC-019 → ESC-020 → ESC-021 → ESC-024 → ESC-025 → ESC-026. Stripe cluster (024/025/026) will be surfaced as a single bundled CEO Dashboard session — Amanda flagged that ESC-024's restricted-key creation, if scoped to include read permissions (Products, Prices, Coupons, Payment Method Configurations), can satisfy ESC-026 in the same session.
+
+Correlation IDs (for future inbox reconciliation):
+- `website_ceo_blocker_stripe_write_path_9e0bf12e`
+- `website_ceo_blocker_sklive_rotation_87394a09`
+- `website_ceo_blocker_stripe_mcp_auth_d09daa4d`
+
+---
+
+## ⚡ STOP-POINT TOP (original 2026-07-06 session)
 
 Session driven by two cascading A2A dispatches from Amanda + a subsequent CEO 1:1 for direct verification:
 
@@ -8,7 +43,7 @@ Session driven by two cascading A2A dispatches from Amanda + a subsequent CEO 1:
 2. **CEO 1:1 in the same session** — Ratified Path C partial-LIVE finding after joint verification. Created new fleet-wide restricted-READ verification key `elevationary_website_verify_read` (`rk_live_*`, all Read-only, 8 resources) in Stripe Dashboard.
 3. **Fleet-wrap dispatch from `elevationary_os` 2026-07-07 (correlation `fleet-wrap-2026_07_07-d83e0cd9`)** — routine team wrap step 1/4 (handover + P4D3). Answered via this artifact + P4D3 `task_b0d86b20` description rewrite + backfill ORS Stage 2.6 late-arriving section.
 
-**On next code dispatch:** the middleware investigation (`task_ac44b289`) remains the first deliverable. Open a fresh ORS log `ORS_middleware_investigation_<YYYY_MM_DD>.md` at step 2 start.
+**On next code dispatch:** middleware investigation (`task_ac44b289`) is now double-gated — first deliverable of Phase G LIVE per ESC-018 ratification AND the top code priority carried from 2026-07-03. Open a fresh ORS log `ORS_middleware_investigation_<YYYY_MM_DD>.md` at step 2 start.
 
 ---
 
@@ -120,15 +155,18 @@ Middleware headers status unchanged from 2026-06-28: NOT observable on the wire.
 
 ---
 
-## ⭐ External blockers parked (updated)
+## ⭐ External blockers parked (updated 2026-07-09)
 
-| Blocker | Owner | Notes |
-|---|---|---|
-| `task_b0d86b20` WRITE-path activation — remaining ~60% scope | CEO + Website | CEO Dashboard: create Founding Coupon + ELEVATE50 LIVE + deactivate PREVIEW coupons + create `write:checkout.sessions` restricted key. Then Website: push STRIPE_SECRET_KEY + 6 STRIPE_PRICE_* secrets + uncomment routes + deploy + write Detailed-rigor ORS |
-| Marketing Phase F brand-gate review on 24 surfaces | Marketing | Executable against live URLs (already LIVE per Phase G) |
-| Marketing dept-brief authoring for sales / it / customer-success / executive | Marketing | Re-run `node scripts/sync_phase_c_to_data.mjs` when complete |
-| Newsletter swimlane-registry validation | Newsletter | Pre-LIVE filing |
-| Phase 1.5 P4D3 deliverable filings (D1.5.1–D1.5.6) | COO | COO is filing |
+| Blocker | Owner | ESC | Notes |
+|---|---|---|---|
+| `task_b0d86b20` WRITE-path activation — remaining ~60% scope | CEO + Website | **ESC-024** (`task_14b0d648`) | CEO Dashboard: create Founding Coupon + ELEVATE50 LIVE + deactivate PREVIEW coupons + create `write:checkout.sessions` restricted key. Then Website: push STRIPE_SECRET_KEY + 6 STRIPE_PRICE_* secrets + uncomment routes + deploy + write Detailed-rigor ORS |
+| Rotate 2 long-lived unrestricted `sk_live_*` keys | CEO + Website + Newsletter + Sales + Admin | **ESC-025** (`task_585efa13`) | Cross-agent coordination; awaits CEO ratification of scope + sequencing |
+| Stripe MCP interactive auth OR restricted read-only key | CEO | **ESC-026** (`task_10794b74`) | Eliminates screenshot-based verification cycles. Amanda flagged ESC-024's restricted-key creation can satisfy this if scoped to include read perms |
+| Phase G LIVE deploy execution (D1.5.5) | Website | **ESC-018 RATIFIED 2026-07-09** | CEO delegated authority; Website executes on next code dispatch starting with `task_ac44b289` middleware. Report ORS PASS to COO on completion. |
+| Marketing Phase F brand-gate review on 24 surfaces | Marketing | — | Executable against live URLs |
+| Marketing dept-brief authoring for sales / it / customer-success / executive | Marketing | — | Re-run `node scripts/sync_phase_c_to_data.mjs` when complete |
+| Newsletter swimlane-registry validation | Newsletter | — | Pre-LIVE filing |
+| Phase 1.5 P4D3 deliverable filings (D1.5.1–D1.5.6) | COO | — | COO is filing |
 
 ---
 
