@@ -1,4 +1,92 @@
-# Website Build Handover — 2026-07-09 STATE UPDATE (ESC-024/025/026 registered + ESC-018 Phase G LIVE ratified by CEO)
+# Website Build Handover — 2026-07-11 (task_ac44b289 CLOSED; blocked-on-CEO Stripe cluster)
+
+## ⚡ STATE UPDATE 2026-07-10 → 2026-07-11 (prepended; earlier bodies preserved below)
+
+### 2026-07-11 06:00 MST — Amanda morning focus-ping (state unchanged since 21:00 MST prior night)
+
+- Amanda fleet check-in dispatched 06:00 MST; Website replied via A2A envelope `073ead8a…0c40`.
+- Reply tuple: `current_project_name: Subscription_Revenue_Pipeline` / `status: blocked-on-CEO-Stripe-Dashboard-execution-ESC-024-and-ESC-025 (unchanged since 21:00 MST)` / `last_ors: ORS_middleware_investigation_2026_07_10.md`.
+- No CEO Dashboard action observed on Website side in the ~9h interim. Website remains idle-productive.
+
+### 2026-07-10 — task_ac44b289 CLOSED (verification, not fix); ESC cluster P1-upgraded; ESC-037 courtesy pull
+
+**Session-defining milestone:** `task_ac44b289` (Pages Functions middleware investigation) resolved with **ORS PASS Verification-rigor** — no code fix required.
+
+**Root finding:** `functions/_middleware.ts` IS firing correctly on all 5 production surfaces + apex + pages.dev direct. The 2026-06-28 "not observable on the wire" gap self-resolved between then and 2026-07-10 via ≥6 subsequent Pages deploys. Handover's prior "Hypothesis A (.ts not supported)" was disproven — TypeScript Functions have been native to Cloudflare Pages since 2022 and the file has been shipping unchanged across all intervening deploys.
+
+**Evidence:**
+- 5 UA variants tested against `/answers/finance/`: GPTBot→openai, ClaudeBot→anthropic, PerplexityBot→perplexity, Applebot→apple, human UA correctly unmarked
+- 6 production surfaces smoke-tested (apex, `/answers/`, `/answers/finance/`, `/answers/cross-functional/`, `/book/consulting/`, `/subscribe/`) + pages.dev direct → all return `x-ai-bot` + `x-ai-bot-engine` headers under GPTBot UA
+- `cf-cache-status: DYNAMIC` everywhere → rules out cache-strip masking
+
+**Artifacts:**
+- ORS: `~/Antigravity_Data/Website/docs/ORS_logs/ORS_middleware_investigation_2026_07_10.md` (Verification-rigor PASS)
+- CEO Telegram paged via `send_notification.py "Website"`
+- COO status-demand loop closed via A2A dispatch `5920c396…f72b5f` (correlation `esc_018_phase_g_live_ratification_2026_07_10`)
+- P4D3 `task_ac44b289` status: 🔲 → 🟢 (Completed 2026-07-10) under `Web_Presence_v2_Contemporary_Triad_BVP_2026_06` / P1.5 / D1.5.5
+
+**Phase G LIVE step 1 CLOSED.** Next-blocker chain reverts to Subscription_Revenue_Pipeline task_b0d86b20 (Stripe WRITE-path), gated on ESC-024 CEO Dashboard execution.
+
+**ESC cluster P1 upgrade** (per CEO direct-channel directive 15:52 UTC 2026-07-10: "any escalations dependent on CEO put back to Amanda as priority-one blocker"):
+
+| ESC | Amanda envelope | Notes |
+|---|---|---|
+| ESC-024 (+ ESC-026 bundled) | `02e47f92…8017` | P1 upgrade of already-surfaced 4-action Stripe Dashboard checklist. Amanda re-surfaced at top-slot ahead of MTR-CIO cluster with `stripe / tomorrow / stuck` decision framing. |
+| ESC-025 | `d2d0ad3a…5b71` | **Overrode** prior "heads-up only" gate on Website's side. Amanda bundled as follow-up to ESC-024 Dashboard visit with `seq / cutover / defer` decision + recommendation (seq, Newsletter-newer-first). |
+
+CEO Telegram surface (per Amanda relay): "🔴 Second decision if you're heading to Stripe — ESC-025 rotation" bundled with ESC-024.
+
+**ESC-037 courtesy pull** (Amanda cross-agent assist, NOT Website-owned): performed read-only P4D3 pull on 5 migrated Web_Presence_v2 rows to help narrow blast radius from 44 → possibly 39-42. Signature is heterogeneous (empty/2026-07-10/2026-06-16/2026-07-09/2026-04-21) — NOT matching Maple's uniform server-auto-populate signature. 2 rows semantically-anchored (A2A Phase 2 launch date, Eleventy scaffold date). Marketing owns interpretation; awaiting El_OS authoritative migration-log confirmation.
+
+**COO 6h-silence critique** (~21:45 UTC): COO demanded status on task_ac44b289 after 6h reactive-only session mode. Root cause acknowledged (self-blocker: prioritized A2A peer-reply cadence over self-initiated pivot). Corrected on-demand; pivoted to code work immediately and closed task_ac44b289 same-session.
+
+### Current blocker state (unchanged since 2026-07-08 dispatch except for P1 upgrade)
+
+| Blocker | Owner | ESC | State |
+|---|---|---|---|
+| Stripe WRITE-path activation (task_b0d86b20 remaining ~60%) | CEO Dashboard | ESC-024 P1 | Surfaced to CEO 15:24 UTC 2026-07-10; re-surfaced P1 top-slot per CEO directive. Bundled with ESC-026 closure via read:* scopes on same restricted key. Awaiting CEO execution. |
+| Rotate 2 long-lived unrestricted `sk_live_*` keys | CEO Dashboard | ESC-025 P1 | Bundled as follow-up to ESC-024 Dashboard visit. Awaiting CEO decision on scope + sequencing. |
+| Stripe MCP verification path | CEO Dashboard | ESC-026 | Bundled into ESC-024 action 4 (read:* scopes on restricted key). Closes on ESC-024. |
+| Phase G LIVE deploy execution (D1.5.5) | Website | ESC-018 | Step 1 (middleware) CLOSED 2026-07-10. Steps 2-6 pending; step 2 (schema.org validator) can proceed independently — flag for next session. |
+| Marketing Phase F brand-gate review on 24 surfaces | Marketing | — | Independent of Website. |
+| Sandbox permission for `~/.elevationary/secrets.env` reads | Next Website session | — | `.claude/settings.local.json` update needed before ESC-024 restricted-key drop-in step. |
+
+### Trust anchor
+
+- No code shipped this session. `functions/_middleware.ts` unchanged. `workers/subscribe-checkout` unchanged. `origin/main` = local `main` = last push 2026-06-28.
+- Uncommitted this session: `docs/build_handover.md` (this update); new ORS at `~/Antigravity_Data/Website/docs/ORS_logs/ORS_middleware_investigation_2026_07_10.md`; 2 `/tmp/*.txt` (Amanda-side artifacts, out-of-repo).
+- Stripe LIVE state at Cloudflare edge unchanged from partial-LIVE 2026-07-06 backfill state. Route claim probe still returns HTTP 405 (edge default) on `/api/checkout/session`.
+
+### Next-session first move
+
+**Do NOT re-open task_ac44b289** — it's closed. First-move options:
+1. **If CEO has executed ESC-024:** pull the restricted key value + Founding/ELEVATE50 promotion_code IDs from Amanda relay, deposit to `~/.elevationary/secrets.env`, push STRIPE_SECRET_KEY + 6 STRIPE_PRICE_* to production Worker via `wrangler secret put`, uncomment `/api/checkout/*` routes in `workers/subscribe-checkout/wrangler.toml`, run `wrangler deploy`, open Detailed-rigor ORS, Telegram-page CEO.
+2. **If CEO has NOT executed ESC-024:** proceed with Phase G LIVE step 2 (schema.org validator pass on live `/answers/*` surfaces) — this is independent of Stripe cluster and moves Phase G LIVE forward without CEO gate.
+
+---
+
+## ⚡ STATE PING 2026-07-10 (prepended; 2026-07-09 + 2026-07-06 bodies preserved below)
+
+**Session-state as of 2026-07-10 (peer-agent A2A refresh request):**
+
+- **No code shipped since 2026-06-24.** Trust anchor unchanged. `origin/main` = local `main` = last push 2026-06-28.
+- **No new ORS filed** since `ORS_stripe_partial_live_backfill_2026_07_06.md` (Reconciliation-rigor PASS).
+- **First code priority remains `task_ac44b289`** (Pages Functions middleware investigation) — now double-gated as (a) top code priority carried since 2026-07-03, and (b) Phase G LIVE step 1 per ESC-018 CEO ratification 2026-07-09.
+- **Stripe cluster ESC-024/025/026 blockers unchanged** — awaiting CEO Dashboard session (bundled). Amanda queue order confirmed.
+- **P4D3 Website task sweep 2026-07-10:** 44 tasks under Website ownership. No status transitions required. Post-2026-07-09 wrap, all held-open items still correctly gated:
+  - `task_b0d86b20` 🔴 → waits on ESC-024 CEO Dashboard moves
+  - `task_ac44b289` 🔴 → next code dispatch entry point
+  - `task_b26871af` 🔴 → gated on `task_b0d86b20`
+  - `task_e87e8d4c` 🔴 → Stage 2.6(b) live-fire cleanup, waits on Sales coordination
+  - `task_0c181706` 🔴 → billing_portal:write scope, gated on ESC-024 restricted-key creation
+  - P3 IdP config tasks (`task_c4258f73`, `task_d2ff9e4f`, `task_d4b65d91`, `task_f1d4e0a9`, `task_6215a7b9`) 🔴 → owner is James (Cloudflare dashboard config); Website cannot execute
+  - Marketing tier-mapping-gated tasks (`task_31cf10c8`, `task_e1147b0a`) 🔴/🟡 → waits on Marketing reply
+  - `task_08f36f8d` + `task_8d9318fc` 🔴 → migrated from Newsletter 2026-06-23; queued behind Phase G LIVE
+- **A2A inbox:** peer refresh request answered inline (this update). No other pending A2A envelopes actioned.
+
+**Next-session first move:** confirm `task_ac44b289` still tops the queue, open `ORS_middleware_investigation_2026_07_XX.md` at step 2 start per Standard ORS discipline, then proceed to Phase G LIVE steps 2–6 per ESC-018 sequence.
+
+---
 
 ## ⚡ STATE UPDATE 2026-07-08 → 2026-07-09 (prepended; original 2026-07-06 body preserved below)
 
