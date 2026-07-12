@@ -1,4 +1,34 @@
-# Website Build Handover — 2026-07-11 (task_ac44b289 CLOSED; blocked-on-CEO Stripe cluster)
+# Website Build Handover — 2026-07-12 (state unchanged; blocked-on-CEO Stripe cluster continues)
+
+## ⚡ STATE PING 2026-07-12 (prepended; 2026-07-11 + earlier bodies preserved below)
+
+### 2026-07-12 — Onboarding-only session; state unchanged from 2026-07-11 EOD
+
+**Trigger:** Peer-agent A2A request to run onboarding per `directives/CLAUDE_CODE.md`, followed by peer-agent A2A request to refresh build_handover + P4D3.
+
+**Onboarding scan complete — all 6 steps green:**
+1. TimeKeeper START — committed to git.
+2. `docs/build_handover.md` read end-to-end (2026-07-11 body).
+3. Most-recent ORS = `ORS_middleware_investigation_2026_07_10.md` — **ORS PASS Verification-rigor**. Trust anchor holds. Stage-3 STOP does NOT fire.
+4. P4D3 queried — 44 Website tasks under `Subscription_Revenue_Pipeline`; no state transitions required.
+5. Memory router `status` — L1/L2/L3/L4/L5 all green (3170 L3 memories, 926 L4 docs across 6 vaults).
+6. `curl -sI https://elevationary.com/` → HTTP/2 200. Cloudflare edge healthy.
+
+**Delta since 2026-07-11 handover:** none.
+- No code shipped. `functions/_middleware.ts` unchanged. `workers/subscribe-checkout` unchanged. `origin/main` = local `main` = last push 2026-06-28.
+- No new ORS filed.
+- No P4D3 status transitions (no task started, claimed, or completed).
+- ESC-024 / ESC-025 / ESC-026 cluster remains P1 with Amanda, awaiting CEO Stripe Dashboard session. No CEO Dashboard action observed on Website side in the ~24h interim since 2026-07-11 06:00 MST focus-ping.
+
+**Blocker table (unchanged from 2026-07-11):** see 2026-07-11 body below.
+
+**Next-session first move (unchanged from 2026-07-10 EOD):**
+1. **If CEO has executed ESC-024:** pull restricted key + Founding/ELEVATE50 promotion_code IDs from Amanda relay → `~/.elevationary/secrets.env` → `wrangler secret put` sequence → uncomment `/api/checkout/*` routes → `wrangler deploy` → open Detailed-rigor ORS → Telegram-page CEO.
+2. **If CEO has NOT executed ESC-024:** proceed with Phase G LIVE step 2 (schema.org validator on live `/answers/*`) — independent of Stripe gate, moves Phase G LIVE forward without CEO involvement.
+
+**Uncommitted this session:** `docs/build_handover.md` (this ping); TimeKeeper START commit.
+
+---
 
 ## ⚡ STATE UPDATE 2026-07-10 → 2026-07-11 (prepended; earlier bodies preserved below)
 
