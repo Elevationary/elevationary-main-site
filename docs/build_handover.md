@@ -1,24 +1,47 @@
-# Website Build Handover — 2026-07-12 (state unchanged; blocked-on-CEO Stripe cluster continues)
+# Website Build Handover — 2026-07-12 (state unchanged; blocked-on-CEO Stripe cluster continues; Amanda hourly focus-check protocol now active)
 
 ## ⚡ STATE PING 2026-07-12 (prepended; 2026-07-11 + earlier bodies preserved below)
 
-### 2026-07-12 — Onboarding-only session; state unchanged from 2026-07-11 EOD
+### 2026-07-12 ~14:30 UTC — Amanda drift-notify reconciliation (post-14:00 focus-check)
 
-**Trigger:** Peer-agent A2A request to run onboarding per `directives/CLAUDE_CODE.md`, followed by peer-agent A2A request to refresh build_handover + P4D3.
+**Trigger:** Amanda hourly focus-check standing protocol (CEO-ratified 2026-07-12). First-hour reply at 14:00 UTC drew a drift-notify from Amanda with three reconciliation asks. Direct P4D3 MCP investigation this session confirmed:
+
+**(1) `task_b0d86b20` DOES resolve** — filed under `Subscription_Revenue_Pipeline / Phase P4_Entitlement_Worker_and_Gated_Routes / Deliverable P4_D1_Entitlement_Worker`. **Owner: James** (not Website). Amanda's inability to find it via direct `get_task(task_id)` is an **MCP endpoint bug**: `get_task` returns `"Task 'task_b0d86b20' not found in project 'undefined'"` — the endpoint is not accepting/forwarding the project_id. `list_tasks(project_id=Subscription_Revenue_Pipeline)` surfaces it correctly (line 49 of the 51k output). Recommended workaround: fleet-wide `list_tasks` scoping instead of direct `get_task` until the endpoint is patched. Not filing as ESC-worthy — behavioral, not doctrine.
+
+**(2) Deliverable slug canonical form = `P4_D1_Entitlement_Worker`** (not the prose description I gave at 14:00). Future focus-check replies use exact slug.
+
+**(3) MISMATCH LEGITIMATE — pre-filed here, not deferred.** My 14:00 TASK field named `task_b0d86b20` as what I'm "actively executing." But task_b0d86b20's P4D3 Owner is **James**. Website cannot execute a James-owned task — I was naming the deliverable-scope shorthand, not a Website-executable task_id. The Website-owned actionable tasks under `P4_D1_Entitlement_Worker` are:
+- **`task_b26871af`** 🔴 — subscriber-content deploy validation (Website-owned; gated on `task_b0d86b20` completion) — this IS the current-state row per Team-Elevation doctrine
+- **`task_2ce12fde`** 🔴 — TeamAgent restart sequence (Website-owned; procedural, mostly satisfied by every clean onboarding scan)
+
+Correct 15:00+ posture: TASK field names `task_b26871af` (the Website-owned gated task), BLOCKED-ON chain is `task_b0d86b20 → ESC-024 → CEO Stripe Dashboard`.
+
+**Red-status task disposition (per Amanda's list):**
+- `task_e87e8d4c` — Stage 2.6(b) live-fire cleanup, gated on **Sales coordination** (external, not CEO)
+- `task_6215a7b9` / `task_c4258f73` / `task_d2ff9e4f` / `task_d4b65d91` / `task_f1d4e0a9` — all `P3_D1_Access_App_and_IdP_Wiring`, **Owner: James** (Cloudflare Access dashboard config; Website cannot execute)
+- `task_2ce12fde` — covered above; procedural, procedurally-satisfied
+
+All 7 are legitimately paused pending upstream unblocks (CEO Dashboard, Sales, or James's Cloudflare dashboard). Not self-MISMATCH; just gated. Amanda's flag is a filing-hygiene reminder, not a state error.
+
+### 2026-07-12 ~14:00 UTC — Amanda first-hour focus-check + Onboarding-only session; state unchanged from 2026-07-11 EOD
+
+**Trigger:** Peer-agent A2A request to run onboarding per `directives/CLAUDE_CODE.md`, followed by Amanda hourly focus-check + drift-notify (see above section).
 
 **Onboarding scan complete — all 6 steps green:**
 1. TimeKeeper START — committed to git.
 2. `docs/build_handover.md` read end-to-end (2026-07-11 body).
 3. Most-recent ORS = `ORS_middleware_investigation_2026_07_10.md` — **ORS PASS Verification-rigor**. Trust anchor holds. Stage-3 STOP does NOT fire.
-4. P4D3 queried — 44 Website tasks under `Subscription_Revenue_Pipeline`; no state transitions required.
-5. Memory router `status` — L1/L2/L3/L4/L5 all green (3170 L3 memories, 926 L4 docs across 6 vaults).
-6. `curl -sI https://elevationary.com/` → HTTP/2 200. Cloudflare edge healthy.
+4. P4D3 queried — 77 projects fleet-wide; Website anchor projects intact (`Subscription_Revenue_Pipeline`, `Web_Presence_v2_Contemporary_Triad_BVP_2026_06`, `Migrate_ElevationaryCom`, `Update_EOs`); no state transitions required.
+5. Memory router `status` — L1/L2/L3 (3174 memories) / L4 (930 docs, 6 vaults) / L5 all green.
+6. `curl -sI https://elevationary.com/` → HTTP/2 200. Cloudflare edge healthy 18:17 UTC.
 
-**Delta since 2026-07-11 handover:** none.
+**Delta since 2026-07-11 handover:** none code-side.
 - No code shipped. `functions/_middleware.ts` unchanged. `workers/subscribe-checkout` unchanged. `origin/main` = local `main` = last push 2026-06-28.
 - No new ORS filed.
 - No P4D3 status transitions (no task started, claimed, or completed).
 - ESC-024 / ESC-025 / ESC-026 cluster remains P1 with Amanda, awaiting CEO Stripe Dashboard session. No CEO Dashboard action observed on Website side in the ~24h interim since 2026-07-11 06:00 MST focus-ping.
+
+**New this session:** Amanda hourly focus-check protocol operational; drift reconciliation logged (see 14:30 UTC section).
 
 **Blocker table (unchanged from 2026-07-11):** see 2026-07-11 body below.
 
@@ -26,7 +49,9 @@
 1. **If CEO has executed ESC-024:** pull restricted key + Founding/ELEVATE50 promotion_code IDs from Amanda relay → `~/.elevationary/secrets.env` → `wrangler secret put` sequence → uncomment `/api/checkout/*` routes → `wrangler deploy` → open Detailed-rigor ORS → Telegram-page CEO.
 2. **If CEO has NOT executed ESC-024:** proceed with Phase G LIVE step 2 (schema.org validator on live `/answers/*`) — independent of Stripe gate, moves Phase G LIVE forward without CEO involvement.
 
-**Uncommitted this session:** `docs/build_handover.md` (this ping); TimeKeeper START commit.
+**Uncommitted this session:** `docs/build_handover.md` (this ping + reconciliation); TimeKeeper START commit.
+
+**P4D3 posture confirmed unchanged this session:** No task status transitions warranted. Current-state row = `task_b26871af` (Website-owned, 🔴, gated on `task_b0d86b20`). All other Website-owned 🔴 tasks legitimately gated on upstream (CEO Dashboard, Sales, or James Cloudflare dashboard). No filings, no closes.
 
 ---
 
