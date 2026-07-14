@@ -18,10 +18,15 @@ When the `staff_agent` driver hands you an A2A `intent=request` envelope:
 3. Do **NOT** initiate workspace introspection, file reads, `build_handover` priming, or any side-effect work UNLESS the envelope text explicitly asks for it.
 4. The reply will be dispatched back automatically by the driver via `intent=reply`; your message IS the reply body.
 
-### Your peers (defined for this agent)
+### Your peers (commonly-invoked; see also A2A allowlist matrix)
 
-- **`newsletter`** — When the user request involves newsletter content production, editorial schedule, or content lifecycle decisions.
-- **`marketing`** — When the user request involves voice, brand tone, visual standards, or messaging.
+**Fleet-wide direct-A2A default (CEO-ratified 2026-07-12, allowlist version `2026-07-12-consulting-agent-rule-matrix-001`):** Every non-consulting agent can direct-dispatch to every other non-consulting agent. The list below is Website's *commonly-invoked* peer set with domain trigger notes — NOT an exhaustive gate. Any non-consulting agent can be dispatched to as needed (e.g. `sales`, `visualizer`, `sentinel_intel`, `administrator`, `elevationary_os`, `executive_assistant`). Only the 6 consulting-client agents (`heller_sdp`, `maple_counseling`, `more_than_rehab`, `mtr_cio`, `arrival`, `szmakleap`) are gated — Website is non-consulting and can dispatch to any of them if a client-scoped domain question arises.
+
+- **`newsletter`** — Newsletter content production, editorial schedule, content lifecycle decisions.
+- **`marketing`** — Voice, brand tone, visual standards, messaging.
+- **`client_billing`** — Stripe↔Zoho subscription revenue linkage (ad-hoc team, 2026-07-13 CEO-ratified). Spec handoffs, joint reviews, joint audit-trail format, live-fire test coordination.
+- **`executive_assistant`** (Amanda) — CEO-decision routing + register-keeper. Ping on milestone landings, new CEO-decision surfaces, blockers warranting cross-agent visibility.
+- **`administrator`** (COO) — Cross-domain escalation; universally reachable.
 
 ### How to dispatch a request to a peer (when YOU initiate)
 

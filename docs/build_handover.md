@@ -1,4 +1,72 @@
-# Website Build Handover — 2026-07-12 (state unchanged; blocked-on-CEO Stripe cluster continues; Amanda hourly focus-check protocol now active)
+# Website Build Handover — 2026-07-14 (ad-hoc Stripe↔Zoho team formed; D1.2 authorship kickoff underway; 1 P4D3 flip + 5 claims + 1 CBM peer-A2A dispatch fired this session)
+
+## ⚡ STATE PING 2026-07-14 (prepended; 2026-07-12 + earlier bodies preserved below)
+
+### 2026-07-14 ~01:38 UTC → session close — Stripe↔Zoho ad-hoc team formation + D1.2 kickoff + fleet-doctrine correction cycle
+
+**Session trigger:** Peer-agent A2A onboarding request. Standard 6-step onboarding scan clean-passed (all green; trust anchor `ORS_middleware_investigation_2026_07_10.md` PASS held). Session then pivoted through 4 substantive Amanda A2A cycles + 1 CEO direct-Telegram correction + 1 CBM peer-A2A opening.
+
+**Ad-hoc team formation — Stripe↔Zoho Subscription Revenue Linkage (CEO-ratified ~19:45 MST 2026-07-13):**
+
+- **New P4D3 project LIVE:** `Stripe_Zoho_Subscription_Revenue_Linkage` (Elevationary/Operations/Fleet_Governance) — 🟡 in-flight, 4-phase structure (P1 Spec Authorship + Sign-Off / P2 Build / P3 Lifecycle Validation / P4 Dissolution Ratification), 19 tasks, 5 CEO-gated decisions D-01..D-05, 6 dependencies. Co-owned by Website + Client Billing Manager (`client_billing` gateway slug). Amanda role = register-keeper + CEO-decision router only (NOT project manager — CEO scope-corrected mid-session).
+- **Deliverables under Website ownership:** D1.2 Stripe-side event mapping spec (primary); D2.1 Stripe webhook receiver + Zoho dispatch handler (3 build tasks); D2.3 Joint audit-trail spec + dual-side impl (joint, Website=primary author).
+- **Website tasks claimed (5 fired via `update_task` with agent_id=Website):**
+  - task_8115b620 (T1.2a — D1.2 spec authorship) — 🟡 active
+  - task_253358e4 (T2.1a — Stripe webhooks wiring; GATED on ESC-024)
+  - task_938061e0 (T2.1b — transformation layer)
+  - task_0dd2619e (T2.1c — Zoho dispatch per D-01)
+  - task_0ed4b523 (T2.3a — joint audit-trail spec; Website=primary, CBM shadow-task pattern proposed)
+- **CBM D1.1 spec DRAFT-COMPLETE + ORS PASS'd** (2026-07-14): `~/Antigravity_Data/Client_Billing/docs/plans/spec_stripe_to_zoho_output_contract_2026_07_14.md` (v1.1, 25.4 KB). Covers 5 sections Website builds against: invoice line-item shape / contact_persons resolution (Stripe Customer ID primary key) / 7xxx invoice-number series / stripe_invoice_id idempotency / Direct REST credential path recommendation.
+
+**Session diff — P4D3 mutations:**
+- 1 status flip: `task_2ce12fde` (TeamAgent restart sequence) → 🟢 Completed 2026-07-13 under Amanda delegated-authority green light. Rationale: procedurally-satisfied-by-clean-onboarding (this session's 6-step onboarding scan = fresh restart-sequence execution).
+- 5 ownership claims fired on new project's Website-owned tasks (see list above).
+
+**Session diff — ORS + docs:**
+- 1 new ORS opened: `ORS_stripe_zoho_d12_event_map_spec_2026_07_13.md` (Standard-rigor, Stage 0/1 unfilled — pending next cycle after read of CBM's D1.1 spec). D1.2 authorship kickoff underway.
+- `CLAUDE.md` peer list refreshed — added `client_billing` + `executive_assistant` + `administrator` with explicit note that fleet-wide direct-A2A is the default (per 2026-07-12 rule matrix); the list is *commonly-invoked*, not gate-truth. Removes stale-doctrine trap that led to earlier blocker misframing.
+- 1 auto-memory: `feedback_a2a_allowlist_rule_matrix_not_static_pairs.md` — check live `a2a_allowlist.json` file before claiming any A2A pair blocked; consulting↔consulting is the only deny.
+
+**Session diff — A2A:**
+- 1 outbound peer dispatch to `client_billing` (msg_id `bb0873be-5131-4e44-be63-62aebd656292`, intent=reply, corr_id `a2a_send_client_billing_website_20260714_035407`). Substantive engineering response to CBM's 5 asks + 4 additional coord items. Peer channel proven end-to-end.
+
+**CEO correction absorbed (2 iterations):** CEO caught Website violating Memory-First rule mid-session — quoted static `CLAUDE.md` peer-block text as authorization gate for A2A instead of checking live allowlist file OR L3 fleet memory. Retracted "allowlist gap" blocker framing; verified fleet-wide rule matrix (deny consulting↔consulting only, else PASS); confirmed `client_billing` is non-consulting → direct A2A works today. Auto-memory persisted to prevent recurrence.
+
+**Two joint recommendations landing Amanda's queue soon (CBM + Website consensus once CBM confirms):**
+- **D-01 CEO closure ask:** Direct REST via env-vars on both sides (Vercel serverless for CBM Zoho receiver; Cloudflare Workers wrangler secrets for Website Stripe handler). MCP retained as ad-hoc admin fallback only.
+- **D-03 CEO closure ask:** Two-layer idempotency (Stripe idempotency-key at Website ingress + Zoho `cf_stripe_invoice_id` check-before-create at CBM receiver).
+
+Amanda routes both in single CEO-decision cycle once CBM signs off.
+
+**Cross-project posture check (P4_D1 chain unchanged):** Subscription_Revenue_Pipeline / P4_D1_Entitlement_Worker still blocked-on-CEO-Stripe-Dashboard-execution (ESC-024) with `task_b0d86b20` upstream + `task_b26871af` Website-actionable-once-unblocked. No CEO Dashboard action observed on Website side in interim. Stripe↔Zoho work is PARALLEL not replacement.
+
+**Blocker table (updated 2026-07-14):**
+
+| Blocker | Owner | ESC | State |
+|---|---|---|---|
+| task_b0d86b20 WRITE-path activation | CEO + Website | **ESC-024** (P1 Amanda) | Awaiting CEO Stripe Dashboard session; ESC-024 body enriched with `billing_portal:write` scope per this session's ask; D-05 confirms this scope in ratified restricted-key requirements |
+| 2 long-lived unrestricted `sk_live_*` rotation | CEO + Website + Newsletter + Sales + Admin | **ESC-025** (P1 Amanda) | Bundled with ESC-024 in Amanda relay |
+| Stripe MCP interactive auth OR restricted read-only key | CEO | **ESC-026** (P1 Amanda) | Amanda flagged ESC-024's restricted-key creation may satisfy if scoped for read |
+| P3 IdP cluster ownership decision (5 🔴 tasks) | CEO | **ESC-112** (Amanda register-request) | Website prefers Option A (collapse to Website via Cloudflare Access dashboard delegated auth); Option B leaves split (James dashboard + Website Worker-side) |
+| Phase G LIVE deploy execution | Website | ESC-018 RATIFIED 2026-07-09 | Executes on next code dispatch starting with `task_ac44b289` middleware (task_ac44b289 = CLOSED 2026-07-10 ORS PASS Verification-rigor); next surface = schema.org validator on live `/answers/*` OR Stripe WRITE-path when ESC-024 unblocks |
+| Marketing tier-mapping (canonical "All-Access Corporate Pass" vs `all_access` enum) | Marketing | — | Blocks task_31cf10c8 + task_e1147b0a; Amanda routes to Marketing next cycle |
+| Marketing brand-gate review Phase F 24 surfaces + task_83b15ed9 gated-page brand sign-off | Marketing | — | Standing brand-review queue |
+| Sales `index_contacts_by_email.json` for constant-time gating | Sales | — | Blocks task_6289687d + task_e87e8d4c (P10 live-fire cleanup) |
+| Newsletter D1 migration handoff | Newsletter | — | Blocks task_08f36f8d + task_8d9318fc (Free 3-2-1 + Do-Follow SEO Premium summary) |
+| P4D3 co-ownership/joint-task schema gap | P4D3 platform | — | Amanda relayed this cycle; operational workaround (Owner=primary + shadow task) shipping now on T2.3a |
+
+**Uncommitted this session:** `docs/build_handover.md` (this ping); `CLAUDE.md` (peer list refresh); `.claude/projects/-Users-jamesszmak-Antigravity-Website/memory/MEMORY.md` + new `feedback_a2a_allowlist_rule_matrix_not_static_pairs.md`; `~/Antigravity_Data/Website/docs/ORS_logs/ORS_stripe_zoho_d12_event_map_spec_2026_07_13.md` (new; Stage 0/1 unfilled).
+
+**Next-session first move:**
+1. Read `~/Antigravity_Data/Client_Billing/docs/plans/spec_stripe_to_zoho_output_contract_2026_07_14.md` end-to-end as build-input context.
+2. Fill ORS Stage 0 (Blast Radius) + Stage 1 (Build worklist) on `ORS_stripe_zoho_d12_event_map_spec_2026_07_13.md`.
+3. Begin D1.2 spec authorship draft (5 event mappings — customer.subscription.created/.updated/.deleted + invoice.payment_succeeded/.failed + payload→dispatch transformation + retry+dedup strategy).
+4. Ping `client_billing` + Amanda on draft-complete milestone (ETA 2026-07-14 late → 2026-07-15 early); schedule D1.3 joint E2E contract review + freeze (direct peer-A2A, no Amanda facilitation).
+5. Fire joint D-01/D-03 CEO-closure recs to Amanda once CBM confirms.
+
+**Alternate track if ESC-024 unblocks first:** Pull restricted key + promotion_code IDs from Amanda relay → `~/.elevationary/secrets.env` → `wrangler secret put` sequence → uncomment `/api/checkout/*` routes → `wrangler deploy` → open Detailed-rigor ORS → Telegram-page CEO.
+
+---
 
 ## ⚡ STATE PING 2026-07-12 (prepended; 2026-07-11 + earlier bodies preserved below)
 
