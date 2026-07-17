@@ -1,3 +1,42 @@
+# Website Build Handover — 2026-07-17 (onboarding-only session; state unchanged since 2026-07-14 EVE)
+
+## ⚡ STATE PING 2026-07-17 (prepended; 2026-07-14 EVE + earlier bodies preserved below)
+
+### 2026-07-17 ~05:35 UTC — Peer-agent A2A onboarding scan; state unchanged since 2026-07-14 EVE
+
+**Session trigger:** Peer-agent A2A onboarding request per `directives/CLAUDE_CODE.md`. Standard 6-step onboarding scan executed; all green.
+
+**Onboarding scan results:**
+1. TimeKeeper START — committed to git (a626455).
+2. `docs/build_handover.md` read end-to-end (2026-07-14 EVE body).
+3. Most-recent ORS = `ORS_stripe_zoho_d12_event_map_spec_2026_07_14.md` (OPEN, Stages 2+ marked "TO FILL AT DRAFT-COMPLETE"). Legitimately parked (D1.2 authorship context-switched; resumable). Trust anchor unchanged = `ORS_middleware_investigation_2026_07_10.md` **PASS Verification-rigor**. Stage-3 STOP does NOT fire per 2026-07-03 doctrine (blocked-parked/context-switched ≠ incomplete-mid-build).
+4. P4D3 queried — current-state row confirmed = `task_8115b620` 🟡 (D1.2 spec authorship) under `Stripe_Zoho_Subscription_Revenue_Linkage / P1_Spec_Authorship_and_Sign_Off / D1.2`. 3 downstream P2 build tasks 🔲 gated on either ESC-024 (Stripe restricted key) or D1.2 spec completion. Matches 2026-07-14 handover posture.
+5. Memory router `status` — L1/L2/L3 (3281 memories) / L4 (958 docs, 6 vaults) / L5 all green.
+6. `curl -sI https://elevationary.com/` → HTTP/2 200. Cloudflare edge healthy 05:35 UTC 2026-07-17.
+
+**Delta since 2026-07-14 EVE handover:** none code-side.
+- No code shipped in the ~3-day interim. `origin/main` = local `main` = last non-timelog commit at 98c1378 (2026-07-14 EVE handover). Only timelog commits landed since.
+- No new ORS filed.
+- No P4D3 status transitions.
+- No CEO Dashboard action observed on Website side re ESC-024/025/026 cluster.
+- No new A2A envelopes actioned beyond this onboarding request.
+
+**Blocker table (unchanged from 2026-07-14 EVE):** see 2026-07-14 EVE body below.
+
+**Next-session first move (unchanged from 2026-07-14 EVE):**
+1. **Complete revocation-drill live-fire:** CEO visits `elevationary.com/editions/[edition]/` → auths → confirms signed-in → re-fire `revoke_user` → CEO refreshes → confirm re-auth prompt fires → close task_d2ff9e4f live-fire; close task_6215a7b9 with walkthrough + vault upload.
+2. **Complete P4D3 5 P3 task flips** — reconcile MCP `update_task` mechanical failure from 2026-07-14; may require different tool signature OR manual sheet edit.
+3. **Resume D1.2 spec authorship** — task_8115b620; ORS `ORS_stripe_zoho_d12_event_map_spec_2026_07_14.md` primed and ready for Stages 2+ inline fill.
+4. **On ESC-119 completion:** guide CEO through one-time Zoho OAuth authorization flow → capture refresh_token → drop to `~/.elevationary_website/wrangler_secrets`; add chained-allow follow-up `Bash(source ~/.elevationary_website/wrangler_secrets && npx wrangler *)`.
+5. **On ESC-024 completion:** drop Stripe restricted-key + 6 STRIPE_PRICE_* to `~/.elevationary_website/wrangler_secrets`; push to Website Worker via wrangler secret sequence.
+6. **D2.1 build** unblocks when both Zoho refresh_token (ESC-119) AND Stripe restricted-key (ESC-024) land.
+
+**Uncommitted this session:** `docs/build_handover.md` (this state ping); TimeKeeper START commit already landed as a626455.
+
+**Trust anchor:** unchanged — `ORS_middleware_investigation_2026_07_10.md` PASS Verification-rigor.
+
+---
+
 # Website Build Handover — 2026-07-14 EVE (5 ESCs CLOSED; P3 IdP cluster verify+wire 4/5; ESC-123 sandbox-source unblock; ESC-119 Zoho OAuth kickoff; D1.2 ORS opened; 2 D2.1 hygiene-gap blockers resolved)
 
 ## ⚡ STATE PING 2026-07-14 EVE (prepended; earlier same-day ping + 2026-07-12 + earlier bodies preserved below)
