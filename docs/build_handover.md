@@ -9,7 +9,7 @@
 **Onboarding scan results:**
 1. TimeKeeper START — committed to git (a626455).
 2. `docs/build_handover.md` read end-to-end (2026-07-14 EVE body).
-3. Most-recent ORS = `ORS_stripe_zoho_d12_event_map_spec_2026_07_14.md` (OPEN, Stages 2+ marked "TO FILL AT DRAFT-COMPLETE"). Legitimately parked (D1.2 authorship context-switched; resumable). Trust anchor unchanged = `ORS_middleware_investigation_2026_07_10.md` **PASS Verification-rigor**. Stage-3 STOP does NOT fire per 2026-07-03 doctrine (blocked-parked/context-switched ≠ incomplete-mid-build).
+3. Most-recent ORS = `ORS_stripe_zoho_d12_event_map_spec_2026_07_14.md` — **CLOSED-DESCOPED** (0% D1.2 authorship shipped; 100% deferred to next-session fresh ORS). Sibling `ORS_p3_idp_cluster_2026_07_14.md` also **CLOSED-DESCOPED** (4/5 P3 tasks shipped + agent-verified; terminal wrap descoped pending revocation-drill visible browser live-fire). Both terminal close-states properly declared. Trust anchor unchanged = `ORS_middleware_investigation_2026_07_10.md` **PASS Verification-rigor** (neither 2026-07-14 log advances trust anchor — CLOSED-DESCOPED is a non-PASS terminal state). Stage-3 STOP does NOT fire (CLOSED-DESCOPED is explicitly non-blocking per 2026-07-03 doctrine).
 4. P4D3 queried — current-state row confirmed = `task_8115b620` 🟡 (D1.2 spec authorship) under `Stripe_Zoho_Subscription_Revenue_Linkage / P1_Spec_Authorship_and_Sign_Off / D1.2`. 3 downstream P2 build tasks 🔲 gated on either ESC-024 (Stripe restricted key) or D1.2 spec completion. Matches 2026-07-14 handover posture.
 5. Memory router `status` — L1/L2/L3 (3281 memories) / L4 (958 docs, 6 vaults) / L5 all green.
 6. `curl -sI https://elevationary.com/` → HTTP/2 200. Cloudflare edge healthy 05:35 UTC 2026-07-17.
