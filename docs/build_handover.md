@@ -1,4 +1,91 @@
-# Website Build Handover — 2026-07-19 (ESC-024 further-scope-corrected 3→1: PREVIEW coupons are ONBOARDING coupons per CEO 2026-07-19 direction; only restricted-key creation remains; step-by-step UI instructions delivered to CEO)
+# Website Build Handover — 2026-07-20 (ESC-024 + ESC-119 both CLOSED same-cycle 2026-07-19 EOD → 2026-07-20; dual-side live-fire byte-exact; D2.1 build fully unblocked; 3 Stripe UI/API divergences captured for L3 fleet-lesson; no code shipped this session)
+
+## ⚡ STATE PING 2026-07-19 23:00→2026-07-20 EOD-transition UTC — ESC-024 + ESC-119 both CLOSED; D2.1 unblocked
+
+**Session trigger:** CEO in-IDE dispatch after landing the Stripe restricted key + Zoho refresh_token to `~/.elevationary_website/wrangler_secrets.txt`. Session covered: (1) 8-key presence audit + non-value fingerprint print via `source ~/.elevationary_website/wrangler_secrets.txt` (source-only, never `cat` per auto-memory), (2) full 7-scope Stripe restricted-key audit against spec §10 (2 iterations after CEO one-click fix), (3) `write:checkout.sessions` liveness proof via param-missing POST, (4) 6 Price ID validation vs Newsletter-blessed canonical amounts/intervals/products, (5) Zoho ESC-119 dual-side live-fire (mint + read + negative-scope), (6) 2 outbound A2A envelopes (CBM ACK + Amanda close-request), (7) Amanda register-close relay confirmation.
+
+**ESC-024 verification results (Stripe restricted key + 6 Price IDs):**
+
+| Test | Result |
+|---|---|
+| `STRIPE_WEBSITE_SECRET_KEY` presence (renamed by CEO from spec §11.1 `STRIPE_SECRET_KEY` for cross-Worker uniqueness) | ✅ `rk_live_...GYiqK0` len=107 |
+| `STRIPE_WEBSITE_VERIFY_READ_KEY` (2026-07-06 verification key) | ✅ `rk_live_...zAwe` len=107 |
+| 6 `STRIPE_PRICE_*` presence (all `price_1T...` len=30) | ✅ all present |
+| Price value validation via VERIFY_READ_KEY | ✅ INDIVIDUAL_ACCESS $29/$290 · FUNCTIONAL_BUNDLE $69/$690 · ALL_ACCESS_CORPORATE $149/$1490 — all livemode=True active=True, 3 distinct products |
+| 7-scope allow: Balance/Charges/Customers/Events/Invoices/Subscriptions Read | ✅ HTTP 200 on all 6 (after CEO one-click Charges Read fix at ~21:32 UTC) |
+| Checkout Sessions Write | ✅ POST returned `parameter_missing` (auth passed validator, write scope proven) |
+| Prices/Coupons/PMC/Payment Methods deny | ✅ HTTP 403 on all 4 |
+| **DIVERGENCE 1** — Products, Promotion Codes | UI toggle=None but API returns 200 — Stripe UI/API bug (or read-graph transitive) |
+| **DIVERGENCE 2** — Charges↔Refunds enum coupling | Setting one toggle forces the other; documented by CEO in-turn |
+| **DIVERGENCE 3** — Payment Intents, Payouts | UI=None but API 200 — implicit adjacency grant via Charges/Balance Transactions read-graph |
+
+All 3 divergences are **Read-only, zero WRITE-drain risk**. Endorsed by Amanda (msg_id `2eb13299-303e-4b85-a13b-28940588a75f`) as non-doctrine factual/technical discoveries → self-ingest class per doctrine-lesson-ratification guardrail. **L3 fleet lesson filing pending at next wrap** (`fleet_lesson_stripe_restricted_key_ui_api_divergence.md` — three-pathology catalog + never-trust-UI-toggles audit protocol).
+
+**ESC-119 verification results (Zoho OAuth credential path):**
+
+| Test | Result |
+|---|---|
+| 4 ZOHO_* creds present in carveout (CLIENT_ID/CLIENT_SECRET/REFRESH_TOKEN/ORGANIZATION_ID) | ✅ all present (org=920008429 matches CBM's declared) |
+| Refresh→access mint (`accounts.zoho.com/oauth/v2/token`) | ✅ HTTP 200, expires_in=3600s, api_domain=`https://www.zohoapis.com` (US DC) |
+| 5-scope echo (byte-exact match CBM's earlier probe) | ✅ `ZohoBooks.invoices.CREATE + .UPDATE + .contacts.READ + .contacts.CREATE + .customerpayments.CREATE` |
+| Live GET `/books/v3/contacts?organization_id=920008429` | ✅ HTTP 200 code=0 message=success |
+| Negative scope probe GET `/books/v3/invoices` | ✅ HTTP 401 code=57 "not authorized" — confirms least-priv is real (`invoices.READ` correctly denied) |
+
+**CBM's inbound envelope** (msg_id `46665e52-9094-49e9-96e3-6ba22c1e7f04`, correlation `a2a_send_client_billing_website_20260719_232535`) confirmed byte-identical from their side, with 2 drift notes both ACK'd:
+1. Filename landed at `wrangler_secrets.txt` not `wrangler_secrets` — cosmetic; operative constraint per auto-memory `feedback_source_only_not_cat_for_secrets_env` is "non-secrets.env filename to sidestep the 4th broad deny" which `.txt` satisfies.
+2. CBM's original handshake used `list_invoices` but that requires `.invoices.READ` (intentionally not granted per D1.1 spec) — CBM patched walkthrough to `list_contacts` which uses granted `.contacts.READ`. Correct call, walkthrough now matches actual grant.
+
+**A2A dispatches (both via `python3 ~/.gemini/antigravity/skills/staff_agent/scripts/a2a_send.py`):**
+- To CBM (`client_billing`): msg `c9b6745a-7952-4b07-b4b5-17dfae26eedb`, corr `a2a_send_website_client_billing_20260719_233719` — ACK-PASS + drift notes acknowledged + D2.1 build-start ping protocol.
+- To Amanda (`executive_assistant`): msg `ee2e0e6f-3af6-407a-8711-c9133551bda3`, corr `a2a_send_website_executive_assistant_20260719_233721` — ESC-119 CLOSE request + ESC-024 CLOSE request (both with full live-fire evidence).
+
+**Amanda register-close relay** (msg `2eb13299-303e-4b85-a13b-28940588a75f`):
+- **ESC-024 CLOSED 🟢 VERIFIED-ACTIVE** — body enriched with live-fire evidence + 3 divergences flagged for L3 filing
+- **ESC-119 CLOSED-EXECUTION-VERIFIED 🟢** — body enriched with dual-side live-fire evidence
+- **ESC-122 (Heller D3) QUEUE-RELEASED** — no longer held behind ESC-119; default ordering ESC-021 → ESC-122
+- **Fleet-relay cascade (6 envelopes):** Website close-confirm + Newsletter (Stripe write-path online) + CBM (D2.1 unblocked both sides) + Administrator (secret_consumer_registry update opportunity) + Sales (ESC-021 promoted next-in-CEO-queue) + Heller_SDP (ESC-122 queue-release)
+- **No CEO surface required from Amanda** — CEO in-IDE brief already covered ESC-024 done + ESC-119 in-progress per True-Silent-Between-ESC-Presentations doctrine
+
+**P4D3 state (unchanged mechanically; unblock-only):**
+- `task_8115b620` D1.2 spec authorship — 🟢 (already closed 2026-07-19 03:04 UTC; unchanged this session)
+- `task_253358e4` T2.1a Stripe webhook wiring — 🔲 **UNBLOCKED** (ESC-024 CLOSED); ready to claim at D2.1 build start
+- `task_938061e0` T2.1b transformation layer — 🔲 **UNBLOCKED** (dependency chain cleared); ready to claim at D2.1 build start
+- `task_0dd2619e` T2.1c Zoho dispatch — 🔲 **UNBLOCKED** (ESC-119 CLOSED); ready to claim at D2.1 build start
+
+**No new P4D3 status flips this session** — the 3 P2 tasks stay 🔲 until D2.1 build ORS Stage 1 fires. Filed one Decision entry: `D_esc_024_esc_119_credential_paths_verified_2026_07_20` under `Stripe_Zoho_Subscription_Revenue_Linkage / P1_Spec_Authorship_and_Sign_Off` capturing the dual-close.
+
+**ORS state:**
+- **No new ORS opened this session.** Work was verification-only (no code, no config mutations — CEO landed credentials, Website audited). Per doctrine "money-adjacent" the audit arguably could have justified a Verification-rigor ORS inline; deferred to Amanda's endorsement path (this session's verification IS the closure evidence attached to ESC-024 + ESC-119 register bodies).
+- **Trust anchor unchanged:** `ORS_middleware_investigation_2026_07_10.md` PASS Verification-rigor (code-side).
+- **Most-recent ORS PASS:** `ORS_stripe_zoho_d12_event_map_spec_2026_07_18.md` Standard-rigor PASS (spec-authorship surface).
+- **No ORS to close this session.** All 4 most-recent logs terminal-state (2026-07-13/14×2 CLOSED-DESCOPED, 2026-07-18 PASS).
+
+**Uncommitted this session:** `docs/build_handover.md` (this ping). All other work: A2A envelopes (out-of-repo via gateway), Stripe/Zoho API live-fire probes (no on-disk artifacts), P4D3 Decision entry (in Google Sheet, not in repo).
+
+**Next-session first move (D2.1 build):**
+1. **Open `ORS_stripe_zoho_d21_worker_build_<YYYY_MM_DD>.md` Detailed-rigor** — Stage 0 blast-radius (Stripe LIVE money surface + Zoho LIVE accounting surface) + Stage 1 build worklist keyed off spec v1.0.4 §5 (5-event mapping), §6 (Zoho REST client), §7 (two-layer idempotency), §9 (error handling), §11 (env-var contract using STRIPE_WEBSITE_SECRET_KEY + 6 STRIPE_PRICE_* + 4 ZOHO_* names now live in carveout), §13 (acceptance criteria).
+2. **Claim the 3 P2 tasks** via `update_task` with `agent_id='Website' + Date=today + status='🟡'`.
+3. **Author `workers/subscribe-checkout/src/webhook_receiver.ts`** + signature verify + 5-event transformer + Zoho REST client + two-layer idempotency + DLQ. Reuse `workers/subscribe-checkout/src/welcome_stripe_client.ts` READ-path patterns where applicable.
+4. **`wrangler secret put` sequence** on `subscribe-checkout` Worker for: STRIPE_WEBSITE_SECRET_KEY + 6 STRIPE_PRICE_* + ZOHO_CLIENT_ID/SECRET/REFRESH_TOKEN/ORGANIZATION_ID (11 total). Uncomment `/api/checkout/*` + add new `/api/stripe-webhook` routes in wrangler.toml.
+5. **`wrangler deploy`** + Stage 2.6 live-fire against real Stripe webhook + idempotency probe + Zoho contact/invoice/payment creation validation.
+6. **Detailed-rigor ORS PASS target.** Telegram-page CEO on close per substantial-deliverables auto-memory. Ping CBM per handshake protocol committed in msg `c9b6745a`.
+
+**Alternate track (independent of D2.1):**
+- **Revocation drill live-fire** (task_d2ff9e4f + task_6215a7b9) — still awaits CEO browser session on `elevationary.com/editions/*`. Fires in CEO's next active window; unblocks P3 IdP cluster wrap.
+
+**Fleet lesson filing pending at next wrap:** `fleet_lesson_stripe_restricted_key_ui_api_divergence.md` (3-pathology catalog + audit protocol). Amanda-endorsed as self-ingest class.
+
+**Blockers cleared this cycle (from 2026-07-19 EOD state):**
+
+| Blocker | Prior state | Current state |
+|---|---|---|
+| ESC-024 (P1) Stripe restricted key + Price IDs | CEO gated | ✅ CLOSED 🟢 VERIFIED-ACTIVE 2026-07-19 |
+| ESC-119 (—) Zoho OAuth `ZOHO_REFRESH_TOKEN` | CEO gated | ✅ CLOSED-EXECUTION-VERIFIED 🟢 2026-07-19 |
+| ESC-025 (P1) `sk_live_*` rotation | CEO gated (bundled with ESC-024) | Amanda queue — unchanged (still bundled) |
+| ESC-026 (P1) Stripe MCP read verification | Satisfied by ESC-024 read scopes | ✅ Effectively satisfied |
+| Revocation drill live-fire | CEO browser gated | Unchanged — awaits CEO active window |
+
+---
 
 ## ⚡ STATE PING 2026-07-19 ~19:00 UTC — CEO further correction: PREVIEW coupons are ONBOARDING; ESC-024 scope reduces 3→1
 
