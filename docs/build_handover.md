@@ -1,4 +1,30 @@
-# Website Build Handover — 2026-07-20 (ESC-024 + ESC-119 both CLOSED same-cycle 2026-07-19 EOD → 2026-07-20; dual-side live-fire byte-exact; D2.1 build fully unblocked; 3 Stripe UI/API divergences captured for L3 fleet-lesson; no code shipped this session)
+# Website Build Handover — 2026-07-20 (LATEST session: Triad status reconciliation — corrected two stale cross-agent blocks (Marketing + Amanda relay) via live wire-proof; X-AI-Bot headers re-verified live on /answers/finance/ all 4 engines; ESC-025 unrestricted-key rotation = Website NO-CONSUMER; D1.3 confirmed signed both sides; spec bumps v1.0.2/1.0.3/1.0.4 all informational; D2.1 unblocked; no code shipped. PRIOR session below: ESC-024 + ESC-119 both CLOSED 2026-07-19.)
+
+## ⚡ STATE PING 2026-07-20 (LATEST) — Triad reconciliation + wire re-verification; no code; D2.1 remains next
+
+**Session trigger:** Onboarding scan → CEO flagged a Triad status discrepancy (Amanda's relay said "Marketing idle, blocked on Website Phase G + X-AI-Bot headers"). Session was verification + cross-agent comms only — zero code, zero config, zero production mutation.
+
+**What was done:**
+1. **Onboarding scan** — TimeKeeper START; read handover; read most-recent ORS `ORS_stripe_zoho_d12_event_map_spec_2026_07_18.md` = **ORS PASS** (trust anchor intact); memory stack L1–L4 healthy; anchor task `task_8115b620` confirmed 🟢 (2026-07-19).
+2. **X-AI-Bot header re-verification (live wire, 2026-07-20)** — corrected a stale cross-agent block. `curl` against `https://elevationary.com/answers/finance/`: GPTBot→`x-ai-bot: GPTBot`/`openai`; ClaudeBot→`ClaudeBot`/`anthropic`; PerplexityBot→`PerplexityBot`/`perplexity`; Applebot→`Applebot`/`apple`; human Mozilla UA→**no headers (correct negative)**. Middleware unchanged since commit `ef78d8f` (2026-06-24); live+verified since 2026-07-10 (`ORS_middleware_investigation`, `task_ac44b289` PASS). **Marketing was NOT blocked on Website — the header handoff was already delivered.**
+3. **Cross-agent corrections dispatched** (both via `a2a_send.py`):
+   - → Marketing (`elevationary_marketing`): msg `039acd7b-8af6-406d-8e4d-5195358e727f` — live-fire proof + header handoff closed + asked them to name any residual specific gate.
+   - → Amanda (`executive_assistant`): msg `c36c3a25-7ace-4660-8446-8b29c17fe843` — status-parity correction (Website line accurate; Marketing line stale).
+   - **Marketing accepted in full** — independently wire-verified 11 answer routes (200) + JSON-LD (index 2 blocks; dept/cross-functional 4 each) + AI-bot detection. Confirmed "Phase G LIVE signal" only ever meant the deploy milestone (AEO routes serving), which is satisfied. **No Website handoff pending.** Marketing's next: D1.5.5 post-LIVE brand-gate smoke under a fresh ORS; brand-drift findings route back to Website as discrete items.
+   - **Amanda accepted** — flagged her own pattern (3× this session she relayed self-reported blocks without counterparty cross-check: D1.3, Newsletter-consumer, Marketing); corrected the Triad answer to CEO: nothing blocks the Triad.
+4. **Earlier this session — spec-bump parity check** (Amanda thread): verified §15 change log — v1.0.2 (§12 row-8 pointer fix), v1.0.3 (env-var tier-label rename; Worker binds by Price ID), v1.0.4 (§11.1 coupon-posture CEO correction) are **all informational; contract not reopened; no re-sign-off.** D1.3 confirmed signed both sides (fired 2026-07-19 03:04 UTC env `6be893bb`; Website ACK 2026-07-19 16:08 UTC). T2.1a freeze-dependent wiring unblocked.
+5. **ESC-025 (unrestricted `sk_live_*` key rotation, CEO-executed 2026-07-20)** — Amanda polled consumers. **Website = NO CONSUMER.** Website's Stripe LIVE consumption is exclusively via two restricted `rk_live_*` keys (write:checkout.sessions + read-verify) in the `~/.elevationary_website/` carveout — untouched by rotation; no runtime Worker refresh needed. Flagged dev-time provisioning scripts (`configure_worker_secrets.py`/`stripe_provision.py`) reference `STRIPE_LIVE_KEY` from shared path but are one-off push tooling, not runtime consumers. Reply to Amanda confirmed; leg closed. Amanda forwarding nuance to Administrator for `secret_consumer_registry`.
+
+**P4D3 state (this session):** No status flips — no D2.1 code started, so the 3 P2 tasks stay 🔲. Honest annotation applied to `task_253358e4` (T2.1a) name: removed the now-false "GATED on ESC-024" clause (ESC-024 CLOSED 2026-07-19) → marked ESC-024 gate CLEARED / UNBLOCKED. `task_8115b620` D1.2 = 🟢 (unchanged). `task_938061e0` (T2.1b) + `task_0dd2619e` (T2.1c) = 🔲-UNBLOCKED (names already clean).
+
+**ORS state:** No new ORS opened — verification + comms only, no code/config/production mutation. Trust anchor unchanged: `ORS_middleware_investigation_2026_07_10.md` PASS. Most-recent PASS: `ORS_stripe_zoho_d12_event_map_spec_2026_07_18.md`.
+
+**Open item (not a Website blocker):** ESC-120 remains CEO's open decision (A/B/C) per Amanda — no identified Website surface; will pick up if any branch lands a Website dependency.
+
+**Next-session first move: unchanged — D2.1 build.** See the D2.1 build worklist in the prior ping below (open Detailed-rigor ORS keyed off spec v1.0.4 §5/§6/§7/§9/§11/§13; claim the 3 P2 tasks to 🟡; author `webhook_receiver.ts` + Zoho REST client + two-layer idempotency + DLQ; `wrangler secret put` ×11 + uncomment routes; deploy + Stage 2.6 live-fire). Also pending at next wrap: L3 fleet-lesson filing `fleet_lesson_stripe_restricted_key_ui_api_divergence.md` (from prior session).
+
+---
+
 
 ## ⚡ STATE PING 2026-07-19 23:00→2026-07-20 EOD-transition UTC — ESC-024 + ESC-119 both CLOSED; D2.1 unblocked
 
