@@ -6,7 +6,13 @@ Housekeeping update (peer-agent request). **No code/config/production mutation 2
 
 **P4D3 refreshed this update:** `task_253358e4` (T2.1a) projected date pushed 2026-07-23→**2026-07-25** (foundations done; index.ts wiring + transformer + idempotency + DLQ + LIVE deploy + §13 live-fire remain); name annotated with progress + remaining scope. Status 🟡 (in-progress; projected date active). D2.1 deliverable + T2.1b/T2.1c still 🔲. No completions to flip — nothing deployed yet.
 
-**Next work unit (unchanged):** D2.1 Increment 2b — 5-event transformer (§5), fresh ORS. See the 2026-07-21 ping below for the full remaining-increment sequence.
+**Next work unit:** D2.1 Increment 2b — 5-event transformer (§5), fresh ORS. See the 2026-07-21 ping below for the full remaining-increment sequence. **PLUS a new discrete SEO item — see addendum.**
+
+### ↳ Post-wrap addendum 2026-07-24 (read-only triage; no code/deploy)
+
+**Marketing D1.5.5-F1 smoke finding → triaged NOT-A-DEFECT (wrong-URL artifact).** Marketing tested `/answers/it-engineering/` (soft-404 → Pages homepage fallback, 8,998 B). The IT/Eng Q&A landing is canonical at **`/answers/it/`** and renders correctly (live: 23,777 B, FAQPage, 8 Q&A, title "IT (Engineering) — Answers — Elevationary"). Slug `it` is correct per the single-token convention (every dept uses short slugs; `customer-success` proves hyphenated slugs build fine). Zero internal links reference `it-engineering`. Replied to Marketing: re-verify at `/answers/it/` → D1.5.5 loop closes 11/11. No Website fix needed.
+
+**NEW finding surfaced during triage (mine to fix, own fresh ORS):** the **sitemap lists only 2 of 11 answer routes** — `/answers/finance/` + `/answers/cross-functional/` only; the other **8 dept landings + the `/answers/` index are ABSENT**. Identical in LOCAL build + LIVE (15 total `<loc>`) → **sitemap-generation gap, not deploy lag.** Real AEO/SEO discoverability hole (Website domain). **NEXT-SESSION PRIORITY alongside D2.1 Inc 2b** — open a fresh ORS; investigate the sitemap template/generation (likely `_site/sitemap.xml` source glob or a hand-curated list omitting depts); fix so all 9 depts + index + book/subscribe surfaces are included; rebuild + deploy + verify live sitemap coverage. NOT part of D1.5.5-F1.
 
 ---
 
