@@ -46,7 +46,13 @@ export type WorkerErrorCode =
   | "session_id_malformed"
   | "session_id_invalid"
   | "stripe_session_retrieve_failed"
-  | "entitlement_lookup_failed";
+  | "entitlement_lookup_failed"
+  // Stripe webhook receiver surface (D2.1; spec § 3.4 rejection posture).
+  | "missing_signature"
+  | "malformed_signature"
+  | "invalid_signature"
+  | "timestamp_out_of_range"
+  | "config_error";
 
 export interface WorkerError {
   error: WorkerErrorCode;
@@ -144,4 +150,44 @@ export interface Env {
   // CF dashboard service-auth flow.
   CF_ACCESS_CLIENT_ID?: string;
   CF_ACCESS_CLIENT_SECRET?: string;
+
+  // ==========================================================================
+  // D2.1 Stripe Webhook Receiver — Subscription Revenue Linkage (spec § 11).
+  // Frozen contract: spec_stripe_event_mapping_2026_07_18.md (D1.3 signed
+  // 2026-07-19). All optional until the LIVE-deploy increment provisions them
+  // via `wrangler secret put` + claims the wrangler.toml bindings — the Worker
+  // asserts presence at webhook-handler entry (spec § 3.4 config_error), so the
+  // existing checkout path is unaffected by their absence.
+  // ==========================================================================
+
+  // --- Stripe webhook secrets (spec § 11.1) ---
+  // Signature signing secret (whsec_…) — spec § 3.2. DISTINCT from the API key.
+  STRIPE_WEBHOOK_SECRET?: string;
+  // Restricted API key (spec § 10, scope per § 10 table).
+  // ⚠ DIVERGENCE (L1): spec § 10/§11.1 label is STRIPE_SECRET_KEY; CEO 2026-07-19
+  // unique-secret-name rule renamed it STRIPE_WEBSITE_SECRET_KEY (consumer-Worker
+  // -prefixed). Rename overrides spec label. See auto-memory
+  // feedback_stripe_website_secret_key_rename_convention + this increment's ORS.
+  STRIPE_WEBSITE_SECRET_KEY?: string;
+
+  // --- Stripe Price IDs (spec § 11.1 frozen names; supersede the older
+  //     STRIPE_PRICE_*_MONTHLY forward-decls above). Tiers per Master Business
+  //     Plan §274-276. No 4th cross-vertical slot (§11.1 note: bespoke SKU). ---
+  STRIPE_PRICE_INDIVIDUAL_ACCESS_MONTHLY?: string;
+  STRIPE_PRICE_INDIVIDUAL_ACCESS_ANNUAL?: string;
+  STRIPE_PRICE_FUNCTIONAL_BUNDLE_MONTHLY?: string;
+  STRIPE_PRICE_FUNCTIONAL_BUNDLE_ANNUAL?: string;
+  STRIPE_PRICE_ALL_ACCESS_CORPORATE_MONTHLY?: string;
+  STRIPE_PRICE_ALL_ACCESS_CORPORATE_ANNUAL?: string;
+
+  // --- Zoho Books OAuth v2 (spec § 11.2) ---
+  ZOHO_CLIENT_ID?: string;
+  ZOHO_CLIENT_SECRET?: string;
+  ZOHO_REFRESH_TOKEN?: string;
+  ZOHO_ORGANIZATION_ID?: string; // well-known 920008429; non-secret
+
+  // --- Bindings (spec § 11.3; claimed in wrangler.toml at LIVE-deploy) ---
+  STRIPE_IDEMPOTENCY?: KVNamespace; // Layer-1 event.id dedup (§7.1)
+  STRIPE_DLQ?: R2Bucket;            // DLQ storage (§9.1)
+  DLQ_PAGED_MARKER?: KVNamespace;   // stuck-loop page suppression (§9.4)
 }

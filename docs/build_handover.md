@@ -1,4 +1,47 @@
-# Website Build Handover — 2026-07-20 (LATEST session: Triad status reconciliation — corrected two stale cross-agent blocks (Marketing + Amanda relay) via live wire-proof; X-AI-Bot headers re-verified live on /answers/finance/ all 4 engines; ESC-025 unrestricted-key rotation = Website NO-CONSUMER; D1.3 confirmed signed both sides; spec bumps v1.0.2/1.0.3/1.0.4 all informational; D2.1 unblocked; no code shipped. PRIOR session below: ESC-024 + ESC-119 both CLOSED 2026-07-19.)
+# Website Build Handover — 2026-07-23 (LATEST: D2.1 build in progress — 2 foundation increments shipped CLOSED-DESCOPED 2026-07-21 (signature-verify + Zoho REST client), 116/116 tests green, uncommitted; full decision set D-01..D-05 🟢 + P1 phase closed. PRIOR 2026-07-21 build session detail below.)
+
+## ⚡ STATE CONFIRM 2026-07-23 — no code change 07-22→07-23; P4D3 refreshed
+
+Housekeeping update (peer-agent request). **No code/config/production mutation 2026-07-22 or 2026-07-23** — state is exactly as the 2026-07-21 build session left it: D2.1 Increments 1 (signature-verify `src/stripe_webhook_verify.ts`) + 2a (Zoho client `src/zoho_client.ts`) shipped CLOSED-DESCOPED, `tsc` clean, 116/116 vitest green, all 3 Worker files still **uncommitted** (held per "commit only when asked").
+
+**P4D3 refreshed this update:** `task_253358e4` (T2.1a) projected date pushed 2026-07-23→**2026-07-25** (foundations done; index.ts wiring + transformer + idempotency + DLQ + LIVE deploy + §13 live-fire remain); name annotated with progress + remaining scope. Status 🟡 (in-progress; projected date active). D2.1 deliverable + T2.1b/T2.1c still 🔲. No completions to flip — nothing deployed yet.
+
+**Next work unit (unchanged):** D2.1 Increment 2b — 5-event transformer (§5), fresh ORS. See the 2026-07-21 ping below for the full remaining-increment sequence.
+
+---
+
+
+## ⚡ STATE PING 2026-07-21 (LATEST) — D2.1 build increment 1 shipped (signature-verify foundation); CLOSED-DESCOPED; continuation queued
+
+**Session trigger:** Amanda A2A stall-check → drift-reconciliation (Amanda counterparty-verified: D1.3 sign-off actually CLOSED 2026-07-19 under CBM's zero-gap thread; my onboarding trace had anchored on the stale `d12_draft_complete` correlation → false "blocked on CBM"). Blocker withdrawn; D2.1 confirmed UNBLOCKED.
+
+**What was done:**
+1. **Onboarding scan** — TimeKeeper START; read handover; most-recent ORS at open = `ORS_stripe_zoho_d12_event_map_spec_2026_07_18.md` = **ORS PASS**; memory L1–L4 healthy.
+2. **Unblock actions** — Stood down an erroneous CBM re-page (root-caused stale-correlation trace); **claimed `task_253358e4` (T2.1a)** projected 2026-07-23.
+3. **D2.1 Increment 1 BUILT + verified** — new ORS `ORS_d21_stripe_webhook_receiver_2026_07_21.md` = **CLOSED-DESCOPED** (verified subset shipped; NOT whole-deliverable PASS):
+   - `workers/subscribe-checkout/src/stripe_webhook_verify.ts` (NEW) — real Stripe-Signature HMAC-SHA256 via Web Crypto (zero new deps), constant-time compare, Stripe `constructEvent` check order (sig-match before timestamp = no replay oracle), full §3.4 rejection posture (missing/malformed/invalid/timestamp/config).
+   - `src/types.ts` (EXTEND) — webhook `Env` contract (§11) + 5 new `WorkerErrorCode`s. **L1 DIVERGENCE:** built to `STRIPE_WEBSITE_SECRET_KEY` (CEO 2026-07-19 unique-name rule; overrides spec §10/§11.1 `STRIPE_SECRET_KEY` label). `STRIPE_WEBHOOK_SECRET` distinct/unchanged.
+   - `test/stripe_webhook_verify.test.ts` (NEW, 15 cases: 12 equivalence classes + red-team). **`tsc --noEmit` exit 0; `vitest run` 103/103 green** (88 baseline untouched + 15 new).
+4. **CEO rulings ratified as-frozen this session (via Amanda A2A), ZERO rework each:**
+   - **ESC-120 / D-04** (error-handling): retry+DLQ+page = my spec §8/§9 exactly. 🟢
+   - **ESC-132 / D-01** (Zoho cred path): direct-REST via `zoho_auth.py` OAuth = my spec §6 exactly. 🟢
+   - **ESC-133 / D-03** (idempotency): last on CEO desk; my spec §7 two-layer already encodes it; anticipated zero-rework; non-blocking for the transformer/Zoho-client increment.
+
+**P4D3 state:** `task_253358e4` (T2.1a) CLAIMED (🔲 + projected 2026-07-23). `task_8115b620` (D1.2 task) 🟢. `task_938061e0` (T2.1b transformer) + `task_0dd2619e` (T2.1c Zoho dispatch) still 🔲-UNBLOCKED (unclaimed). **This session, post-ESC-133:** flipped **D1.2 deliverable 🟡→🟢** (2026-07-19) + **P1 phase → 🟢** (all four surfaces green: deliverables D1.1/D1.2/D1.3 🟢, decisions D-01→D-04 🟢, Dep-06 🟢) per Amanda's assignment on full-decision-set close (D-01..D-05 all 🟢, Dep-01 🟢). **Flagged to Amanda (not mine — Owner James):** Dep-05 (P2 upstream-external ESC-024) still stale 🟡 though ESC-024 closed 2026-07-19 — needs her/CEO flip to 🟢.
+
+**ORS/trust-anchor:** New CLOSED-DESCOPED log does NOT advance the code anchor (no deploy). Fleet code anchor unchanged: `ORS_middleware_investigation_2026_07_10.md` PASS. CLOSED-DESCOPED = next session proceeds (not a STOP state).
+
+**⚠ Uncommitted:** the 3 Worker files (types.ts M, stripe_webhook_verify.ts + test NEW) are uncommitted — held per "commit only when asked"; commit at next wrap or CEO request. All tested green; low loss-risk but not yet in git.
+
+**Increment 2a ALSO shipped this session (Zoho REST client):** `ORS_d21_stripe_webhook_receiver_inc2a_zoho_client_2026_07_21.md` = **CLOSED-DESCOPED**. New `src/zoho_client.ts` — `ZohoClient` class porting `zoho_auth.py` to the Worker (`fetch`-based, DI'd `fetchFn`/`nowMs`/`kv`): OAuth refresh-token mint + instance/KV token cache (55-min) + 401-refresh-once-retry + org_id/auth injection + all §6.2 endpoint helpers (contacts/invoices/customerpayments). Non-throwing structured `{ok,status,body}` so the §8 retry ladder + §9 DLQ (later) own policy. `test/zoho_client.test.ts` 13 cases. **`tsc` exit 0; vitest 116/116 green** (103 + 13). ⚠ Also uncommitted.
+
+**⚠ TOOLING NOTE:** run `tsc`/`vitest` from INSIDE `workers/subscribe-checkout` via `./node_modules/.bin/tsc` / `./node_modules/.bin/vitest` — a bare `npx tsc`/`npx vitest` from repo root mis-resolves (installs wrong `tsc@2.0.4`; globs both workers → 202 tests). Authoritative worker-local run = 116/116 + TSC_EXIT=0.
+
+**Next-session first move — D2.1 Increment 2b (fresh ORS): the 5-event transformer (§5)** — pure Stripe-payload → Zoho-resource mapping (invoice line-items, contact resolve, customer-payment), consumes `ZohoClient` helpers; fully unit-testable. THEN: `index.ts` `POST /api/webhooks/stripe` wiring (`verifyStripeSignature` → router → transformer → dispatch) + remove `src/webhook.ts` stub + `test/webhook.test.ts`; then two-layer idempotency (§7) + DLQ/retry (§8/§9). THEN LIVE-deploy increment: `wrangler.toml` route claim + KV/R2 bindings (§11.3); `wrangler secret put` ×12 (incl. `STRIPE_WEBSITE_SECRET_KEY` rename + 6 §11.1 price vars + 4 Zoho); `wrangler deploy`; §13 live-fire (signed webhook→200 / unsigned→401, Zoho org GET, Stripe customers GET). Also pending at next wrap: L3 fleet-lesson `fleet_lesson_stripe_restricted_key_ui_api_divergence.md` (carried from prior session).
+
+---
+
+
 
 ## ⚡ STATE PING 2026-07-20 (LATEST) — Triad reconciliation + wire re-verification; no code; D2.1 remains next
 
