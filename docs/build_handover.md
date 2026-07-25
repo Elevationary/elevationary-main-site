@@ -1,4 +1,20 @@
-# Website Build Handover — 2026-07-23 (LATEST: D2.1 build in progress — 2 foundation increments shipped CLOSED-DESCOPED 2026-07-21 (signature-verify + Zoho REST client), 116/116 tests green, uncommitted; full decision set D-01..D-05 🟢 + P1 phase closed. PRIOR 2026-07-21 build session detail below.)
+# Website Build Handover — 2026-07-25 (LATEST: no code change 07-24→07-25; onboarding scan all-green; sitemap-coverage fix filed as P4D3 task_dad56f9f (Future). D2.1 build unchanged — 2 foundation increments CLOSED-DESCOPED 2026-07-21 (signature-verify + Zoho REST client), 116/116 tests green, uncommitted; decision set D-01..D-05 🟢 + P1 phase closed. PRIOR bodies below.)
+
+## ⚡ STATE CONFIRM 2026-07-25 — housekeeping/A2A session; no code/config/production mutation; onboarding green; sitemap fix anchored in P4D3
+
+Peer-agent-triggered session (onboarding + commitment audit + P4D3/handover update). **Zero code, config, or production mutation 2026-07-24→2026-07-25** — on-disk state unchanged from the 2026-07-21 build session (D2.1 Increments 1 + 2a shipped CLOSED-DESCOPED; `tsc` clean; 116/116 vitest green; 3 Worker files still **uncommitted** per "commit only when asked").
+
+**Onboarding scan (all green):** TimeKeeper START committed; handover read; `config/input_surfaces.yaml` absent → forward-scan no-op; commitment forward-scan clean (see below); most-recent ORS `ORS_d21_stripe_webhook_receiver_inc2a_zoho_client_2026_07_21.md` = **CLOSED-DESCOPED** (terminal, non-blocking → proceed); code trust anchor unchanged = `ORS_middleware_investigation_2026_07_10.md` **PASS**; memory router L1–L6 green (L3 3,593 memories; L4 1,141 docs / 6 vaults; L5 available; L6 not-yet-integrated).
+
+**P4D3 updates this session:**
+- **NEW — `task_dad56f9f` filed** (Future, Owner=Website) under `Web_Presence_v2_Contemporary_Triad_BVP_2026_06 / P1.5 — AEO/GEO Expertise Surface / D1.5.5`: **D1.5.5-F2 sitemap dept-landing gap** — live `sitemap.xml` serializes only `/answers/`, `/answers/finance/`, `/answers/cross-functional/`; the other 8 dept `/answers/` landings absent. Website-owned build/deploy defect (not Marketing content). Anchors the fresh-ORS fix + the Marketing re-verify trigger (their side parked as `task_4d8c4f11`, HOLD; my re-deploy ping is the sole trigger). Origin: A2A F1 triage close 2026-07-23.
+- **⚠ FLAG for COO/Amanda — `task_253358e4` (T2.1a) projected Date = 2026-07-25 (today), will slip.** Owner=P4D3, 🟡. Foundations done; substantial remainder (5-event transformer §5 + `index.ts` wiring + idempotency §7 + DLQ/retry §8/§9 + wrangler bindings + LIVE deploy + §13 live-fire) not started this session. Website cannot re-date a P4D3-owned row (`update_task` RBAC-blocks non-owner; `update_status` is status-only) — **re-projection is COO/Amanda's field.** No completion to flip (no D2.1 code this session).
+
+**Commitment forward-scan disposition:** (a) Marketing sitemap re-verify → anchored `task_dad56f9f` ✅; (b) CBM post-ESC-119 handshake → already satisfied (ESC-119 CLOSED 2026-07-19, dual-side live-fire) ✅; (c) revocation-drill live-fire → awaits CEO browser (not agent-actionable); (d) L3 fleet-lesson `fleet_lesson_stripe_restricted_key_ui_api_divergence.md` → still pending next wrap. No passed-deadline commitment left unhandled.
+
+**Next work unit (unchanged, two independent tracks):** (1) D2.1 Increment 2b — the 5-event transformer (§5), fresh ORS; then `index.ts` wiring → idempotency → DLQ → LIVE deploy + §13 live-fire. (2) `task_dad56f9f` sitemap-coverage fix — fresh ORS: root-cause Eleventy collection/permalink enumeration feeding the sitemap template, rebuild + deploy, verify all 11 `/answers/` routes emit `<loc>`, then ping Marketing.
+
+---
 
 ## ⚡ STATE CONFIRM 2026-07-23 — no code change 07-22→07-23; P4D3 refreshed
 
