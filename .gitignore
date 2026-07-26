@@ -7,3 +7,8 @@ __pycache__/
 .venv/
 .vscode/
 .cursor/
+
+# Interim control 2026-07-25: MCP config carries a credential-named field.
+# Blocks accidental `git add -A` staging. NOT the permanent fix — the field
+# must be scrubbed to a canonical-env-store reference. See task_7caadf8f.
+.mcp.json
