@@ -1,0 +1,43 @@
+# input_surfaces.yaml.example — PERL per-agent configuration template
+# =====================================================================
+# This is an EXAMPLE. PERL consumers read ONLY `config/input_surfaces.yaml`
+# (no .example suffix) — this file can never enable anything.
+#
+# To activate PERL for this agent: copy to config/input_surfaces.yaml and
+# edit for THIS agent's actual surface layout. Do NOT copy blindly — the
+# per-agent surface list is the reason this file exists.
+#
+# Absent live file = ALL PERL features OFF (Layer-1 enrichment passthrough,
+# Layer-3 scans skipped-with-log). Every consumer is fail-open: a corrupt or
+# major-version-mismatched file behaves like an absent one, logged once.
+#
+# Design authority: perl_input_surfaces_yaml_design_2026_07_19.md (Administrator)
+# Spec: PERL v2 Component 3.1 (A6) + D1.3 §2.1 / D1.4 §5 enablement semantics.
+
+schema_version: 1          # integer; consumers reject major mismatch → features disabled, log once
+
+# --- Layer-1 enrichment enablement (D1.3 telegram seam / D1.4 a2a seam) ---
+enrichment:
+  enabled: false           # master switch; absent block or file = false
+  ingress:
+    telegram: false        # Layer 1.T — _handle_inbox_message seam
+    a2a: false             # Layer 1.A — RECEIVER's setting; senders check receiver's config
+    ide: false             # reserved — MUST stay false in schema v1 (spec §5.1: hooks cover IDE)
+  progress_threshold_s: 5  # A4 streaming-progress trigger
+
+# --- Layer-3 onboarding forward-scan targets (Component 3.1) ---
+# Paths relative to $ELEVATIONARY_AGENT_WORKSPACE.
+# type enum: meeting_transcript | client_input | internal_supplied | ors_log | other
+input_surfaces: []
+# Example (Heller_SDP pilot shape):
+#   - path: docs/Meetings
+#     type: meeting_transcript
+#     freshness_gate_days: 3
+#   - path: docs/Customer_Supplied
+#     type: client_input
+#     freshness_gate_days: 7
+
+# --- Step 2.7 commitment-scan knobs (Component 3.2) — defaults if absent ---
+commitment_scan:
+  handover_entries: 5
+  transcripts: 3
