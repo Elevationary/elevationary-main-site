@@ -19,6 +19,20 @@ function jsonResponse(status: number, body: unknown): Response {
 }
 const TOKEN_OK = () => jsonResponse(200, { access_token: "tok_ABC", expires_in: 3600 });
 
+/**
+ * A BOUND Zoho list response. Real Zoho echoes `search_criteria` naming the
+ * NORMALISED BASE COLUMN whenever a filter binds — in both the match and the
+ * no-match case. Fixtures without it model an UNBOUND (silently org-wide)
+ * response, which v1.4 § 4.3.1 requires the client to reject.
+ */
+function boundList(column: string, payload: Record<string, unknown>): Response {
+  return jsonResponse(200, {
+    code: 0,
+    search_criteria: [{ column_name: column, comparator: "equal" }],
+    ...payload,
+  });
+}
+
 /** Script-driven fetch mock: each call consumes the next handler; records calls. */
 function makeFetch(handlers: Array<(url: string, init?: RequestInit) => Response>) {
   const calls: Array<{ url: string; init?: RequestInit }> = [];
@@ -98,14 +112,17 @@ describe("ZohoClient — token minting + caching (§ 6.1)", () => {
 
 describe("ZohoClient — request shaping (§ 6.2 / § 6.3)", () => {
   it("injects organization_id + Zoho-oauthtoken auth header on GET", async () => {
-    const { fn, calls } = makeFetch([TOKEN_OK, () => jsonResponse(200, { code: 0, invoices: [] })]);
+    const { fn, calls } = makeFetch([
+      TOKEN_OK,
+      () => boundList("email", { contacts: [{ contact_id: "c1" }] }),
+    ]);
     const client = new ZohoClient(ENV, { fetchFn: fn, nowMs: () => 1_000_000 });
-    const r = await client.listInvoiceByStripeInvoiceId("in_123");
+    const r = await client.listContactByEmail("a@b.com");
     expect(r).toMatchObject({ ok: true, status: 200 });
     const call = calls[1];
-    expect(call.url).toContain("www.zohoapis.com/books/v3/invoices");
+    expect(call.url).toContain("www.zohoapis.com/books/v3/contacts");
     expect(call.url).toContain("organization_id=920008429");
-    expect(call.url).toContain("cf_stripe_invoice_id=in_123");
+    expect(call.url).toContain("email=a%40b.com");
     expect((call.init?.headers as Record<string, string>).Authorization).toBe(
       "Zoho-oauthtoken tok_ABC",
     );
@@ -125,14 +142,19 @@ describe("ZohoClient — request shaping (§ 6.2 / § 6.3)", () => {
     expect(JSON.parse(call.init?.body as string)).toEqual({ customer_id: "c1", line_items: [] });
   });
 
-  it("builds the 7xxx max-lookup query (§ 6.2 / CBM § 3.3)", async () => {
-    const { fn, calls } = makeFetch([TOKEN_OK, () => jsonResponse(200, { code: 0, invoices: [] })]);
+  it("7xxx max-lookup filters on invoice_number_startswith and does NOT rely on server-side sort", async () => {
+    const { fn, calls } = makeFetch([
+      TOKEN_OK,
+      () => boundList("invoice_number", { invoices: [{ invoice_id: "i1", invoice_number: "7001" }] }),
+    ]);
     const client = new ZohoClient(ENV, { fetchFn: fn, nowMs: () => 1_000_000 });
-    await client.listInvoicesMax7xxx();
+    await client.maxInvoiceNumber7xxx();
     const url = calls[1].url;
     expect(url).toContain("invoice_number_startswith=7");
-    expect(url).toContain("sort_order=D");
-    expect(url).toContain("per_page=1");
+    // sort_column / sort_order are non-filter params: silently droppable AND
+    // structurally unassertable. Correctness must not depend on them.
+    expect(url).not.toContain("sort_order");
+    expect(url).not.toContain("sort_column");
   });
 });
 
@@ -142,7 +164,7 @@ describe("ZohoClient — 401 refresh-retry + non-2xx passthrough (§ 6.4 / § 8)
       TOKEN_OK, // initial mint → tok_ABC
       () => jsonResponse(401, { code: 57, message: "invalid token" }), // GET #1 → 401
       () => jsonResponse(200, { access_token: "tok_NEW", expires_in: 3600 }), // forced re-mint
-      () => jsonResponse(200, { code: 0, contacts: [{ contact_id: "c9" }] }), // GET retry → 200
+      () => boundList("email", { contacts: [{ contact_id: "c9" }] }), // GET retry → 200
     ]);
     const client = new ZohoClient(ENV, { fetchFn: fn, nowMs: () => 1_000_000 });
     const r = await client.listContactByEmail("a@b.com");

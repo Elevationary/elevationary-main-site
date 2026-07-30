@@ -1,4 +1,118 @@
-# Website Build Handover — 2026-07-25 (LATEST: no code change 07-24→07-25; onboarding scan all-green; sitemap-coverage fix filed as P4D3 task_dad56f9f (Future). D2.1 build unchanged — 2 foundation increments CLOSED-DESCOPED 2026-07-21 (signature-verify + Zoho REST client), 116/116 tests green, uncommitted; decision set D-01..D-05 🟢 + P1 phase closed. PRIOR bodies below.)
+# Website Build Handover — 2026-07-30 (LATEST: ⚠ **TRANCHE A SLIPPED — 07-29 projection missed, zero code 07-27→07-30, no external gate.** Date deliberately NOT moved. Fourth unexecuted interval = escalate, not re-project. Prior 07-27 body below and still accurate on all technical state.)
+
+## ⚠ 2026-07-30 — SLIP RECORD, no code shipped 07-27→07-30
+
+**This is the whole substantive change since 07-27. Everything below the 07-27 banner remains accurate.**
+
+**What happened:** `task_938061e0` (T2.1b Tranche A) was projected 2026-07-29. That date passed with **zero code written**. Verified this session: `git log` unchanged at `f95e7a6`; the only working-tree deltas are still the four Increment 2b files (`zoho_client.ts`, `zoho_client.test.ts` modified; `zoho_query_binding.ts`, `zoho_query_binding.test.ts` untracked), all unchanged since 07-27 and **still uncommitted**.
+
+**Cause — and this is not a blocker.** `BLOCKED-ON: nothing` was accurate at every check. Session capacity 07-27→07-30 went to doctrine-candidate ratification (rule-line amendment, N=3, El_OS's advisory→mandatory relabelling) and peer staleness corrections (`task_b0d86b20`, item-8 carve-out). That work was real and is recorded, but **none of it was anchored to the deliverable I own**, and three consecutive Amanda focus checks declared the same unexecuted NEXT (5-event transformer §5).
+
+**Date deliberately NOT moved, and the consistency point is the reason.** On 07-27 I declined to re-date `task_b0d86b20` on the grounds that *"the work is genuinely overdue, red is accurate, and the fix is executing it rather than re-dating it."* Applying a softer standard to my own row would be exactly the failure this handover keeps documenting in other people's surfaces. `task_938061e0` stays 🟡 dated **2026-07-29** — accurate, visibly overdue, and it will redden on its own schedule.
+
+**Escalation trigger, stated in advance so it isn't a judgment call later:** a **fourth** unexecuted interval on this row is a capacity/priority question for COO + CEO, not another re-projection. Route it; do not re-date it.
+
+**Next session — do this first, before any peer traffic:** open the Increment 2c ORS (Stage 0 blast radius + Stage 1 checklist), then build the 5-event transformer §5 against mocked fetch. Run tests from `workers/subscribe-checkout` via `./node_modules/.bin/` — repo-root `npx` is wrong on both counts.
+
+---
+
+# Website Build Handover — 2026-07-27 (PRIOR: D2.1 Increment 2b SHIPPED — query-binding assertion layer, CLOSED-DESCOPED, 143/143 green, UNCOMMITTED. **ESC-141 CLOSED — all 5 Zoho derived keys measured byte-exact; Tranche B's two gates BOTH cleared.** Doctrine candidate ENDORSED by El_OS with rule-line amendment; held un-ingested behind CEO ruling on task_f0e3ec7b. PRIOR bodies below.)
+
+## ⚡ 2026-07-27 — Increment 2b shipped; ESC-141 closed; doctrine candidate endorsed + amended (held)
+
+### 1. D2.1 Increment 2b — query-binding assertion layer SHIPPED (CLOSED-DESCOPED)
+
+`ORS_d21_stripe_webhook_receiver_inc2b_query_binding_2026_07_25.md` → **CLOSED-DESCOPED**. Verified this session: `tsc --noEmit` exit 0; **143/143 vitest across 11 files** (+27 new); 20 equivalence classes + 10 red-team modes green. NOT a whole-deliverable D2.1 PASS. **Does NOT advance the code trust anchor** — that remains `ORS_middleware_investigation_2026_07_10.md` **PASS** (no deploy this increment).
+
+**Built as ENFORCEMENT-BY-CONSTRUCTION, per the standing mandate — not as a discipline:**
+- `ZohoClient.getFiltered(..., expectedColumn: string, ...)` (`src/zoho_client.ts:251`) — `expectedColumn` is a **REQUIRED** arg, so a sixth filtered read **cannot compile** without declaring what it expects to bind. A future engineer gets a type error, not a code-review dependency.
+- `assertBinding(body, expectedColumn)` (`src/zoho_query_binding.ts:120`) runs **inside the helper**, not at each call site. Verdicts: `criteria_absent` / `column_mismatch` / bound.
+- `maxInvoiceNumber()` (`:165`) computes the max **CLIENT-SIDE** over the paged filtered set — this **removes** the unassertable `sort_order`/`per_page` dependency rather than guarding it. That was the fourth-shape residual gap §4.3.1 cannot reach by construction; the fix is deletion of the dependency, not a guard on it.
+- `MAX_REFERENCE_NUMBER_LEN = 50` (`:57`) with equivalence tests at exactly 50/51 (Zoho error code 15; the MCP schema advertising 100 is wrong).
+- `BOUND_COLUMN` (`:66`) / `CF_COLUMN` (`:95`) hold the measured normalized base columns.
+
+**Files (UNCOMMITTED, per commit-only-when-asked):** NEW `src/zoho_query_binding.ts`, `test/zoho_query_binding.test.ts`; MODIFIED `src/zoho_client.ts`, `test/zoho_client.test.ts`.
+
+### 2. ⚡ ESC-141 CLOSED — binding constants are MEASURED, not predicted. Both Tranche B gates cleared.
+
+`task_cca44981` → 🟢 2026-07-25. James provisioned the 5 Zoho custom fields; **verified by LIVE BINDING TEST, 5/5 byte-exact against my client literals — ZERO constant changes needed:**
+
+| Module | Measured derived keys |
+|---|---|
+| INVOICE | `cf_stripe_invoice_id` · `cf_stripe_subscription_id` · `cf_stripe_customer_id` |
+| CONTACT | `cf_stripe_customer_id` · `cf_source` |
+
+Each queried with fabricated values → n=0 with `search_criteria` PRESENT and echoed `column_name` matching byte-for-byte; controls (`cf_not_a_real_field_xyz`) → IGNORED on BOTH endpoints (/invoices 27 unfiltered, /contacts 9 unfiltered), proving the discriminator live. `is_mandatory=NO`, `show_in_all_PDFs=NO` — **2026-07-31 consulting billing batch unaffected**, no Stripe IDs on client-facing PDFs.
+
+**⚠ VERIFICATION-METHOD CORRECTION — carry into the LIVE-deploy ORS.** `page_context.custom_fields` reads **EMPTY `[]` even when the fields demonstrably exist and filter correctly.** Presence-listing is unreliable in BOTH directions, and the originally specified "list_invoices custom_fields probe" would have FALSE-NEGATIVED James's completed work. **The live binding test is the only authoritative check.** This is the empirical vindication of binding-over-presence.
+
+**Consequence:** Tranche B (`task_0dd2619e`) Gate 1 (ESC-141) and Gate 2 (derived-key relay) are BOTH cleared. The byte-exact diff was the Stage 2.6 precondition of the LIVE-deploy ORS — **satisfied in advance.** Tranche B is now sequenced behind Tranche A by **dependency, not gate**; no external party is holding it. Do not report it as blocked.
+
+### 3. Doctrine candidate — ENDORSED, rule line AMENDED, HELD un-ingested
+
+`.tmp/doctrine_candidate_generalization_safety.md`. El_OS endorsed for ratification; **five behavioral directives adopted as-is**; rule line amended at El_OS's direction because the original targeted the wrong object:
+
+- ~~"A rule derived from one measurement needs its own measurement pass before it becomes binding."~~ (reads as *measure before generalizing* — which the worked example contradicts; the generalization was CORRECT and measurement proved the broad rule MORE correct than the narrow one)
+- **NOW:** "When you generalize a rule, its enforcement surface is a separate claim requiring separate measurement. A correct rule with an unmeasured enforcement mechanism fails in both directions — and the false-positive direction is worse, because it converts a rare silent defect into a frequent loud one that gets disabled by the first person it pages."
+- Added an explicit **anti-narrowing** clause under it — the paralytic reading was the vector by which directive 5 gets defeated.
+- Added **N=2 corroboration** (El_OS-reported, marked NOT independently measured by Website): the walkthrough-gate defect. Correct rule, unmeasured mechanism — the trivial-change auto-waiver measures `git diff HEAD`, the *uncommitted* tree, so Wrap-Up step 2's commit makes step 6 auto-waive; ~23 days unenforced, ~62 uncovered PASSes fleet-wide, and it also **failed closed** on an agent correctly declining to commit propagation files. El_OS then endorsed the waiver — the "disabled by the first person it pages" clause, executed at the hub within hours.
+
+**Status: HELD. Nothing ingested.** Anchored `task_bf4b3023` ratification-ready; not batched behind `task_f0e3ec7b` (CEO composition confirm on 10 slugs) to avoid spending CEO attention twice on one decision class. Ships with Amanda's decay-function rule on his ruling.
+
+**⚡ N=3 ADDED same night (Amanda, self-reported).** Her escalation auto-surface enumerates P4D3 while her own register is authoritative — so the register **cannot correct the surface that drives escalation**; ESC-024 re-surfaced to the CEO on its original 4-action list (two CEO scope corrections had cut it to one, executed 8 days earlier), and her sweep found **5 stale shadows, not 1**. Her phrasing, quoted verbatim in the candidate: *"The stale copy wins by construction, not by accident."* Third domain, no shared code/vendor/surface. Added a paragraph on what N=3 establishes that N=1 did not — **in all three the rule's own AUTHOR could not see it** (CBM in the query surface; El_OS in the walkthrough gate, who then endorsed the waiver; Amanda in her escalation path, who then escalated on it). That is what makes the enforcement-surface check mandatory rather than advisory: the same reasoning that produces the rule produces the mechanism, so authors cannot self-audit it. Tonight also supplied the **inversion** for free (the `task_b0d86b20` near-flip, §4b) — same rule, opposite direction, on the money surface. **A2A `1b7ed6bc` sent to El_OS** flagging the text growth, with an offer to split N=3 into a follow-on amendment.
+
+**⚡ EL_OS RATIFIED 2026-07-27 — no split — with a RELABELLING that changes what this amendment IS.** Their correction: *"added a third corroboration" undersells what changed.* The corroboration is evidence; **the claim is that the enforcement-surface check escalates from ADVISORY to MANDATORY**, and the check must be run by **someone other than the rule's author**. Justification is not the instance count — three domains would justify confidence in the *rule*, not a mandate. It is the narrower finding: **in all three, the author was blind to their own mechanism and then ACTED on the blind spot.** Advisory assumes someone elects to run the check; the evidence says the person best positioned to run it is structurally least able to see it's needed. Applied to the candidate: new READ-FIRST block labelling it a normative strengthening (an amendment that arrives looking like an increment gets a stale endorsement carried forward — this document's own failure mode, one layer up); directive 1 rewritten to MUST + author-exclusion; Amanda's line promoted to lead the corroboration; **the inversion promoted to its own section** at El_OS's direction, because it does more work than N=3 — it kills the cheap fix a reader would otherwise propose (a thumb on the scale toward "closed"), since the same rule nearly asserted a live payment write path that doesn't exist, in exactly the direction that thumb would push. Also added the compression-layer variant (§4b) there.
+
+**Two disclosures El_OS asked be recorded, both against their own interest:** (1) **the ratifier is cited as evidence** — the walkthrough gate is their own mechanism failing and they endorsed its waiver; they offered to have the CEO reassign this leg to someone not in the evidence; (2) **this exchange is the first recorded instance of the directive being FOLLOWED** — I authored the amendment and routed it out for checking rather than self-auditing, and their relabelling demand *is* the check working. A compliance case is more persuasive than a fourth failure: it shows the check is executable at ordinary cost. Still HELD, nothing ingested.
+
+**Two-route split verified, not assumed:** the Stripe restricted-key UI/API divergence (non-doctrine) is live in FLEET L3 — 3-pathology catalog + live-fire audit protocol, 10 chunks, recall-confirmed this session. Doctrine held at hub, fact self-ingested.
+
+### 4. P4D3 updates this session
+
+- **`task_938061e0` (T2.1b Tranche A, Owner=Website)** → 🔲 **→ 🟡, Date 2026-07-29.** Flip is per the row's own instruction (🟡+dated at Increment 2b ORS Stage 1 fire). Body rewritten: 2b shipped, measured constants replace predicted, remaining scope named.
+- **`task_0dd2619e` (T2.1c Tranche B, Owner=Website)** → body rewritten to record BOTH gates cleared + the verification-method correction. **Left 🔲 Future with NO Date** (doctrine: never set Date on Future rows — no API path to clear it).
+- **`task_253358e4` (T2.1a parent, Owner=P4D3)** — **no action available.** Still RBAC-blocked from re-dating (`update_task` requires Owner=James or caller; `update_status` is status-only). Re-projection 2026-07-30 has NOT passed; no flag needed yet. **If Tranche A slips past 07-29, COO/Amanda must re-project again** rather than let it re-redden on a gate its scope no longer depends on.
+- `task_dad56f9f` (sitemap gap) unchanged 🔲; `task_ac44b289` 🟢; `task_397c7575` icebox 🔲.
+
+### 4b. `task_b0d86b20` staleness correction (Amanda A2A 2026-07-27) — corrected, NOT flipped
+
+Amanda swept her 14 🔴 ESC shadows, found 5 stale (ESC-019/020/024/025/026, all closed 07-13→07-20), flipped them, and flagged `task_b0d86b20` (project `Subscription_Revenue_Pipeline`, Owner=James) as stale in the same direction. **She was right about staleness and I corrected the row — but I did NOT flip it 🟢, because 4 of its 8 ❌ items are genuinely open.** Re-verified live 2026-07-27 before touching it:
+
+| # | Item | Verdict |
+|---|---|---|
+| 1 | Founding Coupon LIVE | ✅ CLOSED — CEO v1 scope correction 07-19 (5→3), removed |
+| 2 | ELEVATE50 LIVE | ✅ CLOSED — same v1 correction |
+| 3 | PREVIEW coupon deactivation | ✅ CLOSED — CEO v2 correction 07-19 **REVERSED** it; onboarding coupons run to natural depletion, must stay Valid |
+| 4 | `write:checkout.sessions` restricted key | ✅ CLOSED — "SS7 not received; presumed absent" was WRONG; live-fire auth-passed 07-19 |
+| 5 | `STRIPE_WEBSITE_SECRET_KEY` on prod Worker | ❌ **OPEN** — `wrangler secret list` returns only `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` / `STRIPE_READ_KEY` |
+| 6 | 6 × `STRIPE_PRICE_*` on prod Worker | ❌ **OPEN** — not provisioned as Worker secrets |
+| 7 | `/api/checkout/*` route claim at edge | ❌ **OPEN** — `POST /api/checkout/session` → 405, content-length 0 (edge default, not the Worker); unchanged since 07-06 |
+| 8 | Detailed-rigor WRITE-path ORS | ❌ **OPEN** — not written |
+
+**The distinction that would have produced a false 🟢:** the 6 `STRIPE_PRICE_*` IDs are verified live **in the Stripe catalog** — that is not the same claim as their being **pushed as Worker secrets**. They are not. Likewise the restricted key exists and works, but the Worker is not wired to it. "The write path is proved live" overstates what the 07-19 live-fire established: it proved the *key and catalog*, not the *path*.
+
+**Sequencing found:** items 5–7 are already inside D2.1 Tranche B (`task_0dd2619e`) — same `subscribe-checkout` Worker, same `wrangler secret put` + route-claim + deploy. Execute there once, not twice. Recorded on both rows.
+
+Status left 🔴 and Date left 2026-06-04 **deliberately** — the work is genuinely overdue, red is accurate, and the fix is executing it rather than re-dating it.
+
+**⚠ ITEM-8 CARVE-OUT — do not let this row close on Tranche B alone.** The remainder was described as closing "as a side effect of D2.1 Tranche B." True for items 5–7 only.
+
+> **Attribution corrected 2026-07-27 (Amanda's own check, commit `8580f7d`) — I had this wrong here.** This handover originally credited the unqualified claim to *Amanda's register*. It was not in the register: the register already read "Tranche B **plus** the WRITE-path ORS." The unqualified version existed only in her **spoken summary to the CEO**, which dropped the qualifier. **That is the harder variant of the defect and worth carrying:** the written record audits clean while the compressed narration carries the unqualified claim, so anyone auditing the register finds it correct and never learns that what actually *reached the decision-maker* was one qualifier short. A record-level audit is structurally blind to the compression layer — directive 3 again (*what can the guard not see?*), one layer above where we'd been looking. Held for El_OS's follow-on amendment rather than silently added to the candidate (see §3: I already flagged text growth once and offered a split; amending again unannounced is the exact drift I said I'd avoid). **Item 8 (Detailed-rigor checkout WRITE-path ORS) is NOT discharged by Tranche B** — Tranche B ships its own LIVE-deploy ORS for the *webhook receiver*, a different document covering a different path. So `task_b0d86b20` goes 🟢 when Tranche B ships **AND** the WRITE-path ORS is written, not on Tranche B alone. Unqualified, that phrasing is one inference from "Tranche B done → b0d86b20 done" — the same entailment gap as "6 Price IDs verified LIVE" → "provisioned as Worker secrets." Carve-out now explicit on both P4D3 rows, and on Amanda's row per her `8580f7d` — **both, not either.** A2A `3d1eac05` raised it; her check then located the defect one layer up from where I'd put it (see correction above).
+
+### 5. Next work unit (two independent tracks, both unblocked)
+
+1. **D2.1 Tranche A remainder** — 5-event transformer (§5) → two-layer idempotency (§7) → DLQ/retry ladder (§8/§9). Fresh ORS. Then Tranche B: route wiring → wrangler bindings → 12 secrets → deploy → §13 live-fire.
+2. **`task_dad56f9f`** — sitemap dept-landing gap: root-cause the Eleventy collection/permalink enumeration, rebuild + deploy, verify all 11 `/answers/` routes emit `<loc>`, then ping Marketing (their re-verify `task_4d8c4f11` is HOLD; my re-deploy signal is the sole trigger).
+
+### 6. Do Not Re-Try / standing constraints
+
+- **NEVER assert on `filter_by`** — it binds but does NOT echo; assert-or-DLQ there routes CORRECT results to the DLQ and pages. Use the echoing form (`status=paid`).
+- **Assert the NORMALIZED BASE COLUMN, never the param sent** — `invoice_number_startswith` echoes `invoice_number`; `date_start` echoes `date`.
+- **Anything not on the measured echo list is UNMEASURED, not safe.**
+- On binding failure: **DLQ + page.** Neither "non-empty means processed" nor "create anyway" is safe — one drops revenue, the other duplicates it.
+- Repo-root `npx tsc` / `npx vitest` are wrong (installs `tsc@2.0.4`; globs both workers). Run from `workers/subscribe-checkout` via `./node_modules/.bin/`.
+
+---
 
 ## ⚡ STATE CONFIRM 2026-07-25 — housekeeping/A2A session; no code/config/production mutation; onboarding green; sitemap fix anchored in P4D3
 
@@ -13,6 +127,75 @@ Peer-agent-triggered session (onboarding + commitment audit + P4D3/handover upda
 **Commitment forward-scan disposition:** (a) Marketing sitemap re-verify → anchored `task_dad56f9f` ✅; (b) CBM post-ESC-119 handshake → already satisfied (ESC-119 CLOSED 2026-07-19, dual-side live-fire) ✅; (c) revocation-drill live-fire → awaits CEO browser (not agent-actionable); (d) L3 fleet-lesson `fleet_lesson_stripe_restricted_key_ui_api_divergence.md` → still pending next wrap. No passed-deadline commitment left unhandled.
 
 **Next work unit (unchanged, two independent tracks):** (1) D2.1 Increment 2b — the 5-event transformer (§5), fresh ORS; then `index.ts` wiring → idempotency → DLQ → LIVE deploy + §13 live-fire. (2) `task_dad56f9f` sitemap-coverage fix — fresh ORS: root-cause Eleventy collection/permalink enumeration feeding the sitemap template, rebuild + deploy, verify all 11 `/answers/` routes emit `<loc>`, then ping Marketing.
+
+### ↳ Addendum 2026-07-25 — Amanda A2A ×2; v1.4 spec concurrence issued; THREE BINDING CONSTRAINTS on Increment 2b
+
+Two inbound Amanda envelopes this session. **No code, no ORS, no deploy.** Output was spec concurrence + constraint capture. **The three items below are MUSTs on the next build increment — do not author the transformer/dispatch path without them.**
+
+**Context:** CBM's D1.1 output contract (`~/Antigravity_Data/Client_Billing/docs/plans/spec_stripe_to_zoho_output_contract_2026_07_14.md`) verified **FROZEN v1.3** this session (header had been stale-DRAFT until 07-25; did not affect my pacing — I'd treated it frozen since Amanda's 07-20 counterparty check). **v1.4 PROPOSED pending my concurrence — I CONCURRED, with a scope extension (see 3).**
+
+1. **`reference_number` 50-char cap** (empirical; Zoho error code 15). MCP schema advertises 100 — **the schema is wrong.** `ch_` IDs run ~27 so there's clearance today; build a length guard at the transformer boundary anyway + equivalence tests at exactly 50/51. Fail loud to DLQ, don't let error-15 surface as an opaque 400. v1.4 §4.5 also reclassified payment-record custom fields OPTIONAL → confirms my existing native-`reference_number` dedup design, **zero rework**.
+
+2. **Post-create read-back assertion.** After any invoice create, re-query `cf_stripe_invoice_id` for the ID just written; if it doesn't come back the field is misbound → DLQ + page. Covers **write-path** label drift only.
+
+3. **§4.3.1 `search_criteria` binding assertion — THE CRITICAL ONE.** CBM measured it against org 920008429: **Zoho SILENTLY IGNORES an unknown `cf_` filter and returns the UNFILTERED SET.** No error, no warning. (Fabricated `cf_stripe_invoice_id` → 27 invoices; `cf_totally_made_up_key` control → 27; bound `invoice_number=4003` → 1 with `search_criteria` PRESENT; bound-no-match `NOPE9999` → 0, still PRESENT.) **Failure mode on a misbound label is NOT a duplicate invoice — it is a SKIPPED CREATE:** §7.2 idempotency query returns 27 → length≥1 → handler reads "already processed" → 200 to Stripe citing `invoices[0]` (a *Heller consulting* invoice) → no Zoho write → Stripe never retries. Every subscription event silently dropped from the first one. Amanda explicitly corrected her earlier "first symptom is a duplicate" guidance — it's the opposite and quieter defect. **My read-back assertion (2) does NOT cover this** — it short-circuits before any create, so the assertion never runs.
+   - **Fix:** `search_criteria` is present iff a filter BINDS (both match and no-match cases) and absent when ignored. Assert it exists and names the queried `cf_` column. In-band, **zero extra calls** — `get()` already returns the parsed body. On failure: **DLQ + page. NEITHER "non-empty means processed" NOR "create anyway" is safe** — one drops revenue, the other duplicates it.
+   - **⚠ MY SCOPE EXTENSION (volunteered, broader than CBM drafted):** apply the assertion to **ALL filtered reads**, not just §7.2. Live exposure found in already-written code — `listInvoicesMax7xxx()` (`src/zoho_client.ts:223`): only `invoice_number_startswith:"7"` is a filter (`sort_column`/`sort_order`/`per_page` still apply). If that filter is ignored, max+1 numbering reads the **org-wide** high invoice number, not the 7xxx subscription series — and the org holds Heller invoices at 4xxx. Fails safe today only by luck (7xxx > 4xxx); **breaks the moment any non-subscription series climbs above 7000** → subscription invoice numbers collide with another team's series. Asked CBM to probe `invoice_number_startswith` binding. **Build the broad version regardless of whether v1.4 ships narrow** — strict superset; don't wait on paperwork.
+
+**⚡ v1.4 RATIFIED 2026-07-25 (Amanda A2A #4) — contract off FROZEN-at-v1.3. My generalization ADOPTED into §4.3.1. THREE constraints POST-DATE my concurrence — they constrain the rule rather than adding demand, and two of them stop my own implementation fail-closing:**
+
+1. **NEVER assert on `filter_by` — it binds but does NOT echo.** Measured: `filter_by=Status.Paid` → 26 of 27 invoices (demonstrably filtering) with `search_criteria` ABSENT. A literal assert-or-DLQ rule would route CORRECT results to the DLQ and page — the guard against silent data loss becomes a loud outage on healthy traffic. Use the echoing form: `status=paid` returns the identical 26 AND echoes `column_name: "status"`. **My client uses `filter_by` NOWHERE — verified by grep. Zero rework.**
+2. **Assert the NORMALIZED BASE COLUMN, not the parameter sent.** `invoice_number_startswith` echoes as `invoice_number`; `date_start` echoes as `date`. Asserting the queried key fails on a perfectly-bound filter. CBM's own v1.4 drafting error, caught by measurement not review — and it would have landed on `listInvoicesMax7xxx()`, the exact call my extension exists to protect.
+3. **Build-time-verify each filter shape before pinning it.** MEASURED ECHOING (invoices): `invoice_number` (+`_startswith`/`_contains`), `status`, `customer_id`, `date` (+`_start`), `search_text`; (customerpayments): `reference_number`. MEASURED NON-ECHOING: `filter_by`. **Anything not on that list is UNMEASURED, not safe.**
+
+**✅ OPEN QUESTION CLOSED: `invoice_number_startswith` BINDS and echoes.** `listInvoicesMax7xxx()` is NOT a live bug — it was failing safe on merit, not luck.
+
+**⚠ NEW GAP FOUND (my finding, routed to Amanda/CBM): the `/contacts` endpoint is ENTIRELY UNMEASURED** — the measured list covers `/invoices` + `/customerpayments` only. `listContactByEmail()` (`zoho_client.ts:209`) is load-bearing: it's the §2.1 fallback matching an EXISTING consulting client who subscribes, so no duplicate contact is created. **Silent-ignore trace = THE THIRD COLLISION SHAPE:** `email` fails to bind → org-wide fallback → returns every contact in 920008429 → handler reads `contacts[0]` as "found the existing customer" → subscription invoice attaches to **whichever consulting client sorts first**. Not a skipped create, not a number collision — a real, correctly-formed invoice issued against the WRONG COMPANY's account. Reconciles cleanly; looks right until that client reads their statement. **MEASUREMENT REQUESTED:** `email` on `/contacts`, bound + garbage value, does `search_criteria` appear and what does `column_name` normalize to. **If `/contacts` does not echo, `listContactByEmail` cannot be asserted in-band → dedup strategy for that path is a DESIGN CHANGE, not a guard, and must be settled BEFORE Tranche A.**
+
+**Full filtered-read audit (6 reads):** ✅ safe = `invoice_number_startswith` (:224), `reference_number` (:243). ⏳ blocked on probe = `cf_stripe_customer_id` (:206), `cf_stripe_invoice_id` (:220), `cf_stripe_subscription_id` (:232). ⚠ unmeasured = `email` (:209).
+
+**DEPENDENCY COLLAPSE — plan for ONE relay, not two.** The exact `column_name` Zoho echoes for a `cf_` filter is unknowable until the fields exist (could be `cf_stripe_invoice_id`, the bare label, or otherwise). §4.3.1 now says CBM's post-provisioning probe supplies the MEASURED string for all five keys and I assert against THAT, never a prediction. So my assertion constants and my query constants unblock on the SAME probe. Asked for the `email` row to be folded into it → one dependency covering all six filtered reads.
+
+**STRUCTURAL REASON the extension matters (CBM's framing, worth keeping verbatim in intent):** both populations share ONE Zoho org and ONE query surface, so ANY filter that fails to bind falls back to ORG-WIDE scope — and org-wide is consulting-dominated: 27 invoices, ZERO subscriptions today. Every silent-filter defect therefore surfaces as a **subscription↔consulting collision**, in whatever shape that query takes. CBM found it as Heller 4003 cited as proof a subscriber was billed. I found it consuming the 4xxx/5xxx number range. I then found the third as wrong-contact attachment. **There will be a fourth shape if a fourth filtered read is added without the assertion. The fallback scope is structurally wrong for this handler** — that, not "the assertion is free," is why the rule is every-filtered-read.
+
+**⚡ PROBE RESULTS IN — ALL THREE OPEN QUESTIONS CLOSED (Amanda A2A #5, 2026-07-25). v1.4 generalization folded into v1.4 ITSELF, not deferred to v1.5 — spec and handler agree; no undocumented superset carried.**
+
+- ✅ **`invoice_number_startswith` BINDS** (raw REST, my call shape verbatim): `=7` → 0 rows, criteria PRESENT, column `invoice_number`; **`=ZZZZNOPE` (bound param, garbage VALUE) → 0 rows, criteria PRESENT** — the row that matters: a value matching nothing still echoes, so the guard genuinely separates "no match" from "not filtered"; `=4` → 3 rows (consulting). **No live numbering-collision bug.** Still fails safe BY LUCK (7xxx > 4xxx, nothing enforces it).
+- ✅ **`/contacts` verified independently** (CBM did NOT assume endpoint parity): unknown `cf_stripe_customer_id` and `cf_source` each → all 9 contacts, criteria ABSENT; native `email=` ECHOES. **`listContactByEmail` (:209) needs NO design change; third collision shape is a non-issue.**
+- ✅ **§4.3.2 added** — maps all five fields to covering checks; records `cf_source` absent-by-design/write-path-only/never queried/never covered by §4.3.1 even post-2b. CBM's probe binding-tests ALL FIVE keys (not only my three) and records measured `column_name` for the two write-only fields so a future traceability query has the real string, not a guess.
+
+**🔑 THE FINDING WIDENED — §4.3.1 IS A QUERY-SURFACE GUARD, NOT A CUSTOM-FIELD GUARD.** CBM added an unrequested row: **`invoice_numbr_startswith=7` (TYPO in a NATIVE param) → 27 rows, UNFILTERED, criteria ABSENT.** Same for `invoice_number_starts_with=7`. **Zoho silently drops ANY unrecognized query parameter** — a typo'd native filter is byte-for-byte indistinguishable from a misbound custom field. So the narrow cf_-scoped rule leaves the identical defect reachable through an ordinary typo in native code that passes review. **The broad version is the ONLY correct version — write it as a query-surface guard on principle, not as a cf_ safeguard that happens to generalize.** (My original argument for the extension — "a second call site" — was weaker than the real reason.)
+
+**⚠ RESIDUAL GAP §4.3.1 CANNOT REACH BY CONSTRUCTION — my finding, FOURTH SHAPE.** Silent param-drop applies to params that are NOT filters, and those never appear in `search_criteria` at all, so no binding assertion can see them. `listInvoicesMax7xxx()` sends three such: `sort_column`, `sort_order:"D"`, `per_page:"1"` — all silently droppable, all unassertable. **Typo `sort_order` → defaults ascending → `per_page:1` returns the LOWEST 7xxx invoice → max+1 allocates an ALREADY-USED number.** `search_criteria` is present and correct throughout, because the filter DID bind. **The guard passes and the answer is still wrong.**
+- **FIX ADOPTED — remove the unassertable dependency rather than guard it:** assert the filter bound, then **page the filtered set and compute the max CLIENT-SIDE.** Never depend on server-side ordering. The call then trusts only a parameter that echoes. Free at current volume (0 subscription invoices); stays cheap as the 7xxx series grows; correct regardless of Zoho's sort-param handling.
+
+**🏗 STRUCTURAL PROPOSAL (mine, routed to CBM for an optional §4.3.1 sentence):** "every filtered read asserts its binding" is a DISCIPLINE, and a discipline is one forgetful commit from violation — precisely the failure mode the typo rows describe. **Make it enforcement-by-construction instead:** the client's filtered-read path takes a REQUIRED `expectedColumn` argument, so a new filtered read CANNOT COMPILE without declaring what it expects to bind, and the assertion runs inside the helper rather than at each call site. A future engineer adding a sixth filtered read gets a type error, not a code-review dependency. Build Tranche A this way.
+
+**Cross-check of my 4 literals vs the 5 provisioned fields** (sent to Amanda verbatim for CBM's independent diff):
+
+| Spec §2.3 field | Derived key | My path | Covered by |
+|---|---|---|---|
+| Contact "Stripe Customer ID" | `cf_stripe_customer_id` (`zoho_client.ts:206`) | read | §4.3.1 assertion |
+| Invoice "Stripe Invoice ID" | `cf_stripe_invoice_id` (`:220`) | read (idempotency) | §4.3.1 assertion |
+| Invoice "Stripe Subscription ID" | `cf_stripe_subscription_id` (`:232`) | read | §4.3.1 assertion |
+| Invoice "Stripe Customer ID" | `cf_stripe_customer_id` | write only | read-back only |
+| Contact "Source" | `cf_source` — **ABSENT from client by design** | write only (lands in 2b) | read-back only |
+
+`createContact(contact: unknown)` posts an opaque body, so `"Source"` is set by the transformer (2b) — there is no `cf_source` literal to diff today. `reference_number` is native (should bind like `invoice_number`) but carries the same skip-vs-duplicate stakes → assert it too.
+
+**Hard gate — DO NOT VIOLATE:** no live invoice create before Amanda relays CBM's derived-key probe output (the five actual keys as Zoho returned them, **not** "five fields present"). That diff is the Stage 2.6 precondition in the LIVE-deploy ORS. If a key comes back derived differently than §2.3 predicts, **change my constant** rather than have James retype a label — cheaper, and it's my side of the boundary.
+
+**D2.1 ROW RECONCILIATION 2026-07-25 (Amanda A2A #3, structural observations surfaced by P4D3 from their T2.1a re-projection ORS).** Problem: the deliverable was being built under one row and tracked across three — T2.1a's scope text had absorbed the work T2.1b and T2.1c describe, leaving two 🔲 rows that would still read not-started at close. Two orphaned 🔲 under a completed deliverable = audit-read drift. **Rejected the fold-into-T2.1a option** — that collapses the build into a single row gated on ESC-141, which is exactly the failure P4D3's second observation warns about (a slip on James's click makes finished ungated work read unfinished). **Took the inverse:** my two rows become the real carriers, disjoint, with the tranche seam falling between them. Achieves the tranche-A/tranche-B split without anyone restructuring a P4D3-owned row.
+
+| Row | Owner | Tranche | Scope |
+|---|---|---|---|
+| T2.1a `task_253358e4` | P4D3 | — | Foundations, ALREADY SHIPPED CLOSED-DESCOPED: signature-verify + Zoho REST client, 116/116 green |
+| T2.1b `task_938061e0` | Website | **A — UNGATED** | Transformer §5 + idempotency §7 + DLQ/retry §8/§9 + the three v1.4 constraints. Zero live Zoho. Closes on own merit. |
+| T2.1c `task_0dd2619e` | Website | **B — GATED** | index.ts wiring + wrangler bindings + 12 secrets + deploy + §13 live-fire. Gates: ESC-141 provisioning + CBM derived-key probe relay. |
+
+**Both left 🔲 and UNDATED deliberately** — directive forbids setting Date on Future-status rows (no API path to clear it). They flip 🟡+dated at their respective ORS Stage 1 fire, which is the honest signal. **Handed back to P4D3/Amanda (not mine — Owner=P4D3):** T2.1a's scope text still enumerates the transformer/idempotency/DLQ/deploy work now carried by B and C; it should narrow to foundations-only or the overlap persists in the row that started it.
+
+**ESC-141** (five Zoho custom fields, last D2.1 go-live prereq): CEO challenged rather than executed, gap answered from spec, **hold RELEASED**, count final at five, now on his to-do list. **Not stalled, not waiting on me.** Amanda relays closure directly on provisioning → CBM probes → T2.2d 🟢. **Do not chase it.** Increments 2b/2c are pure mapping against mocked `fetch` and need zero live Zoho — provisioning and my build run **parallel, not series**; the fields gate only LIVE deploy + §13 live-fire.
 
 ---
 
