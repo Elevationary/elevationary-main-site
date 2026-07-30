@@ -1,18 +1,42 @@
-# Website Build Handover — 2026-07-30 (LATEST: ⚠ **TRANCHE A SLIPPED — 07-29 projection missed, zero code 07-27→07-30, no external gate.** Date deliberately NOT moved. Fourth unexecuted interval = escalate, not re-project. Prior 07-27 body below and still accurate on all technical state.)
+# Website Build Handover — 2026-07-30 EOD (LATEST: ⚡ **SLIP BROKEN — D2.1 Increment 2c SHIPPED + COMMITTED `0be2d26`.** ORS CLOSED-DESCOPED, tsc clean, 192/192. The 07-30 slip record below is SUPERSEDED as a forecast but KEPT as a record — and one piece of its evidence was wrong; correction inline. Prior 07-27 body below still accurate on all other technical state.)
 
-## ⚠ 2026-07-30 — SLIP RECORD, no code shipped 07-27→07-30
+## ⚡ 2026-07-30 EOD — Increment 2c shipped; slip closed same day
 
-**This is the whole substantive change since 07-27. Everything below the 07-27 banner remains accurate.**
+**`ORS_d21_stripe_webhook_receiver_inc2c_transformer_2026_07_30.md` → CLOSED-DESCOPED.** The 5-event transformer (§5) that three consecutive focus checks named as the unexecuted NEXT is built, verified, and **committed `0be2d26`** (`src/stripe_event_transform.ts` + test, 1014 lines).
 
-**What happened:** `task_938061e0` (T2.1b Tranche A) was projected 2026-07-29. That date passed with **zero code written**. Verified this session: `git log` unchanged at `f95e7a6`; the only working-tree deltas are still the four Increment 2b files (`zoho_client.ts`, `zoho_client.test.ts` modified; `zoho_query_binding.ts`, `zoho_query_binding.test.ts` untracked), all unchanged since 07-27 and **still uncommitted**.
+**Verification:** `tsc --noEmit` exit 0; **192/192 vitest** (+49 new); 28 equivalence classes + 12 red-team modes green; plus one **non-mock runtime probe** — money serializes with no float artifact and a proration pair sums exactly to 32.67 on the wire. That row was load-bearing: Zoho recomputes invoice totals from lines. **NOT a whole-deliverable D2.1 PASS. Does NOT advance the code trust anchor** — that remains `ORS_middleware_investigation_2026_07_10.md` **PASS** (no deploy this increment).
+
+**What 2c contains:** `routeEvent()` dispositions all 5 subscribed events (§5.2/5.3/5.4/5.5 no-write + §5.1 billing) with §5.1.4 threshold→cycle and manual→update folds. `buildInvoicePayload()` covers §5.1.1 aggregate line, §5.1.2 cycle numbering, §5.1.3 1:1 proration passthrough **preserving NEGATIVE credits**. `buildPaymentPayload()` keys on charge id with the 50-char cap and skips the $0 proration wash. Module is **PURE** — no `fetch`, no `Env`, no secret — so money-shaping logic is testable without a mock.
+
+**Design line (transferable):** **REJECT when the MONEY shape is unknown, WARN when only a LABEL is.** Refusing revenue Stripe already collected is the worse of the two errors — the same false-positive direction Increment 2b's lesson identified. Ten reject codes guard money and identity; every label ambiguity falls back with a warning.
+
+**⚠ `phoenixDate` and `utcDate` are two near-identical functions ON PURPOSE.** They will read as duplication and the temptation to merge them is the hazard: §5.1.1 wants Phoenix for the accounting date and UTC for period dates. The month-boundary test is what makes a merge fail loudly instead of silently misdating a month of invoices.
+
+**⚠ Fixture honesty is UNPROVEN — carry to Tranche B.** Every Stripe shape in the 2c suite is hand-authored from spec, never captured from a real webhook. Increment 2b's own finding says that is exactly how a mock encodes a wrong shape as normal. **Diff one real `invoice.payment_succeeded` payload against `test/stripe_event_transform.test.ts` fixtures at §13 live-fire before trusting them further.** `price.product` unexpanded is the likeliest real-world reject — it depends on the §5 step-2 `expand` array staying in sync across a Stripe API version bump.
+
+**Date deliberately NOT moved on completion either.** `task_938061e0` stays 🟡 dated **2026-07-29**. The row was genuinely late; re-dating it on the way out would launder the record exactly as re-dating it on the way in would have. Row is still 🟡 (not 🟢) because **Tranche A is not done** — 2c is one increment of it.
+
+**Next session, first action:** §7 two-layer idempotency. **Read `src/idempotency.ts` FIRST** — it predates D2.1 and serves the checkout path; Increment 2b flagged it as either reusable structure or a naming collision. Then §8/§9 DLQ/retry ladder. Fresh ORS each. Run tests from `workers/subscribe-checkout` via `./node_modules/.bin/` — repo-root `npx` is wrong on both counts.
+
+**Inbox forward-scan at wrap (2026-07-30):** 3 unprocessed messages, **all CEO** (`6466791249`) — "Update your build_handover and P4D3" / "Run Wrapup" / "/wrap". **Zero peer A2A traffic, no replies owed, no in-flight peer work, no new dispatches.** Nothing inbound is holding Tranche A.
+
+---
+
+## ⚠ 2026-07-30 — SLIP RECORD (superseded same day; kept as record)
+
+**Superseded by the EOD section above — the slip was real and was closed the same day it was recorded. Kept because the escalation trigger and the cause analysis remain live.**
+
+**What happened:** `task_938061e0` (T2.1b Tranche A) was projected 2026-07-29. That date passed with **zero code written**. `git log` unchanged at `f95e7a6` as of that check.
+
+> **⚠ CORRECTION (2026-07-30 EOD) — this paragraph's original evidence was HALF WRONG.** It claimed the four Increment 2b files were working-tree deltas "**still uncommitted**." **FALSE.** Verified 2026-07-30: Increment 2b is commit **`e3bfa87`**, Increment 1 foundations are **`91b24dd`**, and the working tree was **clean for all four paths** at session open. The zero-code finding was TRUE and is unaffected — but half the evidence cited for it was stale and had propagated verbatim into `task_938061e0`'s body. **A record can audit clean while carrying a wrong claim.** Corrected here and on the P4D3 row.
 
 **Cause — and this is not a blocker.** `BLOCKED-ON: nothing` was accurate at every check. Session capacity 07-27→07-30 went to doctrine-candidate ratification (rule-line amendment, N=3, El_OS's advisory→mandatory relabelling) and peer staleness corrections (`task_b0d86b20`, item-8 carve-out). That work was real and is recorded, but **none of it was anchored to the deliverable I own**, and three consecutive Amanda focus checks declared the same unexecuted NEXT (5-event transformer §5).
 
 **Date deliberately NOT moved, and the consistency point is the reason.** On 07-27 I declined to re-date `task_b0d86b20` on the grounds that *"the work is genuinely overdue, red is accurate, and the fix is executing it rather than re-dating it."* Applying a softer standard to my own row would be exactly the failure this handover keeps documenting in other people's surfaces. `task_938061e0` stays 🟡 dated **2026-07-29** — accurate, visibly overdue, and it will redden on its own schedule.
 
-**Escalation trigger, stated in advance so it isn't a judgment call later:** a **fourth** unexecuted interval on this row is a capacity/priority question for COO + CEO, not another re-projection. Route it; do not re-date it.
+**Escalation trigger, stated in advance so it isn't a judgment call later:** a **fourth** unexecuted interval on this row is a capacity/priority question for COO + CEO, not another re-projection. Route it; do not re-date it. **STILL LIVE** — the counter did not reset just because 2c shipped; it applies to the *next* projected interval on Tranche A (§7 idempotency).
 
-**Next session — do this first, before any peer traffic:** open the Increment 2c ORS (Stage 0 blast radius + Stage 1 checklist), then build the 5-event transformer §5 against mocked fetch. Run tests from `workers/subscribe-checkout` via `./node_modules/.bin/` — repo-root `npx` is wrong on both counts.
+~~**Next session — do this first, before any peer traffic:** open the Increment 2c ORS, then build the 5-event transformer §5 against mocked fetch.~~ ✅ **DONE 2026-07-30** — see EOD section above. Superseded by: §7 two-layer idempotency, read `src/idempotency.ts` first.
 
 ---
 
