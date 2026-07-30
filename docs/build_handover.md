@@ -20,6 +20,14 @@
 
 **Inbox forward-scan at wrap (2026-07-30):** 3 unprocessed messages, **all CEO** (`6466791249`) — "Update your build_handover and P4D3" / "Run Wrapup" / "/wrap". **Zero peer A2A traffic, no replies owed, no in-flight peer work, no new dispatches.** Nothing inbound is holding Tranche A.
 
+### 🔴 OPEN QUESTIONS — both surfaced to CEO 2026-07-30 EOD, both awaiting his reply
+
+Recorded here because each is a commitment I made *conditional on his answer*. Neither is executed. **Next session: check for a reply before assuming either is dead.**
+
+**1. Second doctrine candidate — NOT dispatched, awaiting CEO go.** Finding: *a record can audit clean while carrying a wrong claim* — the 07-30 slip record's stale "still uncommitted" evidence propagated **verbatim** into `task_938061e0`, and both surfaces read as internally consistent while carrying it. Doctrine-class, so protocol routes it to El_OS for ratification. **Held, not routed**, because a prior candidate (`.tmp/doctrine_candidate_generalization_safety.md`, anchored `task_bf4b3023`) is already awaiting his ruling on `task_f0e3ec7b`, and the stated reason for holding *that* one was to avoid spending CEO attention twice on one decision class. **If he says go → A2A El_OS. If he declines → the finding stays recorded here and in the 2c ORS Notes; do not silently self-ingest it, the guardrail forbids that for doctrine-class.**
+
+**2. 26 unpushed commits.** `origin/main` is at **2026-07-19**. Everything since — Increments 2a (`91b24dd` foundations), 2b (`e3bfa87`), 2c (`0be2d26`), doctrine persistence (`2778cee`, `d69800b`), handovers — is **local-disk-only**. Not pushed per commit-and-push-only-when-asked. **This is eleven-plus days of D2.1 work with no off-machine copy.** Flagged to CEO at wrap; awaiting his push authorization. **Next session: if still unpushed and still unanswered, re-raise it — do not let it age silently into a month.**
+
 ---
 
 ## ⚠ 2026-07-30 — SLIP RECORD (superseded same day; kept as record)
