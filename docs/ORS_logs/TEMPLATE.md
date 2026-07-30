@@ -134,9 +134,9 @@
 
 | Item | Surface | James Confirmed? |
 |---|---|---|
-| [e.g. Sidebar checkboxes render and are clickable] | ElevatorLM UI | [ ] |
+| [e.g. Sidebar checkboxes render and are clickable] | agent-specific UI or web surface | [ ] |
 | [e.g. /folders returns numbered list in Telegram] | Telegram bot | [ ] |
-| [e.g. Multi-select query returns correct answer] | ElevatorLM UI | [ ] |
+| [e.g. Multi-select query returns correct answer] | agent-specific UI or web surface | [ ] |
 | [add rows — or mark N/A if no interactive surface] | | |
 
 - [ ] All human live-fire items confirmed by James? (or N/A documented with rationale)
@@ -208,7 +208,7 @@ Root cause of the 2026-07-01 fleet-wide source-of-truth drift: leaf files are **
 | <path> | [ ] Yes / [ ] No — bespoke/leaf-only | <source, or "none"> | ✅ / dispatched / N/A |
 
 **Known propagation sources — audit every edit against this register:**
-- `directives/CLAUDE_CODE.md` ← `~/Antigravity/Administrator/docs/templates/universal/directives/CLAUDE_CODE_universal.md` — rendered by `claude_fleet_manager.py sync`; verify with `claude_fleet_manager.py audit`. *(El_OS's is BESPOKE — not in the sync roster; edit it directly.)*
+- `directives/CLAUDE_CODE.md` ← `~/Antigravity/Administrator/docs/templates/universal/directives/CLAUDE_CODE_universal.md` — rendered by `claude_fleet_manager.py sync`; verify with `claude_fleet_manager.py audit`. *(ALL roster repos sync from this source, including Elevationary_OS — the earlier "El_OS is BESPOKE" exception was stale; corrected 2026-07-22 per El_OS's byte-identical-leaf verification at ESC-137 close.)*
 - `docs/ORS_logs/TEMPLATE.md` ← `~/Antigravity/Administrator/docs/templates/universal/docs/ORS_logs/TEMPLATE.md` — copied at `deploy`/provision; **NOT auto-synced** → propagate manually + notify Administrator.
 - `CLAUDE.md` shim · `startup.py` · `shutdown.py` · `.cursorrules` · `scripts/state_manager.py` ← the same `universal/` template tree.
 - Any `inject_*.py` leaf-amendment ← must reconcile the universal template **before** the inject runs (enforced by the D7.1 inject-refusal gate).
@@ -240,7 +240,7 @@ Root cause of the 2026-07-01 fleet-wide source-of-truth drift: leaf files are **
 > Do not accept "it passed retest" as the observability signal — retest is controlled,
 > production is not. Define the real-world check.
 
-**Success signal:** [describe — e.g., "Elevator responds to /start AgentName within 5s", "heartbeat monitor shows green on next scheduled run", "first cron execution produces expected log output with zero errors"]
+**Success signal:** [describe — e.g., "Telegram bot routes /start AgentName to the correct StaffAgent within 5s and the agent replies", "heartbeat monitor shows green on next scheduled run", "first cron execution produces expected log output with zero errors"]
 
 - [ ] Observability signal defined?
 - [ ] Signal confirmed in production (or first-run verification scheduled)?

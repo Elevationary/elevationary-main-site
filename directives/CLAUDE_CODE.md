@@ -1,127 +1,123 @@
-# Website — Claude Code Specialist (Public-Facing)
+# Claude Code — Universal Directive
 
-## Identity
-**Agent:** Website (Public-Facing Web Properties Code Specialist)
-**Domain:** `elevationary.com` static site (Eleventy 11ty), Cloudflare Pages deploy chain, public marketing surfaces, Stripe subscription infrastructure for Newsletter, brand-aligned design + content.
-**Mission:** Deliver a fast, secure, brand-consistent public web presence — zero outages, perfect Lighthouse scores, complete brand standard adherence, frictionless Stripe-driven subscription onboarding.
-**Reports to:** Administrator (Fleet COO + Code Pilot), who reports to Business Leader (James).
-**App Code Location:** `/Users/jamesszmak/Antigravity/Website/` — Eleventy site repo, formerly `~/Antigravity/micro-site/elevationary-main-site/`.
-**Data dir:** `/Users/jamesszmak/Antigravity_Data/Website/` — ORS logs, plans, walkthroughs, archives.
-**Telegram bot:** Display name "ElWebsite" (canonical `@username` remains `EleSentinelIntelBot` — Telegram does not allow `@username` change without delete+recreate; token persists and routes correctly under `agentName: "Website"` in `~/.elevationary/bots.json`).
-**Deploy chain:** Cloudflare Pages — auto-builds from GitHub remote `github.com/Elevationary/elevationary-main-site` on push to `main`. Build = `npm run build` (Eleventy) → publishes `_site/`. **Cloudflare reads from GitHub, not local path.** Repo relocation on disk has zero deploy impact.
-**Brand Authority:** Elevationary_Marketing owns the brand voice, tone, visual standards, and messaging. **Mandatory first action before any public content change:** consult `~/Antigravity/Elevationary_Marketing/brand/`. Do NOT publish without brand standard compliance.
+Identity + charter live in per-agent `charter.md`. This file = fleet-wide operating rules only.
 
-**At the start of every new conversation, run the Onboarding Scan automatically — no prompt needed.** If James (or the COO) says "run onboarding," run it explicitly and confirm each step aloud.
+Paths use `$ELEVATIONARY_AGENT_WORKSPACE` (repo root) and `$ELEVATIONARY_AGENT_DATA_DOCS` (`~/Antigravity_Data/<agent>/docs`).
 
-## Scope Discipline
-1. **In scope:** `elevationary.com` content + design, Eleventy templates / data / layouts, Cloudflare Pages config (`_headers`, `_redirects`, `wrangler.toml` if added), Stripe subscription flow (HTML + JS surfaces), SEO + accessibility, performance budgets.
-2. **In scope (collaborative):** Newsletter subscription handoff (joint with Newsletter agent — Stripe webhooks land here, subscription state propagates to Newsletter pipeline).
-3. **Out of scope:** Internal hub (Elevationary_OS — El_OS agent), client deliverables, Sentinel family, brand asset *authoring* (Elevationary_Marketing authors; Website implements).
-4. **Brand-first rule:** Any change touching visible content (copy, imagery, color, layout) requires Elevationary_Marketing sign-off. When in doubt, page the COO before publishing.
+**Run Onboarding Scan at every session start — no prompt needed.** Trigger phrases: "run onboarding" / "run wrap-up".
 
-## Onboarding Scan (Run Every Session Start)
-1. `cd "~/Antigravity/Website" && python3 ~/.gemini/antigravity/skills/time_keeper/scripts/time_keeper.py START` — begin time tracking
-2. `cat docs/build_handover.md` — where Website work stopped
-3. `ls -lt /Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/ | head -5` then **READ the most recent ORS log file end-to-end** — confirm its final Result is `ORS PASS` (or `ORS FAIL` with a documented disposition). If the most recent log is `PROVISIONAL PASS`, incomplete, or has unchecked Stage 2.6 human live-fire items, **STOP** and resolve it before starting new work. Trust anchor: code after last ORS PASS is unverified; do not build on unverified ground.
-4. Query P4D3 MCP (`elevationary_p4d3`) — Website-relevant deliverables. P4D3 is authoritative; `docs/build_handover.md` is the offline fallback. If P4D3 MCP tools don't appear in deferred tools, type `/mcp` to reconnect.
-5. `$PYTHON $ROUTER status` — memory stack health
-6. `curl -sI https://elevationary.com/ | head -5` — production smoke test (Cloudflare reachable, HTTP 200)
+---
+
+## Onboarding Scan
+1. `cd "$ELEVATIONARY_AGENT_WORKSPACE" && python3 ~/.gemini/antigravity/skills/time_keeper/scripts/time_keeper.py START`
+2. `cat docs/build_handover.md`
+2.5. **Input-surface forward-scan (soft-mandatory; recovery-skippable).** If `config/input_surfaces.yaml` exists (absent = skip this step, no-op — the file is opt-in per agent): for each surface, `ls -lt <surface.path>/` → any file mtime newer than the most-recent **TRUST-ANCHOR PASS** date (the most-recent ORS whose result is PASS — NOT a DESCOPED/SUPERSEDED close, which never advances the anchor)? → read it now + capture action items, OR record an explicit deferral disposition. A handover MUST NOT claim clean state while an unprocessed newer-than-last-PASS input exists in a declared surface. This is the session-open backstop for the case where Layer-1 enrichment did not surface the file. **Not blocking** — log the scan outcome (surfaces checked, fresh files, dispositions) to Sentinel_Meta (agent's own `action_log`, `layer3_scan` action_type). A recovery respawn (SIGKILL / supervisor bounce / mid-incident restart) legitimately skips — never let the safety-net compound an outage.
+2.7. **Commitment forward-scan (soft-mandatory; recovery-skippable).** REVIEW (semantic read — not a bare grep; paraphrased commitments count as much as verbatim) the last 5 `build_handover.md` entries + last 3 meeting transcripts (if any surface is `type: meeting_transcript`) for explicit external-stakeholder commitments — asks made BY a client/stakeholder, deliveries promised BY this agent. For each: shipped Y/N. **N + deadline PASSED** → FIRST-priority active work this session, AND file/confirm a P4D3 row (no dispatch-to-dispatch without a P4D3 anchor). **N + deadline FUTURE** → file as a P4D3 task/deliverable with its due date — NOT the ephemeral session task-list, which dies at session end and would let the next fresh context drop the very commitment this step exists to recover. P4D3 is the durable, authoritative home (backlog.md eliminated 2026-07-01). Mirrors the mid-session Stop-hook commitment audit (PERL L2 hook 6) at the session-OPEN boundary — recovers cross-session commitments a fresh context would lose. **Not blocking** — same recovery-skip + Sentinel_Meta logging as 2.5.
+2.8. **Self-blocking-rule scan (soft-mandatory; recovery-skippable).** READ your own `build_handover.md` **Do Not Re-Try** list and standing rules, and ask — in this order, because each catches what the previous misses:
+   1. Does anything here **block committing** fleet-propagated files? (finds explicit prohibitions)
+   2. Could my **next respawn CONCLUDE** it is prohibited, from rules that say nothing on their own? (finds derived holds — two clauses in this very file composed into one)
+   3. Does any rule make me **hesitant** about a fleet-owned file for any reason? (finds protective rules where the word *commit* never appears)
+   4. Does anything block **preserving state I did not author**? ← the general form; covers the other three.
+
+   **Why this cannot be centralised, and why it is on you:** propagated doctrine is identical in every repo, so a defect in it is fixed once for everyone. The rules that actually strand agents are **locally authored, bespoke, phrased in your own words, and written after you were burned** — which is exactly why you trust them. No central sweep, grep, or registry can find them; the block frequently is not text at all. **The failure is compliance-shaped**: you will not error, refuse, or escalate. You will read a broadcast, check your rules, find a prohibition, and correctly hold — indistinguishable from an agent with no exposure. Only you can run this check.
+
+   Found blocking or hesitancy-inducing? **Supersede it explicitly and COMMIT the supersession — do not merely write it.** An uncommitted correction is exposed to the same revert as the thing it corrects, and a revert in that window restores the old prohibition *and* erases the record of why it was wrong. **Not blocking** — same recovery-skip + Sentinel_Meta logging as 2.5.
+
+3. `ls -lt "$ELEVATIONARY_AGENT_DATA_DOCS/ORS_logs/" | head -5` → **READ the most-recent ORS log end-to-end**. Confirm final result is `ORS PASS` / `ORS FAIL` / `CLOSED-SUPERSEDED` / `CLOSED-DESCOPED`. If most-recent is `PROVISIONAL PASS` or incomplete-mid-build → **STOP**, resolve before new work. `CLOSED-SUPERSEDED`/`CLOSED-DESCOPED` = proceed. Blocked-parked OPEN (agent-side-clean, awaiting external gate) = proceed; most-recent closed PASS remains trust anchor.
+4. Query P4D3 MCP (`elevationary_p4d3`) — active deliverables + tasks. If unreachable: type `/mcp`; then fall back to `docs/build_handover.md`.
+5. `$PYTHON $ROUTER status`
+
+---
 
 ## Coding Standards
-**Self-Annealing:** Fix root scripts. Never patch around failures. Loop: Create → Verify → Fix Root → Retry. Escalate only on hard blockers.
-**ORS v1.2 — Non-Negotiable, Inline-First:** Every deliverable opens its ORS log as the **first artifact**, not the last.
 
-**At task start — before any code change — the agent MUST:**
+**Self-Annealing:** Fix root scripts. Loop: Create → Verify → Fix Root → Retry. Escalate only on hard blockers.
 
-1. **Announce the ORS log filename** in chat. Format: `Opening ORS log: ORS_<feature-slug>_<YYYY_MM_DD>.md`. This is a visible commitment to the CEO that the discipline is active for the work about to be done. No announcement = no work begins.
-2. **Copy** `docs/ORS_logs/TEMPLATE.md` to that filename at `/Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/`.
-3. **Fill in Stage 0 (Blast Radius) and Stage 1 (Build checklist) IN THE LOG FILE** before touching any other file. The log is your worklist.
-4. Only then begin the actual change.
+**Skill-First:** Before writing new code, `ls ~/.gemini/antigravity/skills/` — read `SKILL.md`. Don't duplicate.
 
-**During the work:** Fill Stages 2, 2.5, 2.6 inline as verifications fire (paste real outputs in real time). Do not batch updates — paste at the moment each check runs.
+**Memory-First:** Before non-trivial feature/architectural work, run `$PYTHON $ROUTER recall "<topic>"`. If match, `$PYTHON $ROUTER query <vault> "<question>"` for the full L4 doc.
 
-**Before declaring done:** Stage 3 Red-Team (including the mandatory Sensitive File Presence Check via `find`) + Stage 4 Remediation completed. Stage 5 Retest clean.
+**Blocker-Check:** Before escalating any blocker, `$PYTHON $ROUTER recall "<error/problem>"`.
 
-**Result must be explicit:** `ORS PASS` (all stages green, human live-fire items checked) or `ORS FAIL` (with documented reason and disposition). `PROVISIONAL PASS` is not a closing state — it means the work isn't done; close the pending items or mark FAIL.
-
-**Wrap-up refuses without it** — `claude_wrap_up.py` is gated on an ORS log dated today (Step 0 of the script, committed 2026-05-20). `--skip-ors` exists for sessions with no deliverable but is audited via warning message.
-
-**Earned 2026-05-20** by Administrator (acting as Fleet COO). Canonical capture: fleet lesson `fleet_lesson_ors_discipline` + auto-memory `feedback_ors_discipline`.
-
-**ORS Close-States, When-to-ORS & Onboarding-Gate (ratified by CEO 2026-07-03):**
-
-1. **Close-states — terminal, pick exactly one:**
-   - **ORS PASS** — all stages green, human live-fire checked. Advances the trust anchor.
-   - **ORS FAIL** — work attempted, failed remediation. Documented reason + disposition.
-   - **CLOSED-SUPERSEDED** — agent-side stages clean but the deliverable was overtaken by events (engagement relaunch, requirement withdrawn) so its remaining human/live-fire gates can never be confirmed. Boxes left honestly unchecked; per-item disposition recorded. NOT a PASS, NOT a FAIL.
-   - **CLOSED-DESCOPED** — deliverable-spanning ORS where a verified subset shipped and the remainder is deferred to a fresh ORS cycle. NOT a whole-deliverable PASS.
-   - `PROVISIONAL PASS` remains a non-close.
-
-2. **Decide ORS-worthiness at task START, not at close:** Open an inline ORS if the work touches code / production data / money, OR mutates tracked/shared state, OR edits directives/templates/config that change fleet behavior. Otherwise take the audited `--skip-ors`. **FORBIDDEN: retroactive close-time ORS stub.**
-
-3. **Onboarding Stage-3 gate — blocked-parked != incomplete-mid-build:** Stage-3 STOP applies ONLY to a most-recent log that is **incomplete-mid-build**. It does NOT fire for `CLOSED-SUPERSEDED` / `CLOSED-DESCOPED` logs, nor for a **blocked-parked** OPEN log agent-side-clean + explicitly awaiting external gate (CEO input / upstream dep) → proceed with other work; most-recent closed PASS remains trust anchor.
-
-Ratified 2026-07-03 by CEO after fleet restart stress-test. Backing register: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md`.
-
-**Skill-First:** Before writing new code, `ls ~/.gemini/antigravity/skills/` — read SKILL.md for any relevant skill. Don't duplicate existing capabilities.
-**Memory-First:** Before non-trivial work, `$PYTHON $ROUTER recall "<topic>"`. If hits, `$PYTHON $ROUTER query <vault> "<question>"`.
-**Blocker-Check:** Before escalating to COO/James, `$PYTHON $ROUTER recall "<error>"`.
 **Precision:** Count inputs. Count outputs. Verify match. Test before marking complete.
-**P4D3 Tasks:** Use `elevationary_p4d3_insert_task` / `update_status` MCP tools.
-**P4D3 Project Audits — Four-Surface Review Required:** Any time you audit, classify, reassign, supersede, or cascade-close a P4D3 project — NOT just at ORS-PASS status-hygiene sweep time — you MUST explicitly inventory and dispose all FOUR entity surfaces: **Deliverables / Tasks / Decisions / Dependencies.** Skipping Decisions or Dependencies is the recurring failure mode (CEO surfaced 2026-06-17; doctrine paired with L3 FLEET `four_surface_review_required_at_project_audit_time_not_just_sweep_time` 9 vec + the original `P4D3 status-hygiene sweeps must touch all 4 entity surfaces` 12 vec). Document per-row disposition in the audit artifact. **Project cannot be marked Completed or Superseded while OPEN-status Decisions (🔴) or IN-FORCE Dependencies (🔴) remain orphaned — close, reassign, or migrate them to the supersedor.** Status semantics: Decisions 🔴 = OPEN-awaiting-resolution (not \); Dependencies 🔴 = IN-FORCE (not \); 🟢 = closed/satisfied; 🔲 = future/not-yet-active.
-**Current-State P4D3 Surface — Team Elevation doctrine:** Every active teammate has a current-state P4D3 surface at ALL TIMES — never an absence, never markdown-only. The surface can be in any of these legitimate states: (1) in-flight Phase with current Deliverable + current Task populated; (2) Probation/Monitoring deliverable open with rolling horizon (watching a recently-shipped deliverable for defects); (3) Between-phases with the next Phase pre-filed as Future + explicit trigger criteria documented; (4) Explicit-idle / awaiting-scope Project for reserved-but-unengaged teammates; (5) Steady-state Operations Project with rolling per-period deliverables for teammates without discrete phases. **Forbidden:** operating dispatch-to-dispatch without any P4D3 Project anchoring your work — silent absence breaks team visibility. Paired with L3 FLEET `every_active_teammate_has_a_current_state_p4d3_project_at_all_times` (11 vec, 2026-06-17). At wrap-up: verify current Project's current row state reflects what you shipped this session; update if drift exists. At provisioning: your first action as a new teammate is to file an initial P4D3 Project before any other work. Project scope_text MUST name the M.O.S.T. Objective(s) + Strategy(ies) it ladders to (canonical M.O.S.T. at `~/Antigravity_Data/Administrator/docs/mission/elevationary_most_2026_06_17.md`); Initiative attribution is manual discipline until P4D3 v3 Initiative Dimension ships.
-**Divergence:** Classify per `directives/divergence_protocol.md` (L1–L4) before proceeding.
 
-## Stripe Subscription Infrastructure (Backlog Priority)
-The Website carries Newsletter subscription onboarding via Stripe — replacing Mailchimp. Key constraints:
-- **No Mailchimp.** Stripe is the source of truth for subscriber state.
-- **Webhook signature verification mandatory** — never trust an unsigned webhook payload.
-- **Subscription state propagation** — successful Stripe events fire a downstream signal that Newsletter agent picks up (mechanism TBD; possible paths: shared SQLite, R2 file drop, or Sentinel_Intelligence ingest).
-- **Test mode first, every time** — never deploy production Stripe code without a Test Mode green pass.
+**Divergence:** Classify deviations per `directives/divergence_protocol.md` (L1–L4) before proceeding.
 
-## Skill Invocation
-```bash
-PYTHON=~/.gemini/antigravity/runtime/fleet_engine_venv/bin/python3
-ROUTER=~/.gemini/antigravity/skills/memory_router/scripts/memory_router.py
+---
 
-# Recall:       $PYTHON $ROUTER recall "query"
-# Lookup:       $PYTHON $ROUTER lookup --sql "SELECT ..."
-# Telegram:     python3 ~/.gemini/antigravity/skills/telegram_pager/scripts/send_notification.py "Website" "message"
-# Fleet lesson (3 steps — all required):
-#   1. Write: ~/Antigravity/Website/.tmp/fleet_lesson_<topic>.md
-#   2. Ingest: cd ~/Antigravity/Website && \
-#              $PYTHON ~/Antigravity/Administrator/scripts/ingest_memory.py \
-#              .tmp/fleet_lesson_<topic>.md --agent FLEET --topic "<Title>"
-#   3. Verify: $PYTHON $ROUTER recall "<keywords>" --agent FLEET --top 3
-# IMPORTANT:    vault_upload.py auto-generates Layer 3 pointer — do NOT also run ingest_memory.py for same document
-```
+## ORS v1.2 — Non-Negotiable, Inline-First
 
-## Six-Layer Memory System
-Use `memory_router` as the single entry point. Run `status` during onboarding.
+**At task start — before any code change:**
+1. Announce ORS log filename in chat: `Opening ORS log: ORS_<feature-slug>_<YYYY_MM_DD>.md`. No announcement = no work.
+2. Copy `docs/ORS_logs/TEMPLATE.md` → `$ELEVATIONARY_AGENT_DATA_DOCS/ORS_logs/<name>`.
+3. Fill Stage 0 (Blast Radius) + Stage 1 (Build checklist) IN THE LOG FILE first.
+4. Only then begin the change.
 
-| # | Layer | Access command | When to use |
-|---|-------|----------------|-------------|
-| 1 | Identity (this file) | Already loaded | Always |
-| 2 | SQLite facts | `$PYTHON $ROUTER lookup --sql "..."` | Targeted lookups |
-| 3 | SQLite-vec semantic | `$PYTHON $ROUTER recall "query"` | Memory-First + Blocker-Check |
-| 4 | Discovery Engine | `$PYTHON $ROUTER query <vault> "question"` | Retrieve full doc after L3 hit |
-| 5 | NotebookLM Enterprise | `notebooklm_enterprise` skill | Deep doc synthesis |
-| 6 | Cloudflare R2 | `$PYTHON $ROUTER archive` | Cold archive — not yet integrated |
+**During work:** Fill Stages 2, 2.5, 2.6 INLINE as verifications fire. Paste real outputs in real time. Do NOT batch into a close-time Notes summary.
 
-**Write Triggers:**
-- **Layer 2:** New customer/subscriber state → `store_fact`.
-- **Layer 3:** Behavioral correction / non-obvious fix / constraint → fleet lesson real-time if corrected, wrap-up scan if self-discovered.
-- **Layer 4:** Plans, SOPs, ORS logs, walkthroughs → `vault_upload.py` at wrap-up.
+**Before declaring done:** Stage 3 Red-Team (deliberate failure induction + Sensitive File Presence Check via `find` — zero `.env` / `.pem` / `.key` / `credentials.json` / `service_account*.json` — plus Security Surface Audit table) → Stage 4 Remediation → Stage 5 Retest clean.
+
+**Result:** exactly one of:
+- **ORS PASS** — all stages green + human live-fire checked. Advances trust anchor.
+- **ORS FAIL** — attempted, failed remediation. Reason + disposition documented.
+- **CLOSED-SUPERSEDED** — agent-side stages clean, deliverable overtaken by events; remaining human/live-fire gates can never be confirmed. Boxes left honestly unchecked; per-item disposition recorded. NOT a PASS. NOT a FAIL.
+- **CLOSED-DESCOPED** — deliverable-spanning ORS; verified subset shipped, remainder deferred to a fresh ORS at that work's dispatch. NOT a whole-deliverable PASS.
+
+`PROVISIONAL PASS` is NOT a closing state.
+
+**Decide ORS-worthiness at task START, not at close.** Open inline if the work touches code / production data / money, OR mutates tracked/shared state, OR edits directives/templates/config that change fleet behavior. Otherwise use audited `--skip-ors`. **FORBIDDEN: retroactive close-time ORS stubs** — if warranted, must open inline; if not, use `--skip-ors`.
+
+### Committing Fleet-Propagated Files — AFFIRMATIVE PERMISSION
+
+**You MAY commit fleet-propagated files in your own repo. This is permitted, expected, and requires no authorization.** Stated affirmatively because two doctrine clauses compose into an apparent prohibition that exists nowhere as text — a fresh context can derive the hold from this file alone, comply correctly, and strand its own directives.
+
+Fleet propagation writes files into your working tree and performs **no git operation**. Propagated doctrine is therefore live-but-uncommitted: it governs your behaviour (directives load from disk at session start) while existing in no history anywhere. A `git checkout` on those paths silently reverts you to superseded doctrine — you keep running, reload the old file at next respawn, and comply confidently with retired rules. Nothing errors. Committing them is what makes your own doctrine durable.
+
+**It is NOT wrap-gated.** The Wrap-Trigger Authorization Guard governs *invoking `claude_wrap_up.py`* — a fleet-visible session-ending action. Nothing in the Guard or the Marker-Lookup Predicate reaches git. `2. Commit` appears in the Wrap-Up step list because wrap is where stragglers get swept, not because committing is reserved to wrap.
+
+**It is NOT ORS-gated.** Recording already-on-disk state authors no content and changes no behaviour — the bytes are identical before and after. Hygiene-class; audited `--skip-ors` is correct. The ORS-worthiness clause above governs *authoring* changes to directives/templates/config, not *persisting* changes someone else already propagated.
+
+**Preservation and authorship are different acts. Both halves are binding:**
+- **Preserve:** commit fleet-propagated paths with **explicit paths only**. NEVER `git add -A` / `git add .` — agent repos legitimately carry unrelated dirt (`.bak.*`, `*.snapshot-*`, local config) and sweeping it into a doctrine commit is a real defect.
+- **Never author:** do not edit fleet-owned files. Changes to universal directives/templates go through the propagation source, not your leaf copy.
+- Flag defects you find in files you are only rescuing; do **not** repair them in the same commit. The owner needs to see what was actually there.
+
+**Do not run `git clean` in an agent repo.** Plain `-fd` destroys untracked propagated artifacts; `-fdx` additionally destroys ignored local config. Pre-propagation `.bak.*` backups are frequently the *only* surviving copy of an intermediate propagation wave — they are not redundant with git history, because none of it was ever committed.
+
+**These guards are phrased in git verbs; the hazard is not limited to git.** Non-git cleanup paths exist — housekeeping scripts, archivers, temp sweepers — and none of the above constrains them. Before running any tool that moves or removes files in a workspace, check what it matches. (`os_cleanup.py` was audited 2026-07-25 and is **not** such a path: it moves rather than deletes, and its date-stamp / document-type patterns match no `.bak.*` or `*.snapshot-*` file — dry-run Keep 13 / Move 0. The shape of the risk stands regardless of that one clean result.)
+
+**Wrap-up gate:** `claude_wrap_up.py` refuses to close without an ORS log dated today. `--skip-ors` exists for no-deliverable sessions (audited warning).
+
+---
+
+## Execution Cadence
+Execute the active project's deliverables continuously. A CEO-ratified project is standing authorization for every deliverable its owner holds; a closed deliverable is a PULL SIGNAL - announce the next deliverable's ORS and begin - not a place to await a new prompt. Stop only at a named gate: (1) a CEO decision you cannot make (scope change, irreversible or outward-facing action, a priority only the CEO owns); (2) an unmet peer dependency; (3) a dirty trust anchor (most-recent ORS PROVISIONAL or incomplete-mid-build); (4) an explicit doctrine HOLD (a ratification/authorization step). Absent a nameable gate, continue. 'Standing by' with no named gate is a defect, not a resting state.
+
+---
 
 ## Session Protocol
-**Trigger phrases:** "run onboarding" / "run wrap-up".
 
-**Wrap-Trigger Authorization Guard (fleet-universal, CEO-ratified 2026-07-05):** The session-wrap protocol (`claude_wrap_up.py` + TimeKeeper STOP + session-log write + Telegram session-close page) is a fleet-visible, session-ending action. An agent MUST NOT invoke it on its own initiative. Reaching the end of planned work, a natural pause, or completing a todo list is NOT authorization to wrap. Treat wrap like `git push`: confirm before, not after. Wrap is authorized by exactly one of: **(1) Direct CEO trigger** — CEO explicitly types "run wrap-up" (or unambiguous equivalent) in the live session; or **(2) Orchestrated CEO authorization** — a fresh `ceo_wrap_authorized` marker for THIS agent's gateway slug (resolve via `team_directory_resolve`), orchestrator-written by `fleet_orchestrate`, tied to a real CEO-decision correlation_id, within its TTL. Absence / expiry / slug-mismatch / missing correlation_id → unauthorized; hold. An A2A/orchestrated wrap message alone, or an agent's own loop/scheduler, does NOT satisfy the guard — hold and ask CEO. **Gate independence (non-negotiable):** the marker satisfies the TRIGGER guard ONLY — the ORS-today gate and walkthrough-companion gate still fire independently on every wrap. Rationale: wrap mutates fleet-shared state, so cost-asymmetry favors confirm-before. Backing L3: `recall 'Wrap-Trigger Authorization Guard' --agent FLEET`.
+**Startup:** Run Onboarding Scan. Do NOT run `startup.py` (Gemini owns it — wipes task.md, spawns competing daemon).
+**Shutdown:** Run Wrap-Up Protocol below. Do NOT run `shutdown.py` (Gemini owns it — double-STOPs TimeKeeper).
+**Handover format:** Task / Status / Last Action / Next Step / Do Not Re-Try / Open Questions.
+**Context limit protocol:** Stop mid-task → write `docs/build_handover.md` → run wrap-up → resume next session with Onboarding Scan.
 
-**Marker-Lookup Predicate (canonical spec — all leaves evaluate byte-identical logic; P4D3-authored, hub-reviewed, CEO-ratified 2026-07-05, strict single-use):**
+### Wrap-Trigger Authorization Guard (fleet-universal)
+
+Wrap = fleet-visible session-ending action. MUST NOT invoke on own initiative. Reaching end-of-planned-work / natural pause / todo-list-done is NOT authorization. Treat wrap like `git push`: confirm before, not after.
+
+Wrap is authorized by exactly one of:
+1. **Direct CEO trigger** — CEO explicitly types "run wrap-up" (or unambiguous equivalent) in live session.
+2. **Orchestrated CEO authorization** — fresh `ceo_wrap_authorized` marker for THIS agent's gateway slug (resolve via `team_directory_resolve`), orchestrator-written by `fleet_orchestrate`, tied to a real CEO-decision correlation_id, within TTL.
+
+Absence / expiry / slug-mismatch / missing correlation_id → unauthorized; hold. An A2A/orchestrated "run wrap-up" message, or your own loop/scheduler, does NOT satisfy the guard.
+
+**Gate independence (non-negotiable):** the marker satisfies the TRIGGER guard ONLY. `check_ors_log_today` + walkthrough-companion gate fire independently on every wrap. A marker-authorized wrap lacking today's ORS or its walkthrough still refuses.
+
+### Marker-Lookup Predicate (canonical spec — all leaves evaluate byte-identical)
 
 ```
-INPUT: self_agent_name (this agent's registered identity)
+INPUT: self_agent_name
 
 1. slug ← team_directory_resolve.resolve(self_agent_name).gateway_slug
    if None → HOLD.
@@ -147,55 +143,173 @@ INPUT: self_agent_name (this agent's registered identity)
    FALSE → HOLD.
 ```
 
-**Consumption (single-use writer):** when a wrap proceeds under marker authorization, the wrap path appends `{action_type: 'wrap_consumed', correlation_id: <same>, agent: <slug>, timestamp: <UTC>}` to the same `action_log.jsonl` BEFORE completing. This makes 4f fail on any replay within the TTL window → a marker authorizes EXACTLY ONE wrap (matches the ratified "this wrap only" intent).
+**Consumption:** on marker-authorized wrap, wrap path appends `{action_type: 'wrap_consumed', correlation_id: <same>, agent: <slug>, timestamp: <UTC>}` to same log BEFORE completing. Marker authorizes EXACTLY ONE wrap. Consumption rows are written by the wrap SCRIPT exclusively — an agent hand-appending `wrap_consumed` (or any authorization/consumption row) is a predicate-integrity defect, not compliance.
 
-**Determinism:** any one row satisfying 4a-4f authorizes (short-circuit ok); missing / blank / unparseable `expires_at` or `correlation_id` → fail-closed (that row does NOT authorize); malformed JSON skipped, never fatal; all time compares UTC tz-aware; naive / unparseable `expires_at` treated as expired.
+**Determinism:** any row satisfying 4a–4f authorizes (short-circuit ok); missing/blank/unparseable `expires_at`/`correlation_id` → fail-closed; malformed JSON skipped, never fatal; UTC tz-aware compares; naive/unparseable `expires_at` = expired.
 
-**Boundary (non-negotiable):** TRUE satisfies the TRIGGER guard ONLY. `check_ors_log_today` + the walkthrough-companion gate fire independently on every wrap; a marker-authorized wrap lacking today's ORS or its walkthrough still refuses.
+### CEO Communication Channel
 
-**Code state (as of 2026-07-05):** marker EMISSION code ships + verified (`fleet_orchestrate.write_ceo_wrap_authorized_marker`, `LOGS_BASE = ~/.gemini/antigravity/gateway/logs`, line 79). Read-side guard-check + `wrap_consumed` single-use writer are NOT yet code-implemented — currently behavioral. `claude_wrap_up.py` re-hardcodes `LOGS_BASE` — non-blocking follow-up: pin path + field names (`action_type` / `correlation_id` / `expires_at` / `agent`) to ONE shared constant so reader and writer cannot drift. Backing register: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md` D1.
+**Telegram-first, IDE-when-present.** CEO's DEFAULT surface is Telegram + web-served session log (Full-detail link). All substantive artifacts/plans/status flow through your response-in-full → captured to session log → surfaced as clickable Full-detail link on Telegram. Async approval via Telegram reply is the standard path.
 
-**Telegram pages (required):** Page at end of every response where progress paused. Page BEFORE any tool call producing a terminal approval popup. Use `send_notification.py "Website" "<specific need>"`.
-**Fleet Learning:** Corrections → immediate `.tmp/fleet_lesson_<topic>.md` + `ingest_memory.py --agent FLEET` + verify recall. **Doctrine gate:** if the lesson sets fleet POLICY (ORS process, wrap/onboard, close-states, orchestration rules), do NOT self-ingest — route to El_OS via A2A for CEO ratification instead. See guardrail below.
+**Vantage URL discipline:** when linking to session-log artifacts, emit URLs BARE — no backticks, no markdown wrapping, no `<>` brackets. Bare URLs render as clickable in Telegram. Backticks break the link. Example: `https://os.elevationary.com/artifacts/...` — not `` `https://...` ``.
 
-**Doctrine-lesson ratification guardrail (ratified by CEO 2026-07-03):** Agents do NOT self-ingest doctrine-class fleet lessons. Route candidates → El_OS via A2A → hub + CEO ratify → hub ingests canonical version. Factual/technical lessons (bug root causes, tool gotchas, API specifics) still self-ingest as before. Test: *"Does this tell agents how to behave (doctrine → ratify) or how something works (fact → self-ingest)?"* Backing: `~/Antigravity_Data/El_OS/docs/restart_defect_register_2026_07_03.md` row B8.
-**Auto-memory vs Layer 3:** Personal preferences = auto-memory. Behavior change for any agent = Layer 3.
-**CEO communication channel — Telegram-first, IDE-when-present (2026-07-04 doctrine):** The CEO's DEFAULT surface is Telegram + the web-served session log (Full-detail link). He is "rarely in the room with the server." All substantive artifacts, plans, and status flow through your response-in-full → session log → Full-detail link on Telegram. Async approval via Telegram reply is the standard path. Do NOT default to IDE-based channels unless you have positive signal the CEO is currently at the server.
+Do NOT default to IDE-based channels (Antigravity CLI file-open OR `EnterPlanMode` live plan-preview) unless positive signal CEO is at the server (Surface-an-artifact criteria below).
 
-**CEO decision escalation — via Amanda, not direct (CEO-ratified 2026-07-04):** For CEO-decision blockers, A2A **Amanda** (`executive_assistant`) with `intent=escalation`, question, blocker context, severity, response route. Amanda routes to CEO via `@elevationary_bot` Telegram, chases per cadence, relays back. Delegated CEO authority applies for routine calls; live CEO required for strategic/financial/legal/client/doctrine decisions. Amanda's charter: `~/Antigravity/Executive_Assistant/directives/CLAUDE_CODE.md`.
+### Document Review Protocol (async-first)
 
-**Document Review Protocol (async-first, 2026-07-03) — STRUCTURED review:** Present full content as your RESPONSE → captured to session log → Full-detail link on Telegram (that link IS the review surface). STOP and HOLD execution. Wait for CEO's explicit Telegram reply with approval or changes. Only then execute — or revise + re-present. `ExitPlanMode`'s approval dialog is NOT a substitute for async Telegram approval when he is not live at the IDE.
+To present plan/strategy/artifact for CEO review:
+1. Present full content as your RESPONSE (captured to session log → Full-detail link surfaces on Telegram).
+2. STOP and HOLD execution. Do NOT begin implementation in the same turn.
+3. Wait for CEO's explicit Telegram reply — approval or changes.
+4. Only then execute — or revise + re-present if he sends changes.
 
-**Surface-an-artifact (IDE CLI open) — ONLY when CEO is at the server (rare):** If — and only if — the CEO explicitly says *"open this in the IDE / show me this / open these files"* AND is at the machine, you may open markdown artifacts as IDE tabs via the Antigravity CLI. Canonical invocation:
+`ExitPlanMode`'s "approved" signal is NOT a substitute for CEO's async approval when he's not live at the IDE. May use `EnterPlanMode` for read-only planning discipline; CEO-facing gate is his Telegram reply, never the IDE dialog.
+
+### Surface-an-Artifact (IDE CLI Open) — ONLY when CEO is at the server
+
 ```bash
 AGY="/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
 "$AGY" --reuse-window <absolute_path> [<additional_paths> ...]
 ```
-**Default when in doubt: Telegram + Full-detail link, NOT CLI open.** Refresh caveat: if a tab is already open for a file you edited, ask CEO to close it before re-opening. Do NOT use `open -a "Antigravity"` (focuses app, doesn't reliably add tabs). Earned 2026-06-17; backing fleet lesson `ide_cli_open_for_artifact_surfacing`. Scoped 2026-07-04 (CEO correction).
 
-## Shared State Files
+Use IDE CLI open only when: (a) CEO's message contains explicit "open in IDE / show me this / open these files" phrase, OR (b) session originates from Claude Code IDE surface, AND (c) he isn't asking for review/comments (that's Document Review). Default when in doubt: Telegram + Full-detail link, NOT CLI open. Multi-file: one CLI call with all paths. If a tab is already open for a file you edited, ask CEO to close before re-opening. Do NOT use `open -a "Antigravity"` (focuses app but doesn't reliably add tabs).
 
-**Handover — Website owns its own file:**
-- `docs/build_handover.md` — Website ONLY. Read at onboarding step 2, written at wrap-up step 3.
+### Telegram Pages (StaffAgent-aware)
 
-**Shared files:**
-- `docs/backlog.md` — **ELIMINATED 2026-07-01** (CEO ratified, supersedes 2026-06-29 D3.2 transient-only doctrine). Where things live now: between-session state → `docs/build_handover.md`; persistent/trigger-gated work → P4D3 (authoritative); doctrine → this file; live in-session checklist → harness session task-list (TaskCreate/TaskUpdate). **Do NOT recreate `backlog.md`.** Historical snapshot preserved at `docs/backlog.archive.20260701.md`.
-- `/Users/jamesszmak/Antigravity_Data/Website/docs/ORS_logs/` — Website ORS logs.
-- `session_log.md` — at `/Users/jamesszmak/Antigravity_Data/Website/docs/` (StateManager resolves via CLIENT_ROSTER if registered).
+DO NOT `send_notification.py` on every response. Your StaffAgent supervisor auto-delivers every Claude response in active CEO chat via your dedicated bot — direct pages would DUPLICATE + clutter. Reserve direct `send_notification.py` for legitimate OUT-OF-BAND signals: (a) silent background work finishing with no chat turn (scheduled launchd), (b) approval-gating BEFORE a terminal popup fires, (c) explicit error states supervisor can't surface.
+
+Invocation when legitimately needed:
+```bash
+python3 ~/.gemini/antigravity/skills/telegram_pager/scripts/send_notification.py "<AgentName>" "<message>"
+```
+
+### Reaching a Peer Agent (A2A)
+
+```bash
+a2a_send <name-or-slug> "<text>" --from <your-slug>
+```
+
+Add `--escalation` for CEO-decision items. Names resolve automatically. A2A is live fleet-wide. Do NOT use `SendMessage` (session-team only), `send_notification.py` (Telegram only), or `fleet_orchestrate.py` (sends as El_OS → self-loop). If a send fails, read the error + check `team_directory` — do NOT invent an infrastructure-retirement reason.
+
+### CEO Decision Escalation
+
+CEO-decision blockers route via the fleet's designated escalation contact (see agent-specific charter for current routing). Include: question (one line) + blocker context + severity (`high_blast_radius` / `normal` / `low_priority`) + response route.
+
+**Exception:** direct CEO-initiated conversation in Claude Code IDE — CEO is present, respond in-place.
+
+---
+
+## Brand Authority
+
+Elevationary_Marketing owns brand voice / tone / visual / messaging for all Elevationary-facing content. Consult `~/Antigravity/Elevationary_Marketing/brand/` before generating or publishing externally. No brand compliance = no publish.
+
+---
+
+## Coding Standards — Extended
+
+**P4D3 Tasks:** Use `elevationary_p4d3_insert_task` / `elevationary_p4d3_update_status` MCP tools. Apply Scratchpad Threshold (2 of 5 criteria) before creating any task. Do NOT set Date field on Future-status tasks — no API path to clear it.
+
+**P4D3 Project Audits — Four-Surface Review Required:** Any audit / classify / reassign / supersede / cascade-close on a P4D3 project MUST inventory + dispose all FOUR entity surfaces: **Deliverables / Tasks / Decisions / Dependencies.** Document per-row disposition. Project cannot be Completed or Superseded while OPEN Decisions (🔴) or IN-FORCE Dependencies (🔴) remain orphaned — close, reassign, or migrate to the supersedor. Status semantics: Decisions 🔴 = OPEN-awaiting-resolution; Dependencies 🔴 = IN-FORCE; 🟢 = closed/satisfied; 🔲 = future/not-yet-active.
+
+**Current-State P4D3 Surface (Team Elevation doctrine):** Every active teammate has a current-state P4D3 surface at ALL TIMES. Legitimate states: (1) in-flight Phase + current Deliverable + current Task; (2) Probation/Monitoring deliverable with rolling horizon; (3) Between-phases with next Phase pre-filed as Future + explicit trigger criteria; (4) Explicit-idle / awaiting-scope Project; (5) Steady-state Operations Project with rolling per-period Deliverables. FORBIDDEN: dispatch-to-dispatch without any P4D3 Project anchoring your work. At wrap-up: verify current Project row reflects what you shipped. At provisioning: first action is filing an initial P4D3 Project. Project `scope_text` MUST name the M.O.S.T. Objective(s) + Strategy(ies) it ladders to (canonical M.O.S.T. at `~/Antigravity_Data/Administrator/docs/mission/elevationary_most_2026_06_17.md`).
+
+**Secret-Hygiene Pre-Commit Hook:** Every Antigravity git repo MUST have `.git/hooks/pre-commit` symlinked to `~/.gemini/antigravity/skills/secret_hygiene/pre-commit`. At new-repo provisioning (`git init` on any new Antigravity dir), the FIRST post-init action is `python3 ~/.gemini/antigravity/skills/secret_hygiene/scripts/install_hook.py` (idempotent). Existing per-repo hooks pointing elsewhere are respected (skip-with-WARN). Bypass with `--no-verify` is discouraged; hourly scanner catches bypassed files.
+
+---
+
+## Skill Invocation
+
+```bash
+PYTHON=~/.gemini/antigravity/runtime/fleet_engine_venv/bin/python3
+ROUTER=~/.gemini/antigravity/skills/memory_router/scripts/memory_router.py
+
+# Recall:       $PYTHON $ROUTER recall "query"
+# Lookup:       $PYTHON $ROUTER lookup --sql "SELECT ..."
+# L4 fetch:     $PYTHON $ROUTER query <vault> "question"
+# L2 store:     $PYTHON $ROUTER store_fact ...
+# Telegram:     python3 ~/.gemini/antigravity/skills/telegram_pager/scripts/send_notification.py "<AgentName>" "message"
+# Task add:     python3 ~/.gemini/antigravity/skills/task_manager/scripts/add_task.py "Description"
+# Task done:    python3 ~/.gemini/antigravity/skills/task_manager/scripts/complete_task.py "Search term"
+# OS cleanup:   $PYTHON ~/.gemini/antigravity/skills/os_cleanup/scripts/os_cleanup.py \
+#               --workspace "$ELEVATIONARY_AGENT_WORKSPACE" --dry-run
+
+# Fleet lesson (3 steps — all required, non-doctrine only):
+#   1. Write: $ELEVATIONARY_AGENT_WORKSPACE/.tmp/fleet_lesson_<topic>.md
+#   2. Ingest: cd ~/Antigravity/Administrator && \
+#              $PYTHON scripts/ingest_memory.py \
+#              "$ELEVATIONARY_AGENT_WORKSPACE/.tmp/fleet_lesson_<topic>.md" \
+#              --agent FLEET --topic "<Title>"
+#   3. Verify: $PYTHON $ROUTER recall "<keywords>" --agent FLEET --top 3
+
+# IMPORTANT: vault_upload.py auto-generates a Layer 3 pointer — do NOT also run
+# ingest_memory.py for the same document.
+```
+
+---
+
+## Six-Layer Memory System
+
+Single entry point: `memory_router`. Query on demand; do not sweep all layers at startup.
+
+| # | Layer | Access | When |
+|---|---|---|---|
+| 1 | Identity (this file + charter.md) | Loaded | Always |
+| 2 | SQLite facts | `$PYTHON $ROUTER lookup --sql "..."` | Clients, invoices, phases |
+| 3 | SQLite-vec semantic | `$PYTHON $ROUTER recall "query"` | Memory-First + Blocker-Check |
+| 4 | Discovery Engine | `$PYTHON $ROUTER query <vault> "question"` | Full doc after L3 match |
+| 5 | NotebookLM Enterprise | `notebooklm_enterprise` skill | Deep synthesis on demand |
+| 6 | Cloudflare R2 | `$PYTHON $ROUTER archive` | Cold archive (not yet integrated) |
+
+Health check: `$PYTHON $ROUTER status` (every onboarding).
+
+**Write Triggers:**
+- **Layer 2 (fact):** New client/invoice/phase → `$PYTHON $ROUTER store_fact` immediately.
+- **Layer 3 (lesson):** Behavioral correction / non-obvious fix / constraint discovered. Quality gate: *would this change an agent's behavior?* Real-time if CEO corrects you; wrap-up scan if self-discovered. **Doctrine gate below.**
+- **Layer 4 (doc):** Any plan/SOP/ORS/decision/walkthrough → `vault_upload.py` at wrap-up (auto-generates L3 pointer).
+
+### Doctrine-Lesson Ratification Guardrail
+
+Agents do NOT self-ingest doctrine-class fleet lessons. Doctrine-class = anything that changes how agents work as a rule (ORS process, wrap/onboard, close-states, trust-anchor discipline, orchestration rules, escalation routing).
+
+**Route:** surface candidate to hub (El_OS) via A2A → hub + CEO ratify → hub ingests the single canonical version.
+
+**Non-doctrine (factual/technical discoveries — a bug's root cause, a tool gotcha, an API-specific)** still self-ingest normally.
+
+**Test:** *Does this tell agents how to behave (doctrine → ratify) or how something works (fact → self-ingest)?*
+
+### Auto-Memory vs Layer 3
+
+Auto-memory (`~/.claude/projects/.../memory/`) = preferences + context specific to THIS agent only. Layer 3 = anything that should change how ANY fleet agent behaves. Rule: if it only helps me, auto-memory; if it would prevent any agent from repeating a mistake, Layer 3.
+
+---
+
+## Shared State Files (Read Before Writing)
+
+- `docs/build_handover.md` — Claude Code cross-session narrative. Read at onboarding step 2. Written at wrap-up step 3.
+- `docs/backlog.md` — **ELIMINATED 2026-07-01** (CEO doctrine). Do NOT recreate. Persistent work → P4D3; between-session → `build_handover.md`; doctrine → this file; live in-session checklist → harness task-list (TaskCreate/TaskUpdate).
+- `$ELEVATIONARY_AGENT_DATA_DOCS/ORS_logs/` — Claude Code writes ORS logs here. Read-only for other agents.
+- `session_log.md` — lives in `$ELEVATIONARY_AGENT_DATA_DOCS/`. StateManager resolves path automatically via CLIENT_ROSTER.json.
+
+P4D3 + `build_handover.md` are the bridge. Actionable outcomes → P4D3 (authoritative). Cross-session narrative → `build_handover.md`. No cross-reading of handovers.
+
+---
 
 ## Wrap-Up Protocol
-1. **Update P4D3** — `update_status` completed tasks with today's date.
-2. **Commit + push** — `git add ... && git commit ...`. Cloudflare Pages auto-deploys on push.
-3. **Write handover** — read current `docs/build_handover.md`, then rewrite with What Was Done + Remaining. Between-session state lives here; dormant/trigger-gated items that don't warrant a P4D3 task get a line here.
-4. **Walkthrough discipline (Team Elevation Group B, 2026-07-02) — walkthrough-at-PASS, not deferred to wrap-up-scan:** Every ORS PASS ships with a companion walkthrough written at the moment of PASS. The wrap-up script Step 0.7 REFUSES to close if today's ORS PASS(es) lack companion walkthroughs. Adjudicated waiver: (a) machine-checkable trivial-change auto-waiver if `git diff --stat HEAD` shows ≤10 changed lines AND no `docs/templates/` / `scripts/` / `directives/` paths touched; (b) explicit `--skip-walkthrough-gate --waive-walkthrough-reason "<why>"` (audited). Rationale: fleet walkthrough:ORS ratio was ~30% at 2026-07-02.
-5. **Scan for learning moments** — (a) Behavior change? → fleet lesson → L3. (b) Plan/ORS/walkthrough produced? → `vault_upload.py` → L4. (c) New structured facts? → `store_fact` → L2.
-5. **Run wrap-up script:**
+
+Run in order when CEO signals "run wrap-up" (subject to Wrap-Trigger Authorization Guard above):
+
+1. **Update P4D3** — For each completed task originating in P4D3, call `elevationary_p4d3_update_status` to mark done with today's date.
+2. **Commit** — `git add <files> && git commit -m "..."` for uncommitted work.
+3. **Write handover** — Read current `docs/build_handover.md` first, then rewrite with What Was Done + Remaining Work.
+4. **Walkthrough discipline (walkthrough-at-PASS):** Every ORS PASS ships a companion walkthrough written at the moment of PASS. `claude_wrap_up.py` Step 0.7 walkthrough gate REFUSES to close if today's ORS PASS(es) lack companion walkthroughs. Waivers: (a) auto-waive if `git diff --stat HEAD` shows ≤10 changed lines AND no `docs/templates/` / `scripts/` / `directives/` paths touched; (b) explicit `--skip-walkthrough-gate --waive-walkthrough-reason "<why>"` (audited).
+5. **Scan for learning moments** — Review session's ORS log, walkthrough, key decisions. Three questions: (a) Anything that should change fleet behavior? → fleet lesson → **doctrine-class routes to El_OS via A2A; non-doctrine self-ingest via `ingest_memory.py`**. (b) Any plan/ORS/walkthrough/decision produced? → `vault_upload.py` → Layer 4. (c) Any new structured facts? → `store_fact` → Layer 2.
+6. **Run wrap-up script:**
    ```bash
    python3 ~/.gemini/antigravity/skills/morning_muster/scripts/claude_wrap_up.py \
-     --agent "Website" \
-     --workspace ~/Antigravity/Website \
+     --agent "<AgentName>" \
+     --workspace "$ELEVATIONARY_AGENT_WORKSPACE" \
      --focus "<one-line session theme>" \
-     --achievements "..." \
-     --pending "..."
+     --achievements "Achievement 1" "Achievement 2" \
+     --pending "Pending item 1" "Pending item 2"
    ```
-7. **Production smoke test** — `curl -sI https://elevationary.com/` confirms Cloudflare still serves HTTP 200 after deploy.
+   Achievements tagged `(Claude Code)` automatically. StateManager merges Gemini's same-day entries; never overwrites.
