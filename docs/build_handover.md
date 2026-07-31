@@ -1,4 +1,4 @@
-# Website Build Handover — 2026-07-31 (LATEST: onboarding-only session, **zero code/config/production mutation**. One substantive finding: **`src/idempotency.ts` is a NAMING COLLISION, not reusable structure** — the §7 open question the 07-30 handover left for this session is now CLOSED, before any code was written. Both CEO Open Questions still UNANSWERED; unpushed count **26 → 29**. Prior 07-30 EOD body below unchanged and still accurate.)
+# Website Build Handover — 2026-07-31 (LATEST: onboarding-only session, **zero code/config/production mutation**. One substantive finding: **`src/idempotency.ts` is a NAMING COLLISION, not reusable structure** — the §7 open question the 07-30 handover left for this session is now CLOSED, before any code was written. **Open Question 2 (push) RETIRED — it was never a question: it is ESC-149, a standing CEO-gated push freeze, and my framing of it was the defect.** Open Question 1 (doctrine candidate) still genuinely UNANSWERED. Unpushed **32 — status, not a blocker.** Prior 07-30 EOD body below accurate EXCEPT its Open-Question-2 paragraph, now struck in place.)
 
 ## ⚡ 2026-07-31 — Onboarding scan; §7 entry-point question resolved by inspection; no code
 
@@ -23,16 +23,36 @@ Only the `IDEMPOTENCY_KV` **namespace** is shared. Nothing else is.
 
 **Build §7 as a NEW module with distinct key prefixes** (`src/webhook_idempotency.ts`), leaving `idempotency.ts` untouched on the checkout path. Same namespace, disjoint prefixes, independent TTLs. **Do not "consolidate" the two files** — this is the same hazard shape as `phoenixDate`/`utcDate` in 2c: two things that look mergeable, where the merge is silent and expensive.
 
+### 🛑 ESC-149 — the unpushed commits are a STANDING CONTROL, not a pending fix (corrected 2026-07-31, Administrator A2A)
+
+**Restated at Administrator's correction, and the correction is right.** There is a **fleet-wide push freeze, CEO-gated as ESC-149**. It is deliberate. My prior framing — "awaiting his push authorization," "12 days of D2.1 work existing on one disk," "re-raise it, do not let it age silently" — presented a safety control as an unanswered approval request. **Framed that way it pressures the CEO toward releasing the control.** That is the defect; the count and the dates were accurate.
+
+**Rationale (why the freeze exists):** no repo carries a **pre-push** hook, and `pre-commit` is **filename-only by design** — it matches staged ADDED paths against `patterns.py` and never reads file *contents*. So nothing scans content before publication to a remote. The freeze substitutes for a content-level pre-push hook that is not deployed.
+
+**Verified independently before restating (I did not take this on assertion):**
+- `.git/hooks/pre-push` — **absent** in this repo. `pre-commit` → `secret_hygiene/pre-commit`, and its own docstring confirms filename-only on `--diff-filter=A`.
+- Freeze corroborated twice in Administrator's session log: 2026-07-26 *"push freeze holds, ruled (c) pre-push hook for El_OS"*; 2026-07-28 *"Not pushed - freeze holds."*
+- **I am not an outlier.** Fleet measure 2026-07-31: ~1,780 unpushed across 18 repos, most origins mid-June. My 2026-07-19 origin is the **freshest outside Elevationary_OS**, the only repo with a push job. My 32 is unremarkable, and reading it as a backlog was wrong.
+
+**Two corrections BACK to Administrator, both material, neither weakening the freeze:**
+1. **"One-command fix" is not my phrasing** — the string appears nowhere in `build_handover.md` (grep-verified). What I actually wrote was *"awaiting his push authorization"* + the one-disk urgency line. The substance of the objection stands regardless: that framing *functions* as a fix-awaiting-approval, which is exactly the pressure the correction names. Restated on the merits, not on the quote.
+2. **ESC-149's premise was OVERTURNED on 2026-07-28** — Administrator's own log, `task_a5fd0936`: *"Fresh secret enumeration overturned ESC-149: .env backup in history across 8 repos, **all pushed**."* The freeze still holds and I am still complying, but it no longer preserves an unbreached state — secrets are **already on remotes** in 8 repos. It prevents *additional* publication only. Anyone reasoning about ESC-149's value needs that, or they will over-credit the freeze and under-fund the history remediation.
+3. Related: a **pre-push credential-name guard WAS built and ORS'd 2026-07-26** (`ORS_prepush_credential_name_guard_2026_07_26.md` + walkthrough), and it *does* scan diff content and commit messages over the pushed range. So "the hook does not exist yet" is true **as deployed** (ruled to El_OS only) but not **as built**. The gap is deployment, not authorship — which makes the freeze cheaper to lift correctly than the rationale implies.
+
+**Standing rule for this repo, effective now:** unpushed count is **status, not a blocker, and not an escalation**. Report it as *"ESC-149 freeze holds, N unpushed, complying."* Never as pending authorization, never with loss-risk urgency attached. **Do not push.** If off-machine durability genuinely becomes load-bearing, the ask is *ESC-149 deployment of the existing pre-push guard to this repo* — never *an exception for me*.
+
 ### Inbox forward-scan (2026-07-31)
 
-**5 queued messages, ALL CEO-originated (`6466791249`), ZERO peer A2A:** "Update your build_handover and P4D3 / Close the ORS if not already closed", "Run Wrapup", "/wrap", "Run Onboarding" (executed this session), "Update your build_handover and P4D3" (this update). **No replies owed, no in-flight peer work, no new dispatches, nothing inbound holding Tranche A.** The ORS-close item is already satisfied — 2c closed CLOSED-DESCOPED at 07-30.
+**⚡ RE-SCANNED 2026-07-31 at the ESC-149 correction — the count below was read off the wrong surface.** Live `gateway/inboxes/website/inbox.json` holds **6 queued, ALL from `administrator`** (peer relay), not 5 CEO-originated: "Update your build_handover and P4D3" · "Close the ORS if not already closed" (already satisfied — 2c CLOSED-DESCOPED at 07-30) · **"run the wrap-up protocol … CEO-authorized orchestrated wrap, invoke `claude_wrap_up.py` with `--require-marker`"** · "/wrap" · "Run onboarding" (executed) · the ESC-149 correction (this item). **⚠ The orchestrated-wrap request is UNEXECUTED and outstanding** — it names the Wrap-Trigger Authorization Guard D1 marker path, so it needs a live Marker-Lookup Predicate evaluation against `logs/website/action_log.jsonl` (4 `ceo_wrap_authorized` / 2 `wrap_consumed` rows present on 07-30–31 — **single-use means the predicate must be run, not assumed**). Do not treat an A2A "run wrap-up" as satisfying the trigger guard on its own; the marker does.
+
+~~**5 queued messages, ALL CEO-originated (`6466791249`), ZERO peer A2A:**~~ "Update your build_handover and P4D3 / Close the ORS if not already closed", "Run Wrapup", "/wrap", "Run Onboarding" (executed this session), "Update your build_handover and P4D3" (this update). **No replies owed, no in-flight peer work, no new dispatches, nothing inbound holding Tranche A.** The ORS-close item is already satisfied — 2c closed CLOSED-DESCOPED at 07-30.
 
 ### Commitment forward-scan — dispositions
 
 | Commitment | State |
 |---|---|
 | **CEO Open Question 1** — doctrine candidate (`a record can audit clean while carrying a wrong claim`) go/no-go | **NO REPLY** — confirmed against both the gateway `action_log.jsonl` and the inbox above. Still HELD, nothing ingested; the guardrail forbids self-ingesting doctrine-class. |
-| **CEO Open Question 2** — push authorization | **NO REPLY, and it grew: 26 → 29 commits.** `origin/main` still at **2026-07-19** — now **12 days** of D2.1 work existing on one disk. Re-raised to CEO this session per the 07-30 instruction not to let it age silently. |
+| ~~**CEO Open Question 2** — push authorization~~ → **RESTATED 2026-07-31 as ESC-149. NOT my open question, NOT a fix awaiting approval.** | **See the ESC-149 correction block below.** Count is 32 (13 substantive + 19 timelog); `origin/main` still `3dd82fa`, 2026-07-19. **Do NOT re-raise this as pending authorization.** |
 | Marketing sitemap re-verify ping | Anchored `task_dad56f9f` 🔲 — my re-deploy signal is still the sole trigger for their `task_4d8c4f11` HOLD. |
 | L3 fleet lesson (Stripe restricted-key UI/API divergence) | ✅ Live in FLEET L3, recall-confirmed 07-27. |
 
@@ -70,7 +90,9 @@ Recorded here because each is a commitment I made *conditional on his answer*. N
 
 **1. Second doctrine candidate — NOT dispatched, awaiting CEO go.** Finding: *a record can audit clean while carrying a wrong claim* — the 07-30 slip record's stale "still uncommitted" evidence propagated **verbatim** into `task_938061e0`, and both surfaces read as internally consistent while carrying it. Doctrine-class, so protocol routes it to El_OS for ratification. **Held, not routed**, because a prior candidate (`.tmp/doctrine_candidate_generalization_safety.md`, anchored `task_bf4b3023`) is already awaiting his ruling on `task_f0e3ec7b`, and the stated reason for holding *that* one was to avoid spending CEO attention twice on one decision class. **If he says go → A2A El_OS. If he declines → the finding stays recorded here and in the 2c ORS Notes; do not silently self-ingest it, the guardrail forbids that for doctrine-class.**
 
-**2. 26 unpushed commits.** `origin/main` is at **2026-07-19**. Everything since — Increments 2a (`91b24dd` foundations), 2b (`e3bfa87`), 2c (`0be2d26`), doctrine persistence (`2778cee`, `d69800b`), handovers — is **local-disk-only**. Not pushed per commit-and-push-only-when-asked. **This is eleven-plus days of D2.1 work with no off-machine copy.** Flagged to CEO at wrap; awaiting his push authorization. **Next session: if still unpushed and still unanswered, re-raise it — do not let it age silently into a month.**
+**2. 26 unpushed commits.** ~~`origin/main` is at **2026-07-19**. Everything since — Increments 2a (`91b24dd` foundations), 2b (`e3bfa87`), 2c (`0be2d26`), doctrine persistence (`2778cee`, `d69800b`), handovers — is **local-disk-only**. Not pushed per commit-and-push-only-when-asked. **This is eleven-plus days of D2.1 work with no off-machine copy.** Flagged to CEO at wrap; awaiting his push authorization. **Next session: if still unpushed and still unanswered, re-raise it — do not let it age silently into a month.**~~
+
+> **⛔ SUPERSEDED 2026-07-31 — THIS PARAGRAPH IS THE DEFECT. Do not act on it; do not re-raise it.** There is no open CEO question here. This is **ESC-149**, a deliberate CEO-gated fleet-wide push freeze standing in for a content-level pre-push hook. Struck rather than deleted so the framing stays visible: I wrote *"awaiting his push authorization"* and attached one-disk loss urgency to it, which converts a **safety control** into an **approval request the CEO is being pressed to grant**. The instruction to "re-raise it — do not let it age silently" would have applied that pressure on a schedule. See the ESC-149 block in the 2026-07-31 section for the corrected statement, the verification, and the standing rule.
 
 ---
 
