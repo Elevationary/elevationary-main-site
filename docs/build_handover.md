@@ -1,4 +1,48 @@
-# Website Build Handover — 2026-07-30 EOD (LATEST: ⚡ **SLIP BROKEN — D2.1 Increment 2c SHIPPED + COMMITTED `0be2d26`.** ORS CLOSED-DESCOPED, tsc clean, 192/192. The 07-30 slip record below is SUPERSEDED as a forecast but KEPT as a record — and one piece of its evidence was wrong; correction inline. Prior 07-27 body below still accurate on all other technical state.)
+# Website Build Handover — 2026-07-31 (LATEST: onboarding-only session, **zero code/config/production mutation**. One substantive finding: **`src/idempotency.ts` is a NAMING COLLISION, not reusable structure** — the §7 open question the 07-30 handover left for this session is now CLOSED, before any code was written. Both CEO Open Questions still UNANSWERED; unpushed count **26 → 29**. Prior 07-30 EOD body below unchanged and still accurate.)
+
+## ⚡ 2026-07-31 — Onboarding scan; §7 entry-point question resolved by inspection; no code
+
+**Session shape:** peer-triggered onboarding + this update. **No code, no config, no production mutation, no ORS opened.** On-disk state is exactly as `0be2d26` left it: working tree clean of source changes (only `.bak.*` / `*.snapshot-*` / `.claude/` / `.tmp/` dirt), 192/192 green, `tsc` clean.
+
+**Onboarding all green.** TimeKeeper START committed; handover read; `config/input_surfaces.yaml` absent → step 2.5 no-op; commitment forward-scan dispositions below; **step 2.8 self-blocking-rule scan CLEAN** — the Do Not Re-Try list is entirely technical, and the recurring "UNCOMMITTED per commit-only-when-asked" phrasing governs *authored* code, not propagated doctrine, whose supersession is already committed (`2778cee` directives + ORS template, `d69800b` `input_surfaces.yaml.example`). Most-recent ORS = `ORS_d21_stripe_webhook_receiver_inc2c_transformer_2026_07_30.md` **CLOSED-DESCOPED** (terminal, non-blocking → proceed; **already closed — nothing left open on it**). **Code trust anchor unchanged: `ORS_middleware_investigation_2026_07_10.md` PASS.** Memory router L1–L4 healthy (L3 3,989; L4 1,271 docs / 6 vaults).
+
+### 🔑 FINDING — `src/idempotency.ts` is a NAMING COLLISION. Do NOT extend it for §7.
+
+The 07-30 handover and the 2c ORS both named this as the first thing to read at §7, flagged as *either* reusable structure *or* a collision. **It is the collision.** Read before writing anything:
+
+| | Existing `src/idempotency.ts` (76 lines, live at `src/index.ts:34`) | D2.1 §7 two-layer webhook idempotency |
+|---|---|---|
+| Purpose | **Checkout-path abuse control** | **Webhook event dedup** |
+| Layer 1 | `rl:ip:<sha256(ip)>` per-IP rate counter, **60s TTL**, max 10 | KV keyed on **Stripe event id** |
+| Layer 2 | `lock:email:<ct_id>` double-submit lockout, **60s TTL**, caches `session_url` | **Zoho** `cf_stripe_invoice_id` lookup (`zoho_client.ts:326`, already built) |
+| Spec | §3.7 / §8 F-3 / §8 F-4 | §7.1 / §7.2 |
+
+Only the `IDEMPOTENCY_KV` **namespace** is shared. Nothing else is.
+
+**⚠ WHY EXTENDING IT WOULD BE A REVENUE DEFECT, not just untidy:** both existing TTLs are **60 seconds** — and the 60s is not a design choice, it is Cloudflare KV's `expirationTtl` **floor** (comment at `:13`, found the hard way 2026-06-16 when a 30s PUT was rejected). Stripe's webhook retry ladder runs for **up to 3 days**. Webhook dedup state parked behind a 60s abuse-window TTL expires long before Stripe stops retrying, so retry #2 reads an empty KV, concludes "not yet processed," and **creates a second Zoho invoice for money collected once.** The floor comment reads like trivia and is actually the load-bearing detail.
+
+**Build §7 as a NEW module with distinct key prefixes** (`src/webhook_idempotency.ts`), leaving `idempotency.ts` untouched on the checkout path. Same namespace, disjoint prefixes, independent TTLs. **Do not "consolidate" the two files** — this is the same hazard shape as `phoenixDate`/`utcDate` in 2c: two things that look mergeable, where the merge is silent and expensive.
+
+### Inbox forward-scan (2026-07-31)
+
+**5 queued messages, ALL CEO-originated (`6466791249`), ZERO peer A2A:** "Update your build_handover and P4D3 / Close the ORS if not already closed", "Run Wrapup", "/wrap", "Run Onboarding" (executed this session), "Update your build_handover and P4D3" (this update). **No replies owed, no in-flight peer work, no new dispatches, nothing inbound holding Tranche A.** The ORS-close item is already satisfied — 2c closed CLOSED-DESCOPED at 07-30.
+
+### Commitment forward-scan — dispositions
+
+| Commitment | State |
+|---|---|
+| **CEO Open Question 1** — doctrine candidate (`a record can audit clean while carrying a wrong claim`) go/no-go | **NO REPLY** — confirmed against both the gateway `action_log.jsonl` and the inbox above. Still HELD, nothing ingested; the guardrail forbids self-ingesting doctrine-class. |
+| **CEO Open Question 2** — push authorization | **NO REPLY, and it grew: 26 → 29 commits.** `origin/main` still at **2026-07-19** — now **12 days** of D2.1 work existing on one disk. Re-raised to CEO this session per the 07-30 instruction not to let it age silently. |
+| Marketing sitemap re-verify ping | Anchored `task_dad56f9f` 🔲 — my re-deploy signal is still the sole trigger for their `task_4d8c4f11` HOLD. |
+| L3 fleet lesson (Stripe restricted-key UI/API divergence) | ✅ Live in FLEET L3, recall-confirmed 07-27. |
+
+**Escalation trigger STILL LIVE, and unaffected by 2c shipping:** a **fourth** unexecuted interval on `task_938061e0` is a capacity/priority question for COO + CEO — **route it, do not re-date it.** The counter applies to the next projected interval on Tranche A (§7). Date on that row stays **2026-07-29**, still not moved.
+
+**Next session, first action:** open `ORS_d21_stripe_webhook_receiver_inc3_idempotency_2026_07_31.md` and build §7 as the new module per the finding above. Then §8/§9 DLQ/retry ladder, fresh ORS. Tests from `workers/subscribe-checkout` via `./node_modules/.bin/` — repo-root `npx` is wrong on both counts.
+
+---
+
+## Website Build Handover — 2026-07-30 EOD (PRIOR: ⚡ **SLIP BROKEN — D2.1 Increment 2c SHIPPED + COMMITTED `0be2d26`.** ORS CLOSED-DESCOPED, tsc clean, 192/192. The 07-30 slip record below is SUPERSEDED as a forecast but KEPT as a record — and one piece of its evidence was wrong; correction inline. Prior 07-27 body below still accurate on all other technical state.)
 
 ## ⚡ 2026-07-30 EOD — Increment 2c shipped; slip closed same day
 
