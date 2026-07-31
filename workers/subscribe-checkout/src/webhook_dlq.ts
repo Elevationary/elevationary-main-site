@@ -5,14 +5,34 @@
 //   § 9.3  Hard-reject vs transient-retry taxonomy
 //   § 9.4  Stuck-retry-loop page suppression
 //
-// ⚠ § 9.2's page is specified as `send_notification.py "Website" "..."` — a
-// PYTHON CLI. Cloudflare Workers have no process, no filesystem, and no shell,
-// so that line cannot execute in the runtime that owns the deposit. This module
-// therefore builds the page INTENT (exact § 9.2 text + a suppression decision)
-// and does NOT send. Wiring it to a real transport needs a Telegram bot token,
-// which is a 13th secret not present in § 11.1/§ 11.2's 12-secret contract —
-// note that § 11.4's env-sync check asserts "all 12 present" and would pass
-// while the pager is unreachable.
+// ⚠ § 9.2's PAGE IS DEFERRED ON A NAMED EXTERNAL GATE — NOT ON A RUNTIME LIMIT.
+// The distinction is load-bearing, because only one of those is permanent.
+//
+// The spec line `send_notification.py "Website" "..."` is a PYTHON CLI, and a
+// Worker has no process, no filesystem, and no shell — so THAT LINE cannot run.
+// But the script is not the capability: send_notification.py is a thin wrapper
+// over the Telegram Bot API, and a Worker can issue the same call directly with
+// `fetch()`:
+//
+//     POST https://api.telegram.org/bot<TOKEN>/sendMessage
+//     body: { chat_id, text }
+//
+// ⛔ THE ACTUAL OBSTACLE IS A SECRET-PLACEMENT DECISION, AND IT IS A CEO CALL.
+// Calling the Bot API from the Worker puts a live bot token in Cloudflare Worker
+// env — a NEW credential surface — while ESC-149 is open: pre-push content
+// scanning exists in 1 of 24 repos, and .env material is already in pushed
+// history across 8. Adding a credential location while that is unresolved is not
+// a build decision. (Confirmed by Administrator/COO 2026-07-31, whose lane it is.)
+//
+// ⚠ AND DO NOT LET THIS BECOME A SILENT DLQ. A deposit path that works while its
+// ALERT path has never once been exercised is a known fleet failure shape — it is
+// Newsletter's open gate today, and here it would have money behind it. The
+// deposit is buildable and testable now; the page is INTENT-ONLY with the gate
+// NAMED and the mechanism IDENTIFIED, so whoever clears the secret question wires
+// it in ONE change instead of re-deriving that Workers cannot shell out.
+//
+// Also note § 11.4's env-sync check asserts "all 12 secrets present" and would
+// pass while the pager is unreachable — the 13th is invisible to it.
 //
 // ⚠ PII BOUNDARY: § 9.1 requires the FULL Stripe event verbatim, because § 9.5
 // replay depends on it. Redacting here would break recovery. The boundary is
@@ -150,9 +170,40 @@ export async function markPaged(
 // § 9.2 — page intent (built, never sent; see header)
 // ---------------------------------------------------------------------------
 
+/**
+ * The one-change wire-in, recorded so it need not be re-derived.
+ *
+ * When the secret-placement gate clears, the delivery is:
+ *   await fetch(TELEGRAM_SEND_MESSAGE_URL(env.TELEGRAM_BOT_TOKEN), {
+ *     method: "POST",
+ *     headers: { "content-type": "application/json" },
+ *     body: JSON.stringify({ chat_id: env.TELEGRAM_CEO_CHAT_ID, text: intent.message }),
+ *   })
+ * and `transport` below flips to "telegram_bot_api".
+ */
+export const TELEGRAM_SEND_MESSAGE_URL = (token: string): string =>
+  `https://api.telegram.org/bot${token}/sendMessage`;
+
+/**
+ * What is actually blocking delivery. Named, not vague — the gate is clearable.
+ * NOT "the runtime cannot do it": the runtime can, via the fetch above.
+ */
+export const PAGE_GATE = {
+  blocked_on: "secret_placement_decision",
+  decision_owner: "CEO",
+  context: "ESC-149 fleet secret-hygiene freeze — adds a new credential surface",
+  needs: ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CEO_CHAT_ID"],
+  note: "13th/14th secrets — §11.4's 'all 12 present' check cannot see them",
+} as const;
+
 export interface PageIntent {
   agent: "Website";
   message: string;
+  /**
+   * "unwired" until the gate above clears. Present so a caller CANNOT mistake a
+   * built intent for a delivered page — the silent-DLQ failure this guards.
+   */
+  transport: "unwired";
 }
 
 export function buildPageIntent(args: {
@@ -167,6 +218,7 @@ export function buildPageIntent(args: {
     message:
       `DLQ: ${args.eventType} ${args.eventId} — ${args.step} failed after ` +
       `${args.retryAttempts} attempts. R2 key: ${args.r2Key}.`,
+    transport: "unwired",
   };
 }
 

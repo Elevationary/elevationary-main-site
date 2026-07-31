@@ -9,6 +9,8 @@ import {
   classifyTransformReject,
   classifyOperationalFailure,
   DLQ_PAGE_SUPPRESSION_TTL_SEC,
+  PAGE_GATE,
+  TELEGRAM_SEND_MESSAGE_URL,
   type DlqKv,
 } from "../src/webhook_dlq";
 import type { TransformRejectCode } from "../src/stripe_event_transform";
@@ -171,6 +173,35 @@ describe("§9.2 page intent", () => {
     expect(intent.message).toBe(
       "DLQ: invoice.payment_succeeded evt_1 — zoho_create_invoice failed after 4 attempts. " +
         "R2 key: 2026/07/31/evt_1_invoice.payment_succeeded.json.",
+    );
+  });
+
+  it("is explicitly UNWIRED — a built intent is not a delivered page", () => {
+    // Guards the silent-DLQ failure: a deposit path that works while its alert
+    // path has never been exercised. `transport` makes the gap unmissable, and
+    // this test must be updated when the gate clears.
+    const intent = buildPageIntent({
+      eventType: "x",
+      eventId: "evt_1",
+      step: "s",
+      retryAttempts: 1,
+      r2Key: "k",
+    });
+    expect(intent.transport).toBe("unwired");
+  });
+
+  it("the gate is NAMED and CLEARABLE — not a runtime limitation", () => {
+    // The correction that matters: the Worker runtime CAN do this via fetch.
+    // What blocks it is a secret-placement decision, which is a CEO call.
+    expect(PAGE_GATE.blocked_on).toBe("secret_placement_decision");
+    expect(PAGE_GATE.decision_owner).toBe("CEO");
+    expect(PAGE_GATE.context).toContain("ESC-149");
+    expect(PAGE_GATE.needs).toContain("TELEGRAM_BOT_TOKEN");
+  });
+
+  it("the wire-in mechanism is recorded so it need not be re-derived", () => {
+    expect(TELEGRAM_SEND_MESSAGE_URL("TOKEN123")).toBe(
+      "https://api.telegram.org/botTOKEN123/sendMessage",
     );
   });
 });
