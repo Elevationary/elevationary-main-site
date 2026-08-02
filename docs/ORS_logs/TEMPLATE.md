@@ -248,8 +248,28 @@ Root cause of the 2026-07-01 fleet-wide source-of-truth drift: leaf files are **
 ---
 
 ## Result
-- [ ] **ORS PASS** — all stages complete, clean retest, observability signal defined
-- [ ] **ORS FAIL** — requires additional remediation
+> Check EXACTLY ONE. The canonical token must sit in the DECLARATION SLOT — immediately after
+> the checkbox, modulo markdown emphasis. Put narrative in Notes, never in the declaration line:
+> a summary that names other close-states inside this line makes the log resolve to several
+> contradictory verdicts at once. `PROVISIONAL PASS` is NOT a closing state.
+
+- [ ] **ORS PASS** — all stages complete, clean retest, observability signal defined, AND every
+      human live-fire item checked. Advances the trust anchor. If any human gate is named but
+      unmet, this is NOT the box — use the blocked-parked note below.
+- [ ] **ORS FAIL** — attempted, remediation failed. Reason + disposition documented.
+- [ ] **CLOSED-SUPERSEDED** — agent-side stages clean, but the deliverable was overtaken by
+      events and the remaining human/live-fire gates can NEVER now be confirmed. Boxes left
+      honestly unchecked, per-item disposition recorded. NOT a PASS. NOT a FAIL. Does not
+      advance the trust anchor.
+- [ ] **CLOSED-DESCOPED** — deliverable-spanning ORS; a verified subset shipped and the
+      remainder is deferred to a fresh ORS at that work's dispatch. NOT a whole-deliverable
+      PASS. Does not advance the trust anchor.
+
+> **None of the four honest?** Two legitimate non-closing states exist — do NOT force a box:
+> **OPEN — blocked-parked** (agent-side clean, awaiting an external gate that is still
+> reachable; onboarding step 3 designates this *proceed*), and **opened-but-never-started**
+> (Stage 1 wholly unchecked, no work product). Stamping any close-state on either puts a false
+> entry in the trust record, which is worse than an open row.
 
 ## Notes
 > Optional: anything surprising, decisions made, or context future agents should know.
