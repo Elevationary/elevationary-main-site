@@ -1,6 +1,73 @@
-# Website Build Handover — 2026-07-31 (LATEST: ⚑ **TRANCHE A COMPLETE — D2.1 Increments 2c + 3 + 4 all shipped, 295/295, `task_938061e0` 🟢.** Nothing deployed; three open gates carried into Tranche B (§9.6 unsecured DLQ bucket, §9.2 unwired pager, unproven fixtures). PRIOR: **Increment 3 SHIPPED — §7 two-layer idempotency, committed `4237d56`, ORS CLOSED-DESCOPED, 240/240.** Three findings, two of them corrections to records that audited clean: my own morning "same namespace" claim was FALSE; spec §7.4/§7.5's 30s mutex TTL is UNIMPLEMENTABLE against KV's 60s floor; and `ok:false` conflates transient with permanent, which silently drops revenue. Wrap NOT run — predicate evaluated FALSE, marker already consumed. Earlier same-day onboarding section below. Its finding that **`src/idempotency.ts` is a NAMING COLLISION** stands, with the namespace half corrected. **Open Question 2 (push) RETIRED — it was never a question: it is ESC-149, a standing CEO-gated push freeze, and my framing of it was the defect.** Open Question 1 (doctrine candidate) still genuinely UNANSWERED. Unpushed **32 — status, not a blocker.** Prior 07-30 EOD body below accurate EXCEPT its Open-Question-2 paragraph, now struck in place.)
+# Website Build Handover — 2026-08-01 (LATEST: 📋 **NO-CODE ASSESSMENT SESSION — Fable 5 + Higgsfield "sizzle" feasibility, CEO-initiated. ZERO code changed, ZERO deploys, ZERO commits. Trust anchor and all Tranche A/B state UNTOUCHED.** **CEO ratified the analysis + approved building an Elevationary version; Q-I4 lift granted in principle but sequenced AFTER Phases 1+2.** Plan authored at `~/Antigravity_Data/Website/docs/plans/sizzle_upgrade_phases_1_3_2026_08_01.md`; **P4D3 project `Website_Sizzle_Upgrade_2026_08` filed** (3 phases / 14 deliverables / 7 tasks / **6 OPEN CEO decisions** / 1 dependency). **RESPAWN ON OPUS 5** — reasoning in the Respawn Brief. `D-CEO-S1` (ESC-149) gates whether Phase 1 can reach production at all. Zero open ORS fleet-wide for this agent. Wrap NOT run — not triggered, and no ORS today to satisfy the gate. Section immediately below. PRIOR: ⚑ **TRANCHE A COMPLETE — D2.1 Increments 2c + 3 + 4 all shipped, 295/295, `task_938061e0` 🟢.** Nothing deployed; three open gates carried into Tranche B (§9.6 unsecured DLQ bucket, §9.2 unwired pager, unproven fixtures). PRIOR: **Increment 3 SHIPPED — §7 two-layer idempotency, committed `4237d56`, ORS CLOSED-DESCOPED, 240/240.** Three findings, two of them corrections to records that audited clean: my own morning "same namespace" claim was FALSE; spec §7.4/§7.5's 30s mutex TTL is UNIMPLEMENTABLE against KV's 60s floor; and `ok:false` conflates transient with permanent, which silently drops revenue. Wrap NOT run — predicate evaluated FALSE, marker already consumed. Earlier same-day onboarding section below. Its finding that **`src/idempotency.ts` is a NAMING COLLISION** stands, with the namespace half corrected. **Open Question 2 (push) RETIRED — it was never a question: it is ESC-149, a standing CEO-gated push freeze, and my framing of it was the defect.** Open Question 1 (doctrine candidate) still genuinely UNANSWERED. Unpushed **32 — status, not a blocker.** Prior 07-30 EOD body below accurate EXCEPT its Open-Question-2 paragraph, now struck in place.)
 
-## ⚑ 2026-07-31 (LATEST) — **TRANCHE A COMPLETE.** Increment 4 shipped: §8/§9 retry ladder + DLQ posture
+## 📋 2026-08-01 (LATEST) — NO-CODE ASSESSMENT: Fable 5 + Higgsfield "sizzle" feasibility
+
+**CEO-initiated question in live Claude Code session.** No ORS opened — no code, production data, money, tracked/shared state, or fleet-behaviour config was touched. **Nothing shipped, nothing committed, nothing deployed. Code trust anchor unchanged.** Deliverable was analysis + a phased plan, presented in-chat per Document Review Protocol and **HELD** pending CEO reply.
+
+**Source material (3 videos transcribed via Apify `johnvc/YoutubeTranscripts`, not summarised from search results):**
+- CEO's first two links were wrong videos. Correct one is **`_2FlJYE4p3Q`** — Jack Roberts, *"Claude Fable 5 + New Design Skill = Beautiful $10,000 Websites"*, 2026-07-17. (`zazasynMZ6g` = an AI-agents/Hyper Agent video, unrelated. `AFRL9dtUHeI` = his earlier "seven levels" video — still useful, levels 3/5/6/7 transfer.)
+- The skill is a packaged Claude Code skill: **spar → direct → render → gate → build → review → verify.** Its three transferable ideas are (1) **adversarial concept review FRONT-loaded** — a second Anthropic model validates the concept before any code, (2) a **model split** where Anthropic owns every design decision and a cheap model does scaffolding/cost-math/consistency only, (3) a **per-build cost receipt**. ~$10/site, dominated by video gen; audio off is the cost lever.
+
+### ✅ CEO RATIFICATIONS THIS SESSION
+
+1. **Analysis approved** + creation of an Elevationary version of Jack's concepts approved.
+2. **Q-I4 lift — CEO WILLING**, but **sequenced after Phases 1+2.** Phase 3 is then evaluated on marginal value, not assumed. The formal supersession is still Marketing's to author as Brand Authority; CEO willingness ≠ doctrine edit.
+3. **Plan authored** → `~/Antigravity_Data/Website/docs/plans/sizzle_upgrade_phases_1_3_2026_08_01.md`.
+4. **P4D3 filed** (below).
+5. **Model assignment CEO-PROPOSED:** Marketing runs Fable 5 as design producer; Website runs Opus 5 as validator + implementer. Website endorsed with two conditions. Pending final confirm.
+
+### ⚑ CEO REFRAME — the steer that cut the plan in half
+
+> *"The sizzle attracts the customer, but they stay for the steak. We have the steak, we just need a little sizzle."*
+
+My first draft of Phase 2 specified authoring a full `elevationary-design-foundry` skill with model-split economics and a per-build cost receipt. **That was over-built and I cut it.** Scored honestly, Jack's assets are: design extraction (**high** value), front-loaded adversarial review (**moderate, cheap**), references/UI-sniping (**moderate**), Fable 5 (**low-moderate — a model, available with or without him**), the skill/wizard (**zero** — it generates greenfield sites; we have a site), model split + cost receipt (**near-zero** — economics for building many sites; we build one).
+
+**The consequence a fresh context must not re-derive: most of the sizzle we will actually feel needs none of Jack's work and no Fable 5.** It is Phase 1 — the dark glassmorphic treatment `visual_standards.md` §1 already mandates and `bvp.css` never implemented, across 36 surfaces, with motion inside the budget we already hold. Craft and compliance, not tooling.
+
+### 📊 P4D3 — `Website_Sizzle_Upgrade_2026_08` (Operations / Web_Presence)
+
+1 project · 3 phases · 14 deliverables · 7 tasks · **6 decisions (all Owner=James, all 🔲 OPEN)** · 1 dependency.
+
+Filed as a NEW project rather than a phase on `Web_Presence_v2_Contemporary_Triad_BVP_2026_06` — that project already carries a split-program hygiene defect (`task_d8f385c7`, Phase 1.5 living under both Fleet_Governance and Web_Presence) and adding to it would compound the mess.
+
+**The six open decisions:** `D-CEO-S1` ESC-149 scoped exception (**blocks Phase 1 reaching production**) · `D-CEO-S2` dark-first flip confirm · `D-CEO-S3` Phase 2 scope (hero set vs all 36) · `D-CEO-S4` sequencing vs Tranche B `task_0dd2619e` · `D-CEO-S5` Q-I4 lift formalization · `D-CEO-S6` model assignment confirm. **Dependency:** `Dep-QMO2` — Marketing must author a scroll-driven motion class before D2.4 lands.
+
+### 🔑 Load-bearing technical finding — do NOT lose this
+
+**The two layouts have DIVERGENT feature sets and neither is a superset.** `base.njk` carries site-nav + `seo.njk` + `head_jsonld`; `bvp-base.njk` carries **none of the three** but has the brand stylesheet. Migrating the 7 orphaned templates the naive direction would **silently strip navigation and the SEO partial from 7 live surfaces.** Consolidation must be the **UNION** of both layouts. This is why D1.1 exists as its own deliverable ahead of D1.2.
+
+### On Jack's own skill
+
+Acquiring it requires a Skool signup under the CEO's email — his call, not Website's. **Standing recommendation: do NOT run a community-gated, uninspectable skill against this repo** (it carries Stripe secrets). Higgsfield's *own* skills are public and inspectable (`npx skills add higgsfield-ai/skills`) if Phase 3 ever proceeds.
+
+### Two site findings (both predate this session; neither is a regression)
+
+- **🔴 Q-I4 Sub-C BLOCKS the entire AI-media half.** `~/Antigravity/Elevationary_Marketing/brand/visual_standards.md`, locked 2026-06-06 by Brand Authority: *"AI-generated imagery BANNED for external-facing brand surfaces."* This is the Higgsfield/OpenArt half of every video in the genre. Not routed around. Secondary, softer conflict: **Q-MO1 locks motion at 150/250/400ms** with "no separate marketing motion budget" — scroll-driven cinematic motion is a different *class*, not a longer duration, and needs fresh Marketing authoring (proposed as a Q-MO2), not a waiver.
+- **⚠ LIVE BRAND-COMPLIANCE DEFECT, independent of this whole topic.** **7 of 17 templates never got the brand system**: `about`, `services`, `contact`, `account`, `upgrade`, `legal`, `newsletter-stories` still use `src/_includes/base.njk` + `assets/styles.css` — whose own first line reads *"Phase 1: Minimal functional CSS — replaced in Phase 2 by Elevationary_OS design system."* Phase 2 never happened for them. Verified live: `elevationary.com/about/` serves `/assets/styles.css`. Separately, `bvp.css` does **not** implement the dark-first glassmorphic standard `visual_standards.md` §1 mandates — it defaults light with a `prefers-color-scheme` override bolted on. **This is a standing defect against the charter's 100%-brand-adherence metric and should be fixed regardless of any Fable 5 decision.**
+
+### The crux, for whoever picks this up
+
+Every site in these videos is a **single-page, greenfield, backend-free product-launch page** — no routing, no entitlement gating, no Stripe, no JSON-LD, no AEO surface. Ours is **36 built surfaces** with a functional spine. **Pointing the skill at this repo would be destructive: it generates sites, it does not renovate them.** Correct use is as a **design foundry** — run it in a throwaway sandbox, extract art direction / motion grammar / design system, hand-port into the Eleventy partials under ORS. That is also why "does it stay functional" is easy: Workers, `functions/_middleware.ts`, and `src/_includes/structured-data/*` are never in the blast radius. **The real exposure is Lighthouse** — the charter names ≥95 and the homepage today is 8,999 bytes with zero JS; GSAP + Lenis + ScrollTrigger + Three.js loaded naively destroys LCP/TBT. Hard per-surface budget, gate in the build, not after.
+
+### 🧭 RESPAWN BRIEF — read this first
+
+**Respawn on Opus 5, not Fable 5.** Reasoning, so a fresh context doesn't re-litigate it: the work is ~85% engineering (layout union, CSS token architecture, Eleventy templating, Lighthouse budgeting, ORS, P4D3); the design spec already exists and is tight (`visual_standards.md` §1 gives literal glass values, `brand-tokens.json` fixes palette/type/grid), so a design-specialist model's edge shrinks; and Jack's own architecture has **Fable propose, Opus validate** — running everything on Fable removes the validator the adversarial gate depends on. Fable 5 belongs with Marketing at D2.2 only. *Caveat honestly recorded: Website has never used Fable 5 and cannot benchmark it. The recommendation is architectural, not a quality claim.*
+
+**First actions on respawn:** (1) Onboarding Scan. (2) Check `D-CEO-S1`–`S6` for rulings — **`D-CEO-S1` and `D-CEO-S4` gate whether Phase 1 starts at all.** (3) If Phase 1 is green: open ORS, start at **D1.1 (unified layout)**, not D1.2 — the union finding above is why.
+
+**Do NOT:** point any site-generation skill at `~/Antigravity/Website`; migrate templates onto `bvp-base.njk` without first building the union layout; add GSAP/Lenis/Three.js in Phase 1; treat CEO's Q-I4 willingness as a completed doctrine edit.
+
+### Session close state
+
+**ORS audit run this session:** every log in `ORS_logs/` carries a terminal result (`ORS PASS` / `CLOSED-DESCOPED`); **zero open or PROVISIONAL ORS.** Most-recent is `ORS_d21_stripe_webhook_receiver_inc4_dlq_retry_2026_07_31.md` → CLOSED-DESCOPED. **Code trust anchor unchanged:** `ORS_middleware_investigation_2026_07_10.md`. This session opened no ORS — correctly, since it authored no code.
+
+**Wrap-up NOT run.** CEO asked for handover + P4D3 + ORS-save in preparation for respawn; that is not a wrap trigger, and the Wrap-Trigger Authorization Guard was not satisfied. Independently, `check_ors_log_today` would refuse — there is no ORS dated today, because no code was written.
+
+**Uncommitted:** this handover + the plan file (the plan lives in `Antigravity_Data`, outside the repo). **38 unpushed commits** on `main`, all `workers/`, all under the ESC-149 freeze — status, not a blocker.
+
+---
+
+## ⚑ 2026-07-31 — **TRANCHE A COMPLETE.** Increment 4 shipped: §8/§9 retry ladder + DLQ posture
 
 `ORS_d21_stripe_webhook_receiver_inc4_dlq_retry_2026_07_31.md` → **CLOSED-DESCOPED**, commits `2604dca` + `d949728`. `tsc` clean; **295/295** across 15 files; 45 equivalence classes + 15 red-team modes; plus the non-mock arithmetic probe that produced finding D. NEW `src/retry_ladder.ts` + `src/webhook_dlq.ts` + tests; **zero tracked files modified**.
 
