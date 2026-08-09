@@ -1,6 +1,169 @@
-# Website Build Handover — 2026-08-01 (LATEST: 📋 **NO-CODE ASSESSMENT SESSION — Fable 5 + Higgsfield "sizzle" feasibility, CEO-initiated. ZERO code changed, ZERO deploys, ZERO commits. Trust anchor and all Tranche A/B state UNTOUCHED.** **CEO ratified the analysis + approved building an Elevationary version; Q-I4 lift granted in principle but sequenced AFTER Phases 1+2.** Plan authored at `~/Antigravity_Data/Website/docs/plans/sizzle_upgrade_phases_1_3_2026_08_01.md`; **P4D3 project `Website_Sizzle_Upgrade_2026_08` filed** (3 phases / 14 deliverables / 7 tasks / **6 OPEN CEO decisions** / 1 dependency). **RESPAWN ON OPUS 5** — reasoning in the Respawn Brief. `D-CEO-S1` (ESC-149) gates whether Phase 1 can reach production at all. Zero open ORS fleet-wide for this agent. Wrap NOT run — not triggered, and no ORS today to satisfy the gate. Section immediately below. PRIOR: ⚑ **TRANCHE A COMPLETE — D2.1 Increments 2c + 3 + 4 all shipped, 295/295, `task_938061e0` 🟢.** Nothing deployed; three open gates carried into Tranche B (§9.6 unsecured DLQ bucket, §9.2 unwired pager, unproven fixtures). PRIOR: **Increment 3 SHIPPED — §7 two-layer idempotency, committed `4237d56`, ORS CLOSED-DESCOPED, 240/240.** Three findings, two of them corrections to records that audited clean: my own morning "same namespace" claim was FALSE; spec §7.4/§7.5's 30s mutex TTL is UNIMPLEMENTABLE against KV's 60s floor; and `ok:false` conflates transient with permanent, which silently drops revenue. Wrap NOT run — predicate evaluated FALSE, marker already consumed. Earlier same-day onboarding section below. Its finding that **`src/idempotency.ts` is a NAMING COLLISION** stands, with the namespace half corrected. **Open Question 2 (push) RETIRED — it was never a question: it is ESC-149, a standing CEO-gated push freeze, and my framing of it was the defect.** Open Question 1 (doctrine candidate) still genuinely UNANSWERED. Unpushed **32 — status, not a blocker.** Prior 07-30 EOD body below accurate EXCEPT its Open-Question-2 paragraph, now struck in place.)
+# Website Build Handover — 2026-08-09 (LATEST: ✅ **D1.1 SHIPPED — ORS resumed, verified, CLOSED-DESCOPED, committed `98cbee8`** (3 files, +138/−64). The open ORS was closed by **performing** Stages 2–5, not by ticking boxes from a build that happened to look fine — which is how **RT-2** was found: a typo'd `chrome:` flag **silently dropped nav + footer from all 8 legacy surfaces with the build exiting 0**, the exact regression this deliverable exists to prevent, one character away, immediately before D1.2 hand-edits front matter across 17 templates. Fixed fail-closed; **the fix then broke byte-identity (8→0) and the acceptance property caught it.** B7 harness: 36 surfaces, **8 byte-identical**, 28 gained canonical + `og:*` + `twitter:image`, **zero losses, zero title changes**. Homepage / `/subscribe/` / all 11 `/answers/` have a canonical URL for the first time. **CLOSED-DESCOPED not PASS** — 4 human live-fire items unreachable while `D-CEO-S1`/ESC-149 is unruled; they transfer to the deploy ORS. **Trust anchor unchanged.** Three findings recorded not remediated, incl. **the ORS's own Stage 0 partial-failure claim is FALSE for render-time failures** (28 files written before abort). P4D3: `task_f3b9399d` + D1.1 → 🟢 2026-08-09. **43 unpushed, no deploy.** Next: **D1.2 `task_86f95d20`**, running B7 as a regression gate. Section immediately below. PRIOR: 🔁 **ADDENDUM — no new work product.** Third arrival of the identical El_OS respawn step, each with a DISTINCT correlation_id (`ae084712` → `ac1439f7` → `fb642584`), so these are fresh dispatches, not redeliveries; the asked-for work was completed on the first and re-verified persisted, so this was answered idempotently rather than re-executed — re-running would churn the same rows and risk the forward re-dating the 07-31 COO ruling forbids. **Marketing reassigned two rows inside `Website_Sizzle_Upgrade_2026_08` on 08-08** (`task_53afb846`, `task_5b0d1057`, Owner James → Marketing) — correct, not reverted; its appended text carries one now-stale claim, flagged not edited. Addendum section immediately below. **OPERATIVE STATE IS UNCHANGED, in the section after it:** PRIOR: 🛑 **D1.1 IS AN OPEN ORS, INCOMPLETE-MID-BUILD — the onboarding step-3 STOP condition. Resolve before any new work.** The 2026-08-03 session authored the union layout (`src/_includes/layouts/el-base.njk`, 90 lines, NEW) and converted both old layouts to thin wrappers, then ended before writing a single verification stage. **`ORS_sizzle_d11_unified_layout_2026_08_03.md`: Stage 0 fully filled, Stage 1 checklist B1–B7 ALL UNCHECKED, Stages 2 / 2.5 / 2.6 / 3 / 4 / 5 untouched template boilerplate, no Result box checked.** The code is materially done and, re-measured this session, **CORRECT** — build green, acceptance property holds on all 36 surfaces — but *the ORS says none of that*, and an unverified-but-working change is exactly the state the trust record exists to refuse to launder. **Nothing committed, nothing deployed, production byte-identical.** P4D3 reconciled: `task_f3b9399d` + D1.1 + project → 🟡 (Date held at 2026-08-03, NOT re-projected); `D-CEO-S4` → 🟢 (ruled 08-03); `D-CEO-S1` → 🟡, still the Phase-1 production blocker. **This session: handover + P4D3 ONLY — no code authored, no ORS stage filled, no commit.** Section immediately below. PRIOR: 📋 **NO-CODE ASSESSMENT SESSION — Fable 5 + Higgsfield "sizzle" feasibility, CEO-initiated. ZERO code changed, ZERO deploys, ZERO commits. Trust anchor and all Tranche A/B state UNTOUCHED.** **CEO ratified the analysis + approved building an Elevationary version; Q-I4 lift granted in principle but sequenced AFTER Phases 1+2.** Plan authored at `~/Antigravity_Data/Website/docs/plans/sizzle_upgrade_phases_1_3_2026_08_01.md`; **P4D3 project `Website_Sizzle_Upgrade_2026_08` filed** (3 phases / 14 deliverables / 7 tasks / **6 OPEN CEO decisions** / 1 dependency). **RESPAWN ON OPUS 5** — reasoning in the Respawn Brief. `D-CEO-S1` (ESC-149) gates whether Phase 1 can reach production at all. Zero open ORS fleet-wide for this agent. Wrap NOT run — not triggered, and no ORS today to satisfy the gate. Section immediately below. PRIOR: ⚑ **TRANCHE A COMPLETE — D2.1 Increments 2c + 3 + 4 all shipped, 295/295, `task_938061e0` 🟢.** Nothing deployed; three open gates carried into Tranche B (§9.6 unsecured DLQ bucket, §9.2 unwired pager, unproven fixtures). PRIOR: **Increment 3 SHIPPED — §7 two-layer idempotency, committed `4237d56`, ORS CLOSED-DESCOPED, 240/240.** Three findings, two of them corrections to records that audited clean: my own morning "same namespace" claim was FALSE; spec §7.4/§7.5's 30s mutex TTL is UNIMPLEMENTABLE against KV's 60s floor; and `ok:false` conflates transient with permanent, which silently drops revenue. Wrap NOT run — predicate evaluated FALSE, marker already consumed. Earlier same-day onboarding section below. Its finding that **`src/idempotency.ts` is a NAMING COLLISION** stands, with the namespace half corrected. **Open Question 2 (push) RETIRED — it was never a question: it is ESC-149, a standing CEO-gated push freeze, and my framing of it was the defect.** Open Question 1 (doctrine candidate) still genuinely UNANSWERED. Unpushed **32 — status, not a blocker.** Prior 07-30 EOD body below accurate EXCEPT its Open-Question-2 paragraph, now struck in place.)
 
-## 📋 2026-08-01 (LATEST) — NO-CODE ASSESSMENT: Fable 5 + Higgsfield "sizzle" feasibility
+## ✅ 2026-08-09 (LATEST) — D1.1 SHIPPED. ORS resumed, verified, CLOSED-DESCOPED, committed `98cbee8`.
+
+**The open ORS is closed — by performing the verification, not by ticking its boxes.** Peer instruction was *"close the ORS if it is not already closed."* It could not simply be closed: Stages 2–5 had never been run. This session built the missing **B7** harness, ran every stage, found and fixed a real defect, and closed **`CLOSED-DESCOPED`** — the state the log itself declared in advance.
+
+**Had the boxes been ticked from the build output alone, RT-2 would never have been found**, and the silent-nav-drop would have gone straight into D1.2's 17-template front-matter edit.
+
+### What shipped — `98cbee8`, 3 files, +138/−64
+
+`src/_includes/layouts/el-base.njk` (NEW, 105 lines) + `base.njk` and `layouts/bvp-base.njk` reduced to thin flag-binding wrappers. Explicit paths only; the `.bak.*` / `*.snapshot-*` / `.claude/` / `.tmp/` dirt was not swept in. **43 unpushed — no push, no deploy, ESC-149 stands.**
+
+**B7 harness result** (pre-change baseline built from a detached worktree at `HEAD`, so the working tree was never mutated to produce the comparison):
+
+| | Result |
+|---|---|
+| Surface set | 36 → 36, none added or removed |
+| **8 legacy surfaces** | **BYTE-IDENTICAL** to pre-union output — the strong form, not "whitespace-only" |
+| **28 brand surfaces** | gained `canonical` + 7 × `og:*` + `twitter:image`; **lost nothing** |
+| Feature losses, any surface | **zero** |
+| `<title>` changes | **zero** |
+
+Homepage, `/subscribe/`, and all 11 `/answers/` AEO surfaces now carry a canonical URL **for the first time**.
+
+### 🔴 RT-2 — the defect the red-team found, and why it mattered now
+
+A typo'd flag value **did not error**. `chrome: banana` fell through the `== 'full'` test and **silently dropped the top nav and site footer from all 8 legacy surfaces, exit 0, build green.** That is the *exact* regression this deliverable exists to prevent — the union was built because naive migration would strip nav from live surfaces — reachable through **one wrong character** instead of a bad migration. **D1.2 hand-edits front matter across 17 templates**, which is precisely when that typo gets made and when the resulting page still builds and still looks plausible.
+
+Same defect shape as D2.1 findings C/D/E: *an instrument that cannot distinguish two states.* Here — "you asked for `none`" vs "you typed something unrecognised." Remediated with a fail-closed guard (`{{ undefined.chromeFlagInvalid() }}`) that aborts the build naming the file and line. Deliberately **not** a default value — a default is what made it silent.
+
+**And the fix broke the acceptance property, which caught it.** The first guard used `{%- endif %}` instead of `{%- endif -%}`; the untrimmed newline put a blank line before `<!doctype html>` on every surface and **byte-identity went 8 → 0**. Fixed, re-verified output-neutral against the un-guarded build. A weaker target ("differs only in whitespace") would have shrugged this off.
+
+### Other findings — recorded, deliberately NOT remediated (flag-don't-repair)
+
+- **🔴 The ORS's own Stage 0 claim is WRONG.** It asserted layout failures are "all-or-nothing … writes nothing." True for **resolution**-time (missing layout / missing partial → 0 files). **False for render-time:** the guard test wrote **28** HTML files before failing, and **8** in the other direction. `_site/` genuinely can be left half-written. Bounded — non-zero exit stops Pages publishing — but **anyone deploying from a local `_site/` would ship a partial site.** Corrected in the log's Notes rather than edited out of Stage 0.
+- **⚠ The union created a new coupling to `site.name`.** 28 surfaces that previously hardcoded `'Elevationary'` now read `site.json`. Induced: removing the key builds green and renders `© 2026 ·` with an empty name. Latent only — **EC8 shows zero surfaces take the title fallback today** — but the one branch this change rewrote is the one branch nothing exercises.
+- **⚠ `seo.njk` blast radius 8 → 36 surfaces**, and **`{{ head_jsonld | safe }}` (an unescaped sink) 8 → 36.** Both by design, both fail loud / inert today. Noted because the exposure changed.
+- **⚠ Three equivalence classes declared UNTESTED** rather than papered over: EC4 (`description` absent), EC6 (custom `og_image`), EC8 (`title` absent). No live surface exercises any.
+- **A harness bug was caught before its results were trusted.** The first B7 run built "post" inside the pre-change worktree — comparing a tree to itself — and cheerfully reported no losses. Caught by a `diff -rq` asking whether the trees differed *at all* before asking whether they differed *correctly*. **A verification harness that agrees with you is the failure mode to design against.**
+
+### Why CLOSED-DESCOPED and not PASS
+
+Every agent-reachable stage is green. **Four human live-fire items are unmet and unreachable** — visual render on both surface classes, nav navigation, social-card preview — because nothing is deployed and `D-CEO-S1` (ESC-149 scoped exception) is unruled. Byte-identity is strong evidence the 8 legacy surfaces look unchanged; **it is not the same claim as a human having looked**, and the 28 changed surfaces have no equivalent proof. Those four items + the 4-check production observability signal **transfer to the deploy ORS**. **Trust anchor unchanged: `ORS_middleware_investigation_2026_07_10.md`.**
+
+### P4D3
+
+`task_f3b9399d` → **🟢 Completed, 2026-08-09**; deliverable **D1.1 → 🟢 2026-08-09**. Earlier this session: project → 🟡, `D-CEO-S4` → 🟢 (ruled 08-03), `D-CEO-S1` → 🟡 (still the Phase-1 production blocker). Marking a task 🟢 on a CLOSED-DESCOPED ORS follows the `task_938061e0` precedent from Tranche A.
+
+### ➡️ Next
+
+**D1.2 — `task_86f95d20`.** Migrate the 7 orphaned templates off `base.njk`/`styles.css` and delete `assets/styles.css`; the `styleset` flag exists so this flips one surface at a time. Fresh ORS. **Run B7 again as a regression gate on every D1.2 increment** — it is the harness that makes "no surface lost anything" checkable, and it is now the thing standing between a front-matter typo and a live page with no navigation. Then D1.3 (`task_51ecd144`), gated on `D-CEO-S2`.
+
+---
+
+## 🔁 2026-08-09 — ADDENDUM: repeat-dispatch loop + Marketing wrote into Website's P4D3 rows
+
+**No new work product.** The 08-08 section below stands unchanged and remains the operative state: **D1.1 ORS still OPEN, incomplete-mid-build, still the step-3 STOP.** Nothing committed, nothing deployed. Two facts surfaced after that section was written.
+
+### 1. El_OS is re-dispatching the identical respawn step, and nothing marks it processed
+
+Three arrivals of *"Update your build_handover and P4D3."*, each with a **distinct** `correlation_id` — so these are **fresh dispatches, not one message redelivered**:
+
+| Arrival | correlation_id | Inbox state |
+|---|---|---|
+| 2026-08-09T06:17Z | `fleet-respawn-2026_08_09-ae084712` | now gone from `inbox.json` (consumed/archived) |
+| 2026-08-09T07:14Z | `fleet-respawn-2026_08_09-ac1439f7` | **queued, `processed: false`** |
+| 2026-08-09T21:52Z | `fleet-respawn-2026_08_09-fb642584` | **queued, `processed: false`** |
+
+The CEO 2026-08-03 "Run Onboarding!" row has also cleared. **The work each dispatch asks for was completed on the first one** — handover written, 5 P4D3 rows updated, verified persisted this session (`task_f3b9399d` reads 🟡). **Re-executing on each arrival would churn the same rows and risk re-dating them forward**, which is precisely what the 07-31 COO ruling forbids. Answered idempotently instead: verify state, report, do not rewrite history.
+
+**Worth El_OS knowing:** if the respawn orchestrator re-issues on the absence of a `processed` flag that the reply path never sets, this loops indefinitely regardless of how completely the agent complies. **Compliance-shaped failure** — nothing errors, the agent keeps answering, and the queue never drains.
+
+### 2. ⚠ Marketing reassigned two rows inside `Website_Sizzle_Upgrade_2026_08` (2026-08-08)
+
+`task_53afb846` (D1.6 brand-gate) and `task_5b0d1057` (D2.2 design extraction): **Owner James → Marketing**, with a long rationale appended into each row's `name` field. **The change is correct and I am not reverting it.** The rows were authored 08-01 carrying *"pending AGENT_ROSTER 'Marketing' entry"*; Marketing measured `AGENT_ROSTER.json` (25 entries, `{"agent_name": "Marketing", "status": "active"}`) and showed the condition satisfied — with `Owner=James` those rows were invisible to an `Owner=Marketing` query, so Marketing's own current-state surface returned nothing for work Marketing owns. Scope, phase, deliverable and gating unchanged; both still 🔲 and still downstream of Website's P1 output.
+
+Two notes for whoever reads those rows next:
+
+- **Marketing's appended text asserts "task_f3b9399d / task_86f95d20 / task_51ecd144 all 🔲 not started."** True when written on 08-08; **`task_f3b9399d` is now 🟡** (D1.1 build done, verification outstanding). Stale claim inside a peer-authored field — flagged, **not edited**: it is Marketing's text, and the flag-don't-repair rule applies to rows as much as to files.
+- Marketing recorded **partial evidence toward `D-CEO-S6`** — Fable 5 is present in its session (`claude-fable-5`) — and correctly left the decision 🔲, since an agent verifying its own tooling is not the CEO confirmation the row awaits. That matches Website's endorsement condition (b), gate independence.
+
+**Nothing here changes the next-session sequence in the 08-08 section.** Start at the D1.1 ORS.
+
+---
+
+## 🛑 2026-08-08 — D1.1 LEFT OPEN MID-BUILD. Handover + P4D3 reconciliation only.
+
+**Session shape:** peer-dispatched (`elevationary_os`, respawn step 1/5, `fleet-respawn-2026_08_09-ae084712`) — *"Update your build_handover and P4D3."* **No code authored, no ORS opened, no ORS stage filled, no commit, no deploy.** The only writes were: this handover, five P4D3 rows, and a local `npm run build` (output `_site/` is gitignored). Read-only measurement otherwise.
+
+### 🛑 The finding that governs the next session
+
+**`ORS_sizzle_d11_unified_layout_2026_08_03.md` is OPEN and INCOMPLETE-MID-BUILD.** This is the onboarding **step-3 STOP** condition, not a proceed. It is *not* `blocked-parked` (agent side is not clean — there is no verification evidence at all) and *not* `opened-but-never-started` (Stage 1 has real work product on disk). It is the third thing, and the third thing stops work.
+
+Precisely what is in the log:
+
+| Section | State |
+|---|---|
+| Stage 0 pre-flight + blast radius + baseline matrix | **Fully filled, genuinely good** — 36-surface pre-change feature matrix captured |
+| Stage 1 build checklist **B1–B7** | **ALL SEVEN UNCHECKED** (the four generic Stage-1 boxes below them *are* checked) |
+| Stage 2 / 2a / 2b / 2c | **Untouched template boilerplate** — literally `- Expected: [describe]` |
+| Stage 2.5 / 2.6 / 3 / 4 / 5 | **Untouched template boilerplate** |
+| Result box | **None checked** |
+
+**The trap here is that the code is fine.** I re-measured it this session and every acceptance criterion holds (below). The temptation a fresh context will feel is to check the boxes retroactively from that measurement and close the log. **Do not.** Stage 2.6 live-fire, Stage 3 red-team, and the sensitive-file check were never *performed*; back-filling them from a later session's build output would put a fabricated verification record in the trust chain, which is a worse defect than the open row. **Perform the stages, then check them.** The Stage-0 boilerplate was earned; the rest has to be too.
+
+### ✅ What is on disk, and what I actually measured
+
+Uncommitted working-tree state, unchanged since 2026-08-02 18:29:
+
+- **NEW** `src/_includes/layouts/el-base.njk` (90 lines) — the union layout, with `chrome ∈ {full,none}` and `styleset ∈ {legacy,brand}` flags.
+- **MODIFIED** `src/_includes/base.njk` — reduced to a 4-line front-matter wrapper (`layout: layouts/el-base.njk`, `styleset: legacy`, `chrome: full`).
+- **MODIFIED** `src/_includes/layouts/bvp-base.njk` — same shape (`styleset: brand`, `chrome: none`).
+- `git diff --stat`: **2 files, +33 / −64.** Zero content templates touched — **B6 holds mechanically**, even though its box is unchecked.
+
+So **B1–B6 are materially complete and B7 (the per-surface diff harness) was never built.** The harness is the missing piece, and it is the one that Stage 2.5 depends on.
+
+**Measurement I ran this session** (`npm run build` → `Copied 7 Wrote 38 files in 0.13s (v3.1.5)`, exit 0), counted over all 36 built surfaces:
+
+| Feature | Pre-change baseline (from the ORS Stage-0 table) | Post-change (measured 2026-08-08) | Verdict |
+|---|---|---|---|
+| `rel="canonical"` | 8 / 36 | **36 / 36** | **+28 — the intended addition** |
+| `og:*` full set | 8 / 36 | **36 / 36** | **+28** |
+| `twitter:image` | 8 / 36 | **36 / 36** | **+28** |
+| `.site-nav` | 8 / 36 | **8 / 36** | **preserved — nothing lost** |
+| `.site-footer` | 8 / 36 | **8 / 36** | **preserved** |
+| `application/ld+json` | 36 / 36 | **36 / 36** | preserved |
+| `assets/styles.css` | 8 / 36 | **8 / 36** | preserved (D1.2 deletes it, not D1.1) |
+| `assets/bvp.css` | 28 / 36 | **28 / 36** | preserved |
+
+**The acceptance property stated in the ORS before building — *"every surface's feature set after is a SUPERSET of before"* — holds, in both directions, on every surface.** The homepage, `/subscribe/`, and all 11 `/answers/` AEO surfaces now emit a canonical URL for the first time. **This is a measurement, not a Stage 2 pass**; it is recorded here so the next session knows the code is sound before it does the verification work, not so it can skip it.
+
+### 📊 P4D3 writes made this session (5 rows, project `Website_Sizzle_Upgrade_2026_08`)
+
+| Row | Before | After | Why |
+|---|---|---|---|
+| `task_f3b9399d` (D1.1 authoring) | 🔲, Date blank | **🟡, Date 2026-08-03** | Work started 08-03 and did not close. **Date set to the day work began, not today** — the row should read "5 days open", not "due today". Consistent with the 07-31 COO ruling: never re-project to mask non-execution. |
+| Deliverable **D1.1** | 🔲, Date blank | **🟡, Date 2026-08-03** | Same. |
+| Project `Website_Sizzle_Upgrade_2026_08` | 🔲 Future | **🟡** | The project is in flight; `Future` became false the moment D1.1 started. |
+| Decision **D-CEO-S4** (sequencing vs Tranche B) | 🔲 | **🟢, Date 2026-08-03** | **Ruled by CEO in the 08-03 session, to the sizzle track.** Sole evidence is the ORS header line (`Conversation reference: … → D-CEO-S4 ruled to the sizzle track in-session`) — my own contemporaneous record, but a one-line one. **If CEO's ruling was narrower than "sizzle wins", reopen this row; it is cheap to reverse.** |
+| Decision **D-CEO-S1** (ESC-149 scoped exception) | 🔲 | **🟡, Date 2026-08-01** | Filed 08-01, unruled 7 days, and it **actively blocks Phase 1 from reaching production.** `Future` was the wrong bucket for a live blocker. |
+
+**Left deliberately untouched:** `D-CEO-S2` (gates D1.3, which has not started), `D-CEO-S3` + `D-CEO-S5` (genuinely Phase 2/3 future), `D-CEO-S6` (pending confirm, blocks nothing today), and `Dep-QMO2`.
+
+**⚠ Recorded because it will bite someone: the decision-status emoji semantics collide with the tool's enum.** Fleet doctrine reads 🔴 on a Decision as *OPEN-awaiting-resolution* and 🟡 has no decision-specific meaning; `update_decision`'s enum is overdue-based (🔴 = *Overdue >2 weeks*, 🟡 = *<2 weeks*). There is no way to say "open" without also asserting an overdue interval. I chose the interval-honest value (S1 is 7 days old → 🟡) and am flagging it rather than quietly picking one. **A reader applying the doctrine gloss will read S1 as "not urgent"; it is the single hardest blocker in the project.** This is a defect in the shared vocabulary, not in the row — worth routing to El_OS if anyone else hits it.
+
+### 📥 Inbox forward-scan (2 queued, both `processed: false`)
+
+1. **CEO, 2026-08-03T01:14Z — "This is James the CEO. Run Onboarding!"** The 08-03 session evidently ran on this and produced the D1.1 work, but **the row was never marked processed.** Treat as already-actioned, not as a fresh dispatch — the evidence is the ORS it produced.
+2. **`elevationary_os`, 2026-08-09T06:17Z — "Update your build_handover and P4D3."** This dispatch. Respawn step 1/5, `correlation_id fleet-respawn-2026_08_09-ae084712`, `reply_to: elevationary_os`, turn budget 7, wall clock 1800s. **Reply owed to El_OS.**
+
+Zero other peer A2A. No other replies owed. *(Note the UTC/local skew: the dispatch stamps 08-09 UTC while local date is 08-08. Not an error.)*
+
+### ➡️ Next session — do these in order
+
+1. **Onboarding Scan.** It will hit the step-3 STOP on the open D1.1 ORS. **That is the expected, correct outcome** — the resolution is item 2, not a reason to escalate.
+2. **Resume D1.1 in the existing ORS log — do not open a second one.** Build **B7** (the per-surface pre/post diff harness) first, since Stage 2.5 has no evidence without it. Then fill Stages 2 → 2.5 → 2.6 → 3 (incl. the mandatory `find`-based sensitive-file check) → 4 → 5 **by performing them**, and check B1–B7 as each is genuinely evidenced.
+3. **Expected close-state is `CLOSED-DESCOPED`, declared in advance in the log's own scope boundary** — this ORS *cannot* reach PASS, because its human live-fire and production-observation gates are unreachable while `D-CEO-S1` is unruled. Do not treat that as a failure to fix.
+4. **Then commit** — explicit paths only (`src/_includes/base.njk src/_includes/layouts/bvp-base.njk src/_includes/layouts/el-base.njk`). **Never `git add -A`**: the tree carries 7 `.bak.*` / `*.snapshot-*` files plus `.claude/` and `.tmp/`, and `.mcp.json` is gitignored for a credential-named-field reason (`task_7caadf8f`).
+5. **Do NOT push or deploy.** ESC-149 freeze stands and `D-CEO-S1` is the named gate. Unpushed count is status, not a blocker.
+6. **Then D1.2** (`task_86f95d20`) — migrate the 7 orphaned templates and delete `assets/styles.css`. The `styleset` flag exists precisely so this can be flipped one surface at a time.
+
+**Do Not Re-Try (additions):** do not back-fill D1.1's Stage 2–5 boxes from a later build's output; do not open a second D1.1 ORS; do not re-date `task_f3b9399d` forward to make the row look current.
+
+---
+
+## 📋 2026-08-01 — NO-CODE ASSESSMENT: Fable 5 + Higgsfield "sizzle" feasibility
 
 **CEO-initiated question in live Claude Code session.** No ORS opened — no code, production data, money, tracked/shared state, or fleet-behaviour config was touched. **Nothing shipped, nothing committed, nothing deployed. Code trust anchor unchanged.** Deliverable was analysis + a phased plan, presented in-chat per Document Review Protocol and **HELD** pending CEO reply.
 
