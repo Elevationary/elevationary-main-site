@@ -1,0 +1,105 @@
+{#
+  el-base.njk — the UNIFIED layout. D1.1 of Website_Sizzle_Upgrade_2026_08.
+
+  This is the UNION of the two layouts it replaces, not a merge of one into the other.
+  Neither predecessor was a superset:
+
+    base.njk            carried site-nav + seo.njk + .site-footer, and assets/styles.css
+    layouts/bvp-base.njk carried the brand stylesheet + Roboto, and NONE of the above
+
+  Migrating templates the naive direction would have stripped navigation and the whole
+  seo.njk partial from 7 live surfaces. Everything both layouts had is emitted here;
+  what differs between surfaces is controlled by the two flags below, never by omission.
+
+  FLAGS (set in front matter, on the wrapper layouts, or per-template):
+
+    styleset  'legacy' -> assets/styles.css                     (default)
+              'brand'  -> Roboto webfont + assets/bvp.css
+              D1.1 does NOT restyle anything. This flag exists so D1.2 can flip
+              surfaces one at a time and delete assets/styles.css at the end.
+
+    chrome    'full'   -> top navigation + .site-footer
+              'none'   -> neither                                (default)
+              Some surfaces suppress nav deliberately (subscribe funnel, welcome,
+              homepage — they carry their own bvp_footer macro). 'none' is the
+              default because 28 of 36 surfaces render that way today.
+
+  NOTE — head_jsonld is INERT. Nothing in this repo sets it: the only reference is the
+  consumer below. It is retained because it costs nothing and a producer is plausible,
+  but its presence is NOT evidence that any surface depends on it. Verified 2026-08-03
+  by grep over the full repo; see ORS_sizzle_d11_unified_layout_2026_08_03.md finding B.
+
+  WHITESPACE CONTROL is deliberate throughout ({%- ... %}). The acceptance target for D1.1
+  is that the 8 legacy surfaces come out BYTE-IDENTICAL to their pre-union output. Without
+  the trim markers every conditional leaves a blank line, and "differs only in whitespace"
+  is a much weaker claim than "does not differ." Do not remove the hyphens.
+-#}
+{#- FAIL-CLOSED FLAG VALIDATION — added at D1.1 Stage 4, driven by red-team finding RT-2.
+
+    Before this guard, a typo'd flag did NOT error: `chrome: fyll` fell through the
+    `== 'full'` test and SILENTLY DROPPED the top nav and the site footer, with the
+    build still exiting 0. That is the exact failure this whole deliverable exists to
+    prevent — silently stripping navigation from a live surface — reachable through a
+    one-character typo instead of a bad migration. D1.2 hand-edits front matter across
+    17 templates, which is precisely when that typo gets made.
+
+    Calling a method on undefined throws inside Nunjucks; Eleventy surfaces it as a
+    build error naming this file and the line. Do NOT "simplify" either line into a
+    default value — a default is what made the failure silent in the first place.
+-#}
+{%- if chrome not in ['full', 'none'] %}{{ undefined.chromeFlagInvalid() }}{%- endif -%}
+{%- if styleset not in ['legacy', 'brand'] %}{{ undefined.stylesetFlagInvalid() }}{%- endif -%}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{ title or site.name }}</title>
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title or site.name }}">
+  {% if description %}<meta name="twitter:description" content="{{ description }}">{% endif %}
+  <meta name="twitter:image" content="{{ (og_image or '/assets/elevationary-logo-512.png') | url }}">
+
+  {% include 'structured-data/organization.njk' %}
+  {{ head_jsonld | safe }}
+
+  {% include 'seo.njk' %}
+
+  <link rel="icon" href="/assets/elevationary-logo-512.png">
+  {%- if styleset == 'brand' %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="/assets/bvp.css">
+  {%- else %}
+  <link rel="stylesheet" href="/assets/styles.css">
+  {%- endif %}
+</head>
+<body>
+  {%- if chrome == 'full' %}
+  <nav class="site-nav">
+    <a href="/" class="nav-brand">Elevationary</a>
+    <ul>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/services/">Services</a></li>
+      <li><a href="/newsletter-stories/">Newsletter</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li><a href="{{ site.agentSiteUrl }}" class="nav-cta" target="_blank" rel="noopener">Agent Catalog →</a></li>
+    </ul>
+  </nav>
+  {%- endif %}
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  {%- if chrome == 'full' %}
+
+  <footer class="site-footer">
+    <p>&copy; {{ site.name }} {{ "now" | date("yyyy") }} · <a href="/legal/">Legal & Privacy</a> · <a href="{{ site.agentSiteUrl }}">agent.elevationary.com</a></p>
+  </footer>
+  {%- endif %}
+</body>
+</html>

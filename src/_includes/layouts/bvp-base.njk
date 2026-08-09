@@ -1,27 +1,21 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+---
+layout: layouts/el-base.njk
+styleset: brand
+chrome: none
+---
+{#-
+  bvp-base.njk — BRAND wrapper, retained so no content template's front matter has to change.
 
-  <title>{{ title or 'Elevationary' }}</title>
+  All markup now lives in el-base.njk (D1.1, the union layout). This file exists only to
+  bind the two flags that reproduce this layout's historic chrome: brand stylesheet +
+  Roboto, no top nav, no .site-footer. The surfaces rendered here that DO have a footer
+  (homepage, /editions/, /subscribe/, /subscribe/welcome/) import the bvp_footer macro
+  themselves, in their own body — that is unchanged and is not this layout's business.
 
-  {% if description %}<meta name="description" content="{{ description }}">{% endif %}
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ title or 'Elevationary' }}">
-  {% if description %}<meta name="twitter:description" content="{{ description }}">{% endif %}
+  What DID change: these 28 surfaces now emit seo.njk (canonical + the full og:* set) and
+  twitter:image, which this layout never carried. That is the point of the union — the
+  homepage, /subscribe/, and all 11 /answers/ AEO surfaces had no canonical URL at all.
 
-  {% include 'structured-data/organization.njk' %}
-
-  <link rel="icon" href="/assets/elevationary-logo-512.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
-  <link rel="stylesheet" href="/assets/bvp.css">
-</head>
-<body>
-  <main>
-    {{ content | safe }}
-  </main>
-</body>
-</html>
+  Do not add markup here.
+-#}
+{{ content | safe -}}
