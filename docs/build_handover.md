@@ -54,6 +54,18 @@ Recorded in the handover deliberately: all three surfaced *after* the wrap-up st
 2. **🔴 FLEET DEFECT — `check_ors_log_today` forced `--skip-ors` on a session that had a complete ORS.** The gate accepts a slug up to 3 days old if modified today; this legitimately-resumed log is `2026_08_03`, six days back. Both remediations the gate itself prints are **doctrine-forbidden** in this exact case — renaming the log to today (the open date is a fact, and `98cbee8` + the Layer-4 upload both cite the old name) and writing a fresh today-dated log (a retroactive close-time stub). So the only exit was `--skip-ors`, a flag meant for *no-deliverable* sessions, used on the session with the most verification work in this deliverable. **The substance the gate protects was present and stronger than usual; only the age arithmetic failed.** Disclosed in the wrap `--focus` string and audited. Fix is to widen the window or to accept an older log closed today — owner is whoever owns `morning_muster`.
 3. **El_OS repeat-dispatch loop** (detail in the addendum section below): three identical dispatches, distinct correlation IDs, none marked `processed`. Reported; unresolved on El_OS's side.
 
+### ⚠️ Post-wrap addendum — ORS close-state audit, and a false alarm I raised and corrected
+
+A peer re-asked "close the ORS if it is not already closed" after the wrap. D1.1 was already `CLOSED-DESCOPED`; nothing needed doing. But the verification sweep I ran across all 32 logs reported **10 of them as having NO close-state checked** — and that was **wrong, my error, caught before it propagated.**
+
+**Two close-state declaration formats coexist in `ORS_logs/`:**
+- **Post-2026-08-02** (after the template backfill in `9a0302d`): four `- [X] **STATE**` checkboxes in a Result section.
+- **Pre-backfill**: a bold token on the first line of the Result section — `**CLOSED-DESCOPED** — …` / `**ORS PASS** — …`. No checkbox exists to tick.
+
+All 10 flagged logs are the second kind and are **properly terminal** (spot-verified: inc4 → `**CLOSED-DESCOPED**`; d12 spec 07-18 → `**ORS PASS**`; `ORS_p3_idp_cluster_2026_07_14.md` → `**CLOSED-DESCOPED**` with an explicit "Why CLOSED-DESCOPED (not PASS, not FAIL)" section). **The 2026-08-01 handover's claim that every log carries a terminal result STANDS.**
+
+**Why this is worth writing down rather than quietly fixing my grep:** a checkbox-only sweep fails in the *alarming* direction — it reports closed logs as open. An agent running that sweep at onboarding step 3 would see ten "open" ORS logs, hit the STOP condition, and refuse to start work that is in fact clear. **Any close-state audit over this directory must accept both formats.**
+
 ### ➡️ Next
 
 **D1.2 — `task_86f95d20`.** Migrate the 7 orphaned templates off `base.njk`/`styles.css` and delete `assets/styles.css`; the `styleset` flag exists so this flips one surface at a time. Fresh ORS. **Run B7 again as a regression gate on every D1.2 increment** — it is the harness that makes "no surface lost anything" checkable, and it is now the thing standing between a front-matter typo and a live page with no navigation. Then D1.3 (`task_51ecd144`), gated on `D-CEO-S2`.
