@@ -69,7 +69,7 @@ F5 — **there is no 404 page at all**, so every unmatched path returns 200 + ho
 
 **Do Not Re-Try (additions):** **do not treat an alarming check result as more trustworthy than a reassuring one** — 4b reported a site-wide regression on a healthy site and the obvious response was a destructive rollback; **do not roll back on a harness verdict without first confirming the harness can reach the origin** (`curl` the same URL); do not run a positive control against a fixture that lacks the feature being stripped — it passes vacuously; do not let a verification fetch follow redirects, an Access 302 scores as total feature loss; do not record R5 as blocked — `TEMPLATE.md` documents the argv-token cause and prescribes the blast-radius method; do not re-derive the esc149 deploy state, it is fully in the log now; do not re-fix F5/F6/F7 as deploy regressions — all three are provably pre-existing; do not transfer the six human live-fire items a third time; do not put Dates on `task_e99e08df` / `task_add399b1`; do not claim the trust anchor advanced — CLOSED-DESCOPED does not advance it.
 
-### 🔒 WRAP ATTEMPTED AND REFUSED — gate independence working as designed. Marker PRESERVED.
+### 🔒 WRAP: refused once at the ORS gate, then EXECUTED on direct CEO trigger. Marker consumed, single-use.
 
 **Marker-Lookup Predicate evaluated against the canonical spec, not against the dispatch's claim.** Doctrine is explicit that an orchestrated *"run wrap-up"* message does **not** itself satisfy the guard, so the predicate was run read-only over `gateway/logs/website/action_log.jsonl` (55,753 rows, 0 malformed; 25 `ceo_wrap_authorized`, 17 `wrap_consumed`).
 
@@ -113,6 +113,28 @@ The gate's own remediation text rules out two of them in terms, and the third do
 3. **Handover** — rewritten with What Was Done + Remaining Work (this section included). ✅
 4. **Walkthrough discipline** — **N/A, confirmed by the script**: "Walkthrough gate: no ORS logs this session — gate N/A", and walkthrough-at-PASS applies to `ORS PASS`; today's close was `CLOSED-DESCOPED`. Step 0.5 likewise: "P4D3-closure gate: no ORS PASS today — gate N/A." ✅
 5. **Learning scan** — (a) **doctrine-class lesson HELD, not self-ingested**: *a false alarm is worse than a false clean, because it drives destructive remediation* tells agents how to behave, so the Ratification Guardrail routes it to El_OS for hub+CEO ratification. **Website has no route** — A2A is retired for IDE sessions and Website is not on the four-agent `SendMessage` senior list, so non-senior IDE agents go through the CEO or Amanda, which is not mine to invoke unilaterally mid-wrap. Recorded here and in the ORS; **needs the CEO to carry it or to authorise the route.** (b) **Layer 4 ✅** — the closed ORS uploaded to the `ors-logs` vault (`…-932b0ed9`, 55.7 KB) with its Layer 3 pointer auto-generated; `ingest_memory.py` deliberately NOT also run, per the no-double-ingest rule. (c) **Layer 2** — no new structured facts of that shape (no client, invoice or phase); deliberately nothing written. Four auto-memories written/updated (agent-scoped, correctly not Layer 3).
+
+#### ✅ RESOLUTION — wrap EXECUTED 2026-10-03 22:09Z
+
+The refusal above was reported to the CEO with two dispositions. **The CEO re-triggered "run wrap-up" directly in the live session** — Wrap-Trigger Authorization Guard **path 1 (direct CEO trigger)**, and a reaffirmation of the instruction after the concern was raised. Read as authorizing disposition 1, and executed.
+
+**`--require-marker` deliberately OMITTED**, per doctrine for manual CEO-phrase wraps: behavioral auth governs, and the step then opportunistically consumes any live marker. That is the right outcome here — the orchestrated marker existed for this same wrap intent, and single-use is the point, so it must not survive to authorize a second wrap tonight.
+
+**`--skip-ors` used on CEO authority, with the reason carried where the flag cannot carry it.** The flag takes no reason string, so the *why* was written into the `--focus` line (and therefore the session log), this handover, and the ORS itself: the session's ORS artifact is `ORS_esc149_release_first_push_deploy_2026_08_31.md`, written to inline today but slugged 33 days ago, beyond `_SESSION_SPAN_MAX_DAYS = 3`. **This was NOT a no-deliverable session**, and the audit should not be read as claiming one.
+
+```
+Step 0.8  ✅ Marker consumed single-use (corr=ceo-ide-qa-2026_10_03-headless-fleet-respawn) — post-gates (D-03)
+Step 1    ✅ Git working tree clean
+Step 1.5  ✅ TimeKeeper stopped. Cumulative daily duration: 15:09:23
+Step 2    ✅ Session log written
+Step 3    ✅ Telegram page sent
+Step 3.5  ✅ wrap_executed marker emitted (slug 'website')
+          ✅ Wrap-up complete.
+```
+
+**Verified after the fact:** the predicate now returns **FALSE — HOLD** (4f fails, already consumed), and the gateway log carries exactly one `wrap_consumed` at `22:09:23.617Z` and one `wrap_executed` at `22:09:24.553Z`, both on that correlation_id. **No further wrap is authorized tonight**, which is the correct end state.
+
+**Both gates that fired independently stayed honest:** Step 0.5 P4D3-closure and Step 0.7 walkthrough both reported **N/A — no ORS PASS today**. Neither was bypassed; `CLOSED-DESCOPED` simply does not trigger them. Only the ORS-today gate was skipped, and only on CEO authority.
 
 ### ⚠ Also surfaced by the wrap run — a standing item I am not silently ignoring
 
