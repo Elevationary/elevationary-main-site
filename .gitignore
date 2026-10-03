@@ -12,3 +12,9 @@ __pycache__/
 # Blocks accidental `git add -A` staging. NOT the permanent fix — the field
 # must be scrubbed to a canonical-env-store reference. See task_7caadf8f.
 .mcp.json
+
+# workspace single-writer lease (runtime, never committed)
+.agent_lease.json
+
+# per-agent ProActive token (CEO D-ADM-01a). NEVER commit.
+.env.proactive

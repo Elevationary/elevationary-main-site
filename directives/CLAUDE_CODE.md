@@ -189,7 +189,35 @@ python3 ~/.gemini/antigravity/skills/telegram_pager/scripts/send_notification.py
 a2a_send <name-or-slug> "<text>" --from <your-slug>
 ```
 
-Add `--escalation` for CEO-decision items. Names resolve automatically. A2A is live fleet-wide. Do NOT use `SendMessage` (session-team only), `send_notification.py` (Telegram only), or `fleet_orchestrate.py` (sends as El_OS → self-loop). If a send fails, read the error + check `team_directory` — do NOT invent an infrastructure-retirement reason.
+Add `--escalation` for CEO-decision items. Names resolve automatically.
+
+⛔ **A2A IS RETIRED FOR IDE SESSIONS (CEO, 2026-10-03).** An IDE session's `a2a_send` reaches the target agent's
+HEADLESS instance, so the reply comes back from the wrong instance of the agent you are working with. **A2A remains
+in use headless-worker to headless-worker.** `fleet_orchestrate.py` still sends as El_OS (self-loop); unchanged.
+
+**Interim peer channel for IDE sessions: Claude Code `SendMessage` — SENIOR TEAM ONLY.** The CEO named it:
+**Administrator, Amanda (Executive_Administrator), Elevationary_OS, Gerri (Agent_Resources).** Reply by copying the
+incoming `from-name` into `to`. ⚠ It **bypasses the gateway**: no allowlist check, no inbox file, **no audit row** —
+so log substantive exchanges in your own ORS or they exist nowhere.
+
+⛔ **DO NOT WIDEN THAT LIST, AND HERE IS WHY — the reason is capacity, not status (CEO, 2026-10-03).** Giving every
+agent a direct peer channel recreates the failure that forced the kill switch: agents talking to agents until
+inboxes hold hundreds of queued messages. The four above are trusted with an UNGOVERNED channel because they use it
+judiciously — they do not re-send the same message because a reply did not arrive in ten milliseconds. **An
+ungoverned channel is safe only at four participants.** If you are not on the list, you do not get an exception by
+asking, and neither does an agent you are helping.
+
+◻ **THE REAL FIX IS NOT A WIDER LIST, IT IS PROJECT TEAMS (CEO, 2026-10-03).** Authorized groups that may speak to
+each other — the same conceptual mechanism A2A already has (allowlist pairs + governor), reimplemented for the IDE
+surface over `SendMessage` instead of Telegram. Until that exists, non-senior IDE agents route through the CEO or
+Amanda. **That build needs a project plan, deep thought and an implementation team; it is not a patch.**
+
+⚠ **A SEND THAT DOES NOT ERROR IS NOT A DELIVERED MESSAGE.** Governor 7 drops a disallowed pair as `SILENT_SKIP` —
+no error reaches the sender. Measured 2026-10-03: ~235 distinct cross-agent messages dropped this way since
+2026-06-14 (1,875 log rows, inflated ~8x by retries and by one suspended self-addressed job). To confirm delivery,
+check `gateway/governor_decisions.jsonl` or the receiver's inbox — **never infer it from the absence of an error.**
+*(This clause replaces an earlier instruction not to "invent an infrastructure-retirement reason". That clause now
+tells agents to disbelieve a retirement that genuinely happened, which is how a correct diagnosis gets suppressed.)*
 
 ### CEO Decision Escalation
 
