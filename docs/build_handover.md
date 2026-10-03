@@ -69,6 +69,54 @@ F5 — **there is no 404 page at all**, so every unmatched path returns 200 + ho
 
 **Do Not Re-Try (additions):** **do not treat an alarming check result as more trustworthy than a reassuring one** — 4b reported a site-wide regression on a healthy site and the obvious response was a destructive rollback; **do not roll back on a harness verdict without first confirming the harness can reach the origin** (`curl` the same URL); do not run a positive control against a fixture that lacks the feature being stripped — it passes vacuously; do not let a verification fetch follow redirects, an Access 302 scores as total feature loss; do not record R5 as blocked — `TEMPLATE.md` documents the argv-token cause and prescribes the blast-radius method; do not re-derive the esc149 deploy state, it is fully in the log now; do not re-fix F5/F6/F7 as deploy regressions — all three are provably pre-existing; do not transfer the six human live-fire items a third time; do not put Dates on `task_e99e08df` / `task_add399b1`; do not claim the trust anchor advanced — CLOSED-DESCOPED does not advance it.
 
+### 🔒 WRAP ATTEMPTED AND REFUSED — gate independence working as designed. Marker PRESERVED.
+
+**Marker-Lookup Predicate evaluated against the canonical spec, not against the dispatch's claim.** Doctrine is explicit that an orchestrated *"run wrap-up"* message does **not** itself satisfy the guard, so the predicate was run read-only over `gateway/logs/website/action_log.jsonl` (55,753 rows, 0 malformed; 25 `ceo_wrap_authorized`, 17 `wrap_consumed`).
+
+**Result: TRUE.** Row 24 — `cid=ceo-ide-qa-2026_10_03-headless-fleet-respawn`, written `2026-10-03T21:00:06Z`, `expires_at 2026-10-04T10:09:06Z`, `agent=website`, unconsumed. All of 4a–4f pass. **This corrects the prior handover's "zero valid markers remain for `website`"** — true on 09-28, stale now; a fresh marker landed ~36 minutes before the check. 24 of the 25 rows correctly fail (23 expired, and the 08-09 pair additionally unconsumed-but-expired).
+
+**Then the independent gates fired, and Step 0 refused:**
+
+```
+── Step 0.0: Wrap-Trigger Authorization ───────
+✅ Marker-authorized wrap (corr=ceo-ide-qa-2026_10_03-headless-fleet-respawn) — verified;
+   consume deferred until AFTER gates pass (D-03).
+
+── Step 0: ORS Log Gate ───────────────────────
+❌ ORS gate FAILED — no ORS log dated today
+```
+
+**Why, precisely:** `check_ors_log_today` accepts a slug at most `_SESSION_SPAN_MAX_DAYS = 3` days old. This session's ORS artifact is `ORS_esc149_release_first_push_deploy_2026_08_31.md` — **33 days old**, written to inline today. It is beyond the bound, so the gate cannot see it.
+
+**✅ The marker survived.** Step 0.0 defers consumption until after the gates (D-03), and the abort happens at Step 0. Re-ran the predicate afterwards: **still `AUTHORIZES`**, no `wrap_consumed` and no `wrap_executed` row written. The CEO's authorization was not burned on a wrap that did not happen — which is the whole point of the deferred-consume design, and it is now confirmed live rather than assumed.
+
+### 🔴 All three sanctioned escapes are either forbidden or false here — so this is a CEO decision, not mine
+
+The gate's own remediation text rules out two of them in terms, and the third does not describe this session:
+
+| Escape | Status |
+|---|---|
+| Rename the existing ORS to today | ✗ **Forbidden by the gate's own text** — "the open date is a FACT, and commits, peer dispatches + Layer-4 uploads cite the old name." All three are true here: `0e26ad0` cites it, the peer dispatch named it, and it was uploaded to the `ors-logs` vault today as `…-932b0ed9` |
+| Write a fresh today-dated ORS | ✗ **Forbidden** — "a retroactive close-time stub, explicitly FORBIDDEN by ORS v1.2." Today's other work (committing propagated doctrine, handover, P4D3) is hygiene/record class and owes no ORS, so there is no un-logged ORS-worthy deliverable to write one *for* |
+| `--skip-ors` | ✗ **Would assert something false.** It is "for sessions with no deliverable"; this session's deliverable was substantial. It also takes **no reason string** — unlike `--skip-walkthrough-gate`, which requires `--waive-walkthrough-reason` — so the audit trail would record only "skipped (use sparingly)" and lose *why*. Mislabelling a gate bypass in a fleet-visible audited action is not mine to do on my own initiative |
+
+**⚑ The real issue is a gate gap worth fixing, not a blocker to route around.** The 3-day session-span tolerance was built for *long sessions that cross midnight*. It does not represent **"this session's deliverable was resuming and closing a long-open ORS"** — which is legitimate, doctrine-encouraged work whose artifact *cannot honestly* carry today's date. The gate is right to refuse on its current rule and right that the two renaming/stubbing escapes are forbidden; what is missing is a fourth path. Candidate fix (owner: whoever owns `claude_wrap_up.py` — fleet tooling, not Website's file): accept an **older** slug when the file was modified today **and** carries a close-state declaration dated today, or give `--skip-ors` a required audited reason string the way the walkthrough gate has one.
+
+**What the CEO needs to choose between** — both are one line, and the marker is good until **2026-10-04T10:09Z**, so there is no rush beyond that:
+1. **Re-run with `--skip-ors`** — accepting that the audit records a bare skip, with the real reason living here and in the ORS; or
+2. **Leave the wrap unexecuted** until the gate is taught this case, and let the marker expire.
+
+### ✅ Wrap-Up Protocol steps 1–5 are DONE regardless — only the script invocation is blocked
+
+1. **P4D3** — `task_5d15882b` → 🟢 2026-10-03; `task_e99e08df` (4 findings, Owner Website) and `task_add399b1` (6 live-fire, **Owner James**) filed. ✅
+2. **Commit** — working tree clean; Step 1 of the script itself confirmed "✅ Git working tree clean." ✅
+3. **Handover** — rewritten with What Was Done + Remaining Work (this section included). ✅
+4. **Walkthrough discipline** — **N/A, confirmed by the script**: "Walkthrough gate: no ORS logs this session — gate N/A", and walkthrough-at-PASS applies to `ORS PASS`; today's close was `CLOSED-DESCOPED`. Step 0.5 likewise: "P4D3-closure gate: no ORS PASS today — gate N/A." ✅
+5. **Learning scan** — (a) **doctrine-class lesson HELD, not self-ingested**: *a false alarm is worse than a false clean, because it drives destructive remediation* tells agents how to behave, so the Ratification Guardrail routes it to El_OS for hub+CEO ratification. **Website has no route** — A2A is retired for IDE sessions and Website is not on the four-agent `SendMessage` senior list, so non-senior IDE agents go through the CEO or Amanda, which is not mine to invoke unilaterally mid-wrap. Recorded here and in the ORS; **needs the CEO to carry it or to authorise the route.** (b) **Layer 4 ✅** — the closed ORS uploaded to the `ors-logs` vault (`…-932b0ed9`, 55.7 KB) with its Layer 3 pointer auto-generated; `ingest_memory.py` deliberately NOT also run, per the no-double-ingest rule. (c) **Layer 2** — no new structured facts of that shape (no client, invoice or phase); deliberately nothing written. Four auto-memories written/updated (agent-scoped, correctly not Layer 3).
+
+### ⚠ Also surfaced by the wrap run — a standing item I am not silently ignoring
+
+**Step 0.6 handover-format gate WARN:** `docs/build_handover.md` is the **legacy format, now 254,655 B.** The prescribed format is the six-field Task / Status / Last Action / Next Step / Do Not Re-Try / Open Questions, written **only** by `handoverwrite.py` — never hand-edited, with Do-Not-Re-Try append-only and retired by `dnr-supersede` rather than deletion. The gate is transitional and never aborts, which is exactly why it has gone unactioned. Migration command is known and includes **every archive** (the gate notes 77% of one agent's Do-Not-Re-Try corpus lived in its archive). **Not done here** — it would rewrite the whole narrative surface mid-wrap, and this session is already carrying a blocked wrap. **Filed as the next hygiene item**, and flagged because every handover I write compounds the migration.
 ---
 
 ## ⏸️ 2026-10-03 (earlier same day — its closing call “unstarted, not gated” was acted on in the section above) — peer dispatch: handover + P4D3. Zero deliverable movement in 5 days. Propagated doctrine committed. **The 09-28 "missing Decisions" FLAG is RETRACTED — it was a read-side artifact.**
