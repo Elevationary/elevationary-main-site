@@ -195,22 +195,56 @@ Add `--escalation` for CEO-decision items. Names resolve automatically.
 HEADLESS instance, so the reply comes back from the wrong instance of the agent you are working with. **A2A remains
 in use headless-worker to headless-worker.** `fleet_orchestrate.py` still sends as El_OS (self-loop); unchanged.
 
-**Interim peer channel for IDE sessions: Claude Code `SendMessage` — SENIOR TEAM ONLY.** The CEO named it:
-**Administrator, Amanda (Executive_Administrator), Elevationary_OS, Gerri (Agent_Resources).** Reply by copying the
-incoming `from-name` into `to`. ⚠ It **bypasses the gateway**: no allowlist check, no inbox file, **no audit row** —
-so log substantive exchanges in your own ORS or they exist nowhere.
+**Interim peer channel for IDE sessions: Claude Code `SendMessage` — SENIOR TEAM ONLY.** Widened from 4 to 9 by
+the CEO on 2026-10-03, deliberately superseding the earlier same-day four-agent cap. **The nine, by wire slug:**
+`administrator` · `executive_administrator` · `elevationary_os` · `agent_resources` · `marketing` · `sales` ·
+`p4d3` · `hilco` · `client_billing`. In his words: *"Marketing, Sales, P4D3, Hilco, Finance — all to the senior
+team list. Everyone else is subordinate."* (**"Finance" = Client Billing Manager = `client_billing`**, confirmed by
+the CEO; it had no roster entry under that name. Note `Elevationary Sales` resolves to slug `sales` — two of the
+five do not match their display name, so **resolve every name through `team_directory_resolve`, never by typing it
+from memory.**)
 
-⛔ **DO NOT WIDEN THAT LIST, AND HERE IS WHY — the reason is capacity, not status (CEO, 2026-10-03).** Giving every
-agent a direct peer channel recreates the failure that forced the kill switch: agents talking to agents until
-inboxes hold hundreds of queued messages. The four above are trusted with an UNGOVERNED channel because they use it
-judiciously — they do not re-send the same message because a reply did not arrive in ten milliseconds. **An
-ungoverned channel is safe only at four participants.** If you are not on the list, you do not get an exception by
-asking, and neither does an agent you are helping.
+### ⛔⛔ THIS IS A VERY LIMITED APPLICATION. IT IS FOR QUESTIONS AND ANSWERS — **NOT FOR TEAMING.**
 
-◻ **THE REAL FIX IS NOT A WIDER LIST, IT IS PROJECT TEAMS (CEO, 2026-10-03).** Authorized groups that may speak to
-each other — the same conceptual mechanism A2A already has (allowlist pairs + governor), reimplemented for the IDE
-surface over `SendMessage` instead of Telegram. Until that exists, non-senior IDE agents route through the CEO or
-Amanda. **That build needs a project plan, deep thought and an implementation team; it is not a patch.**
+**CEO instruction, 2026-10-03.** Being on this list does **not** make you a team, and does not authorize you to
+form one.
+
+**USE IT FOR:** a **specific question** to a named peer, and its **answer**. A targeted consultation. A concrete
+finding that one named peer needs. A correction to something that peer stated. One exchange, closed when the
+question is answered.
+
+⛔ **DO NOT USE IT FOR:** standing up an ad-hoc team or working group · coordinating multi-agent work · assigning
+or chaining tasks between agents · broadcasting the same message to several peers · running a conversation that
+outlives its question · pulling a peer into a project because the channel happens to reach them.
+
+**If what you need is a TEAM, you do not have a channel for it — stop and route through the CEO or Amanda.**
+Forming teams over this channel is the specific thing this clause exists to prevent. **This is a known gap the CEO
+is addressing separately; do not improvise around it.**
+
+### How to use it properly
+1. **Resolve the slug** via `team_directory_resolve` before sending. Display names and slugs differ.
+2. **Reply** by copying the incoming `from-name` straight into `to`.
+3. **Say the whole thing in one message.** Make the first line a self-contained sentence — the recipient's human
+   sees only that line until they expand it.
+4. ⚠ **LOG IT YOURSELF.** It **bypasses the gateway**: no allowlist check, no inbox file, **no audit row**. A
+   substantive exchange that is not written into your own ORS exists nowhere.
+5. ⚠ **A SUCCESSFUL SEND IS NOT A DELIVERED MESSAGE.** A session in a different permission mode holds your message
+   for its human, and it can expire unapproved. Confirm from the receiver, never from the absence of an error.
+6. ⛔ **Do not re-send because a reply has not arrived.** Retry storms are what forced the kill switch. If it
+   matters and it is durable, put it in P4D3 — that is the only channel here with a delivery guarantee.
+7. **End the exchange when the artifact exists.** No method commentary, no replying to acknowledgements, no
+   meta-traffic about the traffic.
+
+⚠ **THE CAP WAS ABOUT CAPACITY, NOT STATUS, AND NINE DOES NOT MAKE THAT REASONING WEAKER — IT MAKES IT HARDER.**
+The channel is ungoverned: no allowlist, no inbox, no audit. It is survivable only because its members use it
+judiciously. **Do not read "4 → 9" as evidence that the limit was arbitrary.** The list is CEO-set: you do not get
+on it by asking, you do not add an agent you are helping, and you do not widen it without a CEO decision.
+
+◻ **THE REAL FIX IS STILL PROJECT TEAMS (CEO, 2026-10-03), AND IT IS UNBUILT.** Authorized groups that may speak to
+each other — the mechanism A2A already has (allowlist pairs + governor), reimplemented for the IDE surface over
+`SendMessage` instead of Telegram. Until it exists, non-senior IDE agents route through the CEO or Amanda. **That
+build needs a project plan, deep thought and an implementation team; it is not a patch.** Its absence is why the
+no-teaming rule above is load-bearing rather than merely tidy.
 
 ⚠ **A SEND THAT DOES NOT ERROR IS NOT A DELIVERED MESSAGE.** Governor 7 drops a disallowed pair as `SILENT_SKIP` —
 no error reaches the sender. Measured 2026-10-03: ~235 distinct cross-agent messages dropped this way since
