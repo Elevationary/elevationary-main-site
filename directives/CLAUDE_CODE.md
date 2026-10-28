@@ -55,7 +55,7 @@ Paths use `$ELEVATIONARY_AGENT_WORKSPACE` (repo root) and `$ELEVATIONARY_AGENT_D
 
 **During work:** Fill Stages 2, 2.5, 2.6 INLINE as verifications fire. Paste real outputs in real time. Do NOT batch into a close-time Notes summary.
 
-**Before declaring done:** Stage 3 Red-Team (deliberate failure induction + Sensitive File Presence Check via `find` — zero `.env` / `.pem` / `.key` / `credentials.json` / `service_account*.json` — plus Security Surface Audit table) → Stage 4 Remediation → Stage 5 Retest clean.
+**Before declaring done:** Stage 3 Red-Team (deliberate failure induction + **Sensitive File Presence Check by the `secret_hygiene` import** (exact command in `docs/ORS_logs/TEMPLATE.md`; never a hand-written `find`/`grep`, which the secrets denylist blocks by design) — every flagged file must be git-ignored and outside the change — plus Security Surface Audit table) → Stage 4 Remediation → Stage 5 Retest clean.
 
 **Result:** exactly one of:
 - **ORS PASS** — all stages green + human live-fire checked. Advances trust anchor.
@@ -149,6 +149,11 @@ INPUT: self_agent_name
 
 ### CEO Communication Channel
 
+**First check whether you HAVE a Telegram line to the CEO (CEO policy, 2026-10-27, D-CEO-04).** Only **senior staff, agents who communicate directly with the CEO, and consulting client leads** keep a bot. Your charter's `**Telegram:**` line says which you are.
+- **No bot** (`**Telegram:** none`): **you do not message the CEO.** Everything CEO-facing (plans, status, decisions, reviews, out-of-band signals) goes to **your supervising agent**. PMs go to **Hilco**; everyone else goes to the agent named as theirs in the org table (owned by Agent_Resources). Your supervisor decides what reaches him. ⛔ Never use another agent's bot or `send_notification.py` name to reach him. **If the CEO addresses you directly** (IDE or Claude app), answer in place: that is his choice of channel, not yours.
+  - **A matter that needs the CEO (CEO rule, 2026-10-28), in this order:** (1) FIRST file it on your work-tracking platform as a **Decision that requires the CEO, with a due date**; (2) THEN `SendMessage` your supervising agent to bring it to their attention. If they're busy, the message waits in their queue. **Do not resend.** The Decision row is the durable record; the message is the nudge.
+- **You have a bot:** everything below applies.
+
 **Telegram-first, IDE-when-present.** CEO's DEFAULT surface is Telegram + web-served session log (Full-detail link). All substantive artifacts/plans/status flow through your response-in-full → captured to session log → surfaced as clickable Full-detail link on Telegram. Async approval via Telegram reply is the standard path.
 
 **Vantage URL discipline:** when linking to session-log artifacts, emit URLs BARE — no backticks, no markdown wrapping, no `<>` brackets. Bare URLs render as clickable in Telegram. Backticks break the link. Example: `https://os.elevationary.com/artifacts/...` — not `` `https://...` ``.
@@ -156,6 +161,8 @@ INPUT: self_agent_name
 Do NOT default to IDE-based channels (Antigravity CLI file-open OR `EnterPlanMode` live plan-preview) unless positive signal CEO is at the server (Surface-an-artifact criteria below).
 
 ### Document Review Protocol (async-first)
+
+**No bot:** you never present for CEO review yourself. Send the artifact to your supervising agent, who presents it, and HOLD for the answer that comes back through them. The steps below are for agents with a bot.
 
 To present plan/strategy/artifact for CEO review:
 1. Present full content as your RESPONSE (captured to session log → Full-detail link surfaces on Telegram).
@@ -175,6 +182,8 @@ AGY="/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-id
 Use IDE CLI open only when: (a) CEO's message contains explicit "open in IDE / show me this / open these files" phrase, OR (b) session originates from Claude Code IDE surface, AND (c) he isn't asking for review/comments (that's Document Review). Default when in doubt: Telegram + Full-detail link, NOT CLI open. Multi-file: one CLI call with all paths. If a tab is already open for a file you edited, ask CEO to close before re-opening. Do NOT use `open -a "Antigravity"` (focuses app but doesn't reliably add tabs).
 
 ### Telegram Pages (StaffAgent-aware)
+
+**Only if you have a bot.** No bot: an out-of-band signal goes to your supervising agent by `SendMessage`, never through `send_notification.py`.
 
 DO NOT `send_notification.py` on every response. Your StaffAgent supervisor auto-delivers every Claude response in active CEO chat via your dedicated bot — direct pages would DUPLICATE + clutter. Reserve direct `send_notification.py` for legitimate OUT-OF-BAND signals: (a) silent background work finishing with no chat turn (scheduled launchd), (b) approval-gating BEFORE a terminal popup fires, (c) explicit error states supervisor can't surface.
 

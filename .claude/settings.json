@@ -1,0 +1,76 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/post_read_meeting_transcript.py"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__elevationary_p4d3__elevationary_p4d3_update_.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/pre_p4d3_close_status.py"
+          }
+        ]
+      },
+      {
+        "_comment_matcher": "Write|Edit \u2014 widened 2026-07-30 (ORS_hook_matcher_edit_bypass). The MATCHER decides what a hook RECEIVES; the script's tool_name check only decides what it ACTS on. They are different surfaces in different files and this one had drifted: pre_write_handover_forward_scan.py:22 accepts ('Write','Edit') and the matcher never delivered Edit, so that branch was dead code and a surgical Edit to build_handover.md bypassed the gate leaving no trace. brand_check and client_content_vantage guard on != 'Write' internally, so they no-op on Edit \u2014 widening is additive, not a behaviour change for them. STILL UNCOVERED: MultiEdit (no script accepts it) and Bash redirection (`cat >> file`), which bypasses every PreToolUse file matcher.",
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/pre_write_brand_check.py"
+          },
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/pre_write_client_content_vantage.py"
+          },
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/pre_write_handover_forward_scan.py"
+          }
+        ]
+      },
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.gemini/antigravity/skills/sendmessage_registry/hooks/pre_sendmessage_gate.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/Antigravity/fleet_hooks/pre_stop_commitment_audit.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.gemini/antigravity/skills/sendmessage_registry/hooks/session_start_briefing.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

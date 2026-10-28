@@ -181,23 +181,32 @@
 
 ### Sensitive File Presence Check (MANDATORY)
 
-> **Why not `find` (and not `grep` either):** the canonical `find … -name "*.env" -o -name "*.key" -o -name "*token*"` trips the harness's **own secrets denylist and is auto-denied** — the security control working as intended. Critically, the denial is on **any secret token appearing in the command's argv**, so a `grep -E '\.env|\.key|credentials\.json|…'` substitute is auto-denied *identically*. The sanctioned workaround proves the intent — *no sensitive file was introduced* — by **enumerating the change's full blast radius and confirming by inspection that every path is a known-safe type**, without ever naming a secret pattern in argv.
+> **One method, fleet-wide** (CEO, 2026-10-24/25: DEC-4 and the DEC-30 cluster). Import the **same patterns the pre-commit hook uses** (`secret_hygiene/scripts/patterns.py`, `is_secret_file`). Never hand-write a `find`/`grep` of secret names: the harness's secrets denylist blocks any command that names secret patterns in its arguments, by design, and a hand-copied pattern list drifts from the hook. Inspection alone is **not** sufficient: on one repo it missed 3 env-family files this scan caught.
+
+Run from the repo root of the work, or with `cd` into each touched directory for non-git work:
 
 ```bash
-# Enumerate exactly what THIS change introduced/modified — no sensitive tokens in argv, so never auto-denied:
-git status --porcelain
-git diff --stat
+python3 - <<'EOF'
+import os, subprocess, sys
+sys.path.insert(0, os.path.expanduser("~/.gemini/antigravity/skills/secret_hygiene/scripts"))
+from patterns import is_secret_file
+root = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip() or os.getcwd()
+files = [os.path.join(d, f) for d, _, fs in os.walk(root) if "/.git" not in d and "node_modules" not in d for f in fs]
+flagged = [f for f in files if is_secret_file(f)]
+bad = [f for f in flagged if subprocess.run(["git", "-C", root, "check-ignore", "-q", f]).returncode != 0]
+print(f"scanned={len(files)} flagged={len(flagged)} not_ignored={len(bad)}")
+for f in flagged: print("  FLAGGED:", os.path.relpath(f, root), "(git-ignored)" if f not in bad else "(NOT IGNORED -> FAIL)")
+print("RESULT:", "PASS" if not bad else "FAIL")
+EOF
 ```
 
-**Verification is by inspection, not by grep:** read the full changed-file list and confirm every path is a known-safe type (`.md`, `.py`, `.json` config, `.bak`, `.ts/.tsx`, `.plist`, etc.). Confirm NONE are secret-bearing (env files, private keys, PEMs, `credentials.json`, `secrets.*`, `service_account*.json`, token stores). Paste the file list + a one-line "no sensitive types present" confirmation.
+**PASS rule:** `RESULT: PASS`, meaning every flagged file is git-ignored (for example, an agent's own `.env.proactive`) and none is part of this change. **Paste the output.** Then also paste `git status --porcelain` and confirm that no flagged path appears in the change.
 
-Expected: a fully-accounted-for, all-known-safe file list. Observed: <pasted `git status`/`git diff --stat` + confirmation>.
+> ⚠ **If the scan is unavailable, record it as UNRUN.** Never quietly fall back to "inspection only" and mark the check discharged. That substitution is the failure this rule exists to stop.
+> ⚠ **The scan is only as good as the patterns.** Gaps in `patterns.py` are fixed **there**, where the hook, the hourly scanner and this check share them, never by adding a local pattern.
 
-> **Non-git fallback:** if the work is entirely outside a git repo (skills tree / data dir), run a scoped `ls -a` of only the touched directories and confirm the same by inspection — do NOT reintroduce the tree-wide `find` or a token-enumerating `grep`.
-
-- [ ] Change blast-radius enumerated via `git status --porcelain` + `git diff --stat` (or scoped `ls -a` for non-git dirs)?
-- [ ] Every path inspected and confirmed to be a known-safe type?
-- [ ] "No sensitive types present" one-line confirmation pasted?
+- [ ] Import scan run and output pasted (`RESULT: PASS`)?
+- [ ] No flagged path appears in `git status --porcelain` for this change?
 
 ### Propagation-Source Audit (MANDATORY when editing any fleet-distributed directive / template / config)
 
