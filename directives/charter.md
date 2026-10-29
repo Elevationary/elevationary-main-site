@@ -5,7 +5,7 @@
 **Domain:** 
 **Mission:** 
 **Reports to:** 
-**Telegram:** Website
+**Telegram:** none (CEO policy 2026-10-27). Reaches the CEO only through its supervising agent.
 
 ## Paths
 - Workspace: `~/Antigravity/Website`
