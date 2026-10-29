@@ -1,7 +1,9 @@
 ---
 title: "Services | Elevationary"
 description: "Elevationary offers AI strategy consulting sessions from 15 to 90 minutes, plus the Agent Insider subscription newsletter. Book directly at agent.elevationary.com."
-layout: base.njk
+layout: layouts/el-base.njk
+styleset: brand
+chrome: full
 ---
 
 <script type="application/ld+json">
@@ -15,40 +17,40 @@ layout: base.njk
 }
 </script>
 
-<article class="page-content">
+<article class="el-page">
   <h1>Services</h1>
   <p>Elevationary offers AI strategy consulting and intelligence subscriptions for executives and enterprise teams.</p>
 
-  <div class="service-cards">
-    <div class="service-card">
+  <div class="el-card-grid">
+    <div class="el-card">
       <h2>15-Minute AI Strategy Introductory Consultation</h2>
       <p>For executives and leaders exploring practical AI application. Rapid clarity on AI's relevance to your business.</p>
-      <a href="{{ site.agentSiteUrl }}/consulting-15/" class="cta-secondary" target="_blank" rel="noopener">Book $75 →</a>
+      <a href="{{ site.agentSiteUrl }}/consulting-15/" class="el-cta el-cta--secondary" target="_blank" rel="noopener">Book $75 →</a>
     </div>
-    <div class="service-card">
+    <div class="el-card">
       <h2>30-Minute AI Readiness Consultation</h2>
       <p>For teams with basic AI knowledge seeking implementation guidance. Comprehensive readiness assessment for your organization.</p>
-      <a href="{{ site.agentSiteUrl }}/consulting-30/" class="cta-secondary" target="_blank" rel="noopener">Book $150 →</a>
+      <a href="{{ site.agentSiteUrl }}/consulting-30/" class="el-cta el-cta--secondary" target="_blank" rel="noopener">Book $150 →</a>
     </div>
-    <div class="service-card">
+    <div class="el-card">
       <h2>60-Minute AI Strategy Consultation</h2>
       <p>For established organizations ready to scale AI initiatives. Strategic alignment between AI and your organizational objectives.</p>
-      <a href="{{ site.agentSiteUrl }}/consulting-60/" class="cta-secondary" target="_blank" rel="noopener">Book $275 →</a>
+      <a href="{{ site.agentSiteUrl }}/consulting-60/" class="el-cta el-cta--secondary" target="_blank" rel="noopener">Book $275 →</a>
     </div>
-    <div class="service-card">
+    <div class="el-card">
       <h2>90-Minute AI Strategy In-Depth Consultation</h2>
       <p>For leadership teams developing organization-wide AI strategy. Enterprise-wide AI transformation objective-aligned strategy roadmap.</p>
-      <a href="{{ site.agentSiteUrl }}/consulting-90/" class="cta-secondary" target="_blank" rel="noopener">Book $375 →</a>
+      <a href="{{ site.agentSiteUrl }}/consulting-90/" class="el-cta el-cta--secondary" target="_blank" rel="noopener">Book $375 →</a>
     </div>
-    <div class="service-card">
+    <div class="el-card">
       <h2>Agent Insider — AI Intelligence Subscription</h2>
       <p>Weekly AI insights for C-suite and functional leaders. Free tier plus premium department-specific editions.</p>
-      <a href="/subscribe/" class="cta-primary">Subscribe Free →</a>
+      <a href="/subscribe/" class="el-cta el-cta--inline">Subscribe Free →</a>
     </div>
   </div>
 
-  <div class="cta-block">
+  <div class="el-callout">
     <p>Need a custom engagement or want to submit an RFP?</p>
-    <a href="{{ site.agentSiteUrl }}/rfp/" class="cta-secondary" target="_blank" rel="noopener">Submit an RFP →</a>
+    <a href="{{ site.agentSiteUrl }}/rfp/" class="el-cta el-cta--secondary" target="_blank" rel="noopener">Submit an RFP →</a>
   </div>
 </article>

@@ -5,7 +5,10 @@ eleventyExcludeFromCollections: true
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {%- for item in collections.all %}
-  {%- if not item.data.robots or 'noindex' not in item.data.robots %}
+  {#- F6 (task_e99e08df): a `permalink: false` page has url === false, which Nunjucks
+      stringified into <loc>https://elevationary.comfalse</loc>. Unrendered pages have
+      no URL and do not belong in the sitemap. #}
+  {%- if item.url and (not item.data.robots or 'noindex' not in item.data.robots) %}
   <url>
     <loc>{{ site.url }}{{ item.url }}</loc>
     <lastmod>{{ item.date | date('yyyy-MM-dd') }}</lastmod>

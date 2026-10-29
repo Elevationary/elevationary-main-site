@@ -13,12 +13,13 @@
 
   FLAGS (set in front matter, on the wrapper layouts, or per-template):
 
-    styleset  'legacy' -> assets/styles.css                     (default)
-              'brand'  -> Roboto webfont + assets/bvp.css
-              D1.1 does NOT restyle anything. This flag exists so D1.2 can flip
-              surfaces one at a time and delete assets/styles.css at the end.
+    styleset  'brand'  -> Roboto webfont + assets/bvp.css        (the ONLY value)
+              'legacy' (assets/styles.css) was RETIRED in D1.2 (2026-10-28): all 8
+              surfaces that used it now render the brand styleset and the file is
+              deleted. The flag is kept, and still validated, so a stale 'legacy' in
+              any front matter fails the build instead of linking a missing file.
 
-    chrome    'full'   -> top navigation + .site-footer
+    chrome    'full'   -> top navigation (.el-nav) + site footer (.el-site-footer)
               'none'   -> neither                                (default)
               Some surfaces suppress nav deliberately (subscribe funnel, welcome,
               homepage — they carry their own bvp_footer macro). 'none' is the
@@ -30,7 +31,8 @@
   by grep over the full repo; see ORS_sizzle_d11_unified_layout_2026_08_03.md finding B.
 
   WHITESPACE CONTROL is deliberate throughout ({%- ... %}). The acceptance target for D1.1
-  is that the 8 legacy surfaces come out BYTE-IDENTICAL to their pre-union output. Without
+  was that the 8 legacy surfaces come out BYTE-IDENTICAL to their pre-union output
+  (D1.2 then restyled them on purpose; the trim discipline still keeps output clean). Without
   the trim markers every conditional leaves a blank line, and "differs only in whitespace"
   is a much weaker claim than "does not differ." Do not remove the hyphens.
 -#}
@@ -48,7 +50,7 @@
     default value — a default is what made the failure silent in the first place.
 -#}
 {%- if chrome not in ['full', 'none'] %}{{ undefined.chromeFlagInvalid() }}{%- endif -%}
-{%- if styleset not in ['legacy', 'brand'] %}{{ undefined.stylesetFlagInvalid() }}{%- endif -%}
+{%- if styleset not in ['brand'] %}{{ undefined.stylesetFlagInvalid() }}{%- endif -%}
 <!doctype html>
 <html lang="en">
 <head>
@@ -68,25 +70,21 @@
   {% include 'seo.njk' %}
 
   <link rel="icon" href="/assets/elevationary-logo-512.png">
-  {%- if styleset == 'brand' %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/assets/bvp.css">
-  {%- else %}
-  <link rel="stylesheet" href="/assets/styles.css">
-  {%- endif %}
 </head>
 <body>
   {%- if chrome == 'full' %}
-  <nav class="site-nav">
-    <a href="/" class="nav-brand">Elevationary</a>
-    <ul>
+  <nav class="el-nav" aria-label="Primary navigation">
+    <a href="/" class="el-nav__brand">Elevationary</a>
+    <ul class="el-nav__links">
       <li><a href="/about/">About</a></li>
       <li><a href="/services/">Services</a></li>
       <li><a href="/newsletter-stories/">Newsletter</a></li>
       <li><a href="/contact/">Contact</a></li>
-      <li><a href="{{ site.agentSiteUrl }}" class="nav-cta" target="_blank" rel="noopener">Agent Catalog →</a></li>
+      <li><a href="{{ site.agentSiteUrl }}" class="el-nav__cta" target="_blank" rel="noopener">Agent Catalog →</a></li>
     </ul>
   </nav>
   {%- endif %}
@@ -97,7 +95,7 @@
 
   {%- if chrome == 'full' %}
 
-  <footer class="site-footer">
+  <footer class="el-site-footer">
     <p>&copy; {{ site.name }} {{ "now" | date("yyyy") }} · <a href="/legal/">Legal & Privacy</a> · <a href="{{ site.agentSiteUrl }}">agent.elevationary.com</a></p>
   </footer>
   {%- endif %}

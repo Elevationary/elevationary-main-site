@@ -861,3 +861,155 @@ h1 { letter-spacing: 0.01em; }
   color: var(--el-text-muted);
   margin-top: var(--el-space-8);
 }
+
+/* ---- D1.2 page system — Website_Sizzle_Upgrade_2026_08 (2026-10-28) ----
+   Replaces assets/styles.css (deleted) for the 8 chrome:full surfaces:
+   /about/ /services/ /contact/ /legal/ /account/ /upgrade/
+   /newsletter-stories/ /newsletter-stories/story-viewer/.
+   Token-bound only — no literal hex (brand-gate C1). Light/dark comes from
+   the :root token swap above; the dark-first glass flip is D1.3, not here.
+   Only components a surface renders are built; the unconsumed styles.css
+   blocks (case-study, focus-area, expertise pill, newsletter-option) wait
+   for /about/ content to exist. */
+
+.el-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--el-space-4);
+  max-width: var(--el-container-max);
+  margin: 0 auto;
+  padding: var(--el-space-4) var(--el-container-pad);
+  border-bottom: 1px solid var(--el-card-border);
+}
+.el-nav__brand {
+  font-size: var(--el-type-h3);
+  font-weight: 700;
+  color: var(--el-text-primary);
+  text-decoration: none;
+}
+.el-nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--el-space-2) var(--el-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.el-nav__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--el-tap-target);
+  color: var(--el-text-primary);
+  text-decoration: none;
+  transition: color var(--el-transition-fast);
+}
+.el-nav__links a:hover,
+.el-nav__links a:focus-visible { color: var(--el-accent); text-decoration: underline; }
+.el-nav__links .el-nav__cta { font-weight: 600; color: var(--el-accent); }
+
+.el-site-footer {
+  margin-top: var(--el-space-16);
+  padding: var(--el-space-8) var(--el-container-pad);
+  background: var(--el-bg-footer);
+  border-top: 1px solid var(--el-card-border);
+  text-align: center;
+  font-size: var(--el-type-caption);
+  line-height: var(--el-lh-caption);
+  color: var(--el-text-body);
+}
+.el-site-footer p { margin: 0; }
+
+.el-page {
+  display: block;
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: var(--el-space-12) var(--el-container-pad);
+}
+.el-page h1 {
+  font-size: var(--el-type-h1);
+  line-height: var(--el-lh-h1);
+  font-weight: 700;
+  color: var(--el-text-primary);
+  margin: 0 0 var(--el-space-6) 0;
+}
+.el-page h2 {
+  font-size: var(--el-type-h2);
+  line-height: var(--el-lh-h2);
+  font-weight: 600;
+  color: var(--el-text-primary);
+  margin: var(--el-space-8) 0 var(--el-space-3) 0;
+}
+.el-page p { margin: 0 0 var(--el-space-4) 0; }
+.el-page--article { max-width: 68ch; }
+.el-page__lede {
+  font-size: var(--el-type-h3);
+  line-height: var(--el-lh-h3);
+}
+.el-page__subtitle {
+  font-size: var(--el-type-h3);
+  line-height: var(--el-lh-h3);
+  font-style: italic;
+  margin-bottom: var(--el-space-8);
+}
+.el-page__muted {
+  font-size: var(--el-type-caption);
+  color: var(--el-text-muted);
+}
+.el-page .el-cta { margin: 0 var(--el-space-2) var(--el-space-2) 0; }
+
+.el-breadcrumb {
+  margin-bottom: var(--el-space-6);
+  font-size: var(--el-type-caption);
+}
+
+.el-cta--secondary {
+  background: transparent;
+  color: var(--el-accent);
+  box-shadow: inset 0 0 0 1px var(--el-accent);
+}
+.el-cta--secondary:hover,
+.el-cta--secondary:focus-visible {
+  background: color-mix(in srgb, var(--el-os-electric-blue) 10%, transparent);
+  color: var(--el-accent);
+}
+
+.el-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--el-space-6);
+  margin: var(--el-space-6) 0;
+}
+.el-card-list {
+  display: grid;
+  gap: var(--el-space-4);
+  margin: var(--el-space-6) 0;
+}
+.el-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--el-space-6);
+  background: var(--el-card-bg);
+  border: 1px solid var(--el-card-border);
+  border-radius: var(--el-radius);
+  transition: border-color var(--el-transition-fast);
+}
+.el-card:hover,
+.el-card:focus-within { border-color: var(--el-accent); }
+.el-page .el-card h2 {
+  font-size: var(--el-type-h3);
+  line-height: var(--el-lh-h3);
+  margin: 0 0 var(--el-space-3) 0;
+}
+.el-card > :last-child { margin-top: auto; align-self: flex-start; }
+
+.el-callout {
+  margin-top: var(--el-space-12);
+  padding: var(--el-space-8);
+  background: var(--el-bg-footer);
+  border-top: 2px solid var(--el-higher-ground-clay);
+  border-radius: var(--el-radius);
+  text-align: center;
+}
+.el-page .el-callout h2 { margin-top: 0; }
