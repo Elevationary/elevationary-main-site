@@ -862,11 +862,11 @@ h1 { letter-spacing: 0.01em; }
   margin-top: var(--el-space-8);
 }
 
-/* ---- D1.2 page system — Website_Sizzle_Upgrade_2026_08 (2026-10-28) ----
+/* ---- D1.2 page system: Website_Sizzle_Upgrade_2026_08 (2026-10-28) ----
    Replaces assets/styles.css (deleted) for the 8 chrome:full surfaces:
    /about/ /services/ /contact/ /legal/ /account/ /upgrade/
    /newsletter-stories/ /newsletter-stories/story-viewer/.
-   Token-bound only — no literal hex (brand-gate C1). Light/dark comes from
+   Token-bound only: no literal hex (brand-gate C1). Light/dark comes from
    the :root token swap above; the dark-first glass flip is D1.3, not here.
    Only components a surface renders are built; the unconsumed styles.css
    blocks (case-study, focus-area, expertise pill, newsletter-option) wait
@@ -954,8 +954,10 @@ h1 { letter-spacing: 0.01em; }
   margin-bottom: var(--el-space-8);
 }
 .el-page__muted {
+  /* Marketing gate B3 (2026-10-28): --el-text-muted on cream is 2.24:1, fails C6.
+     Body colour at caption size; the global muted token is NOT changed here. */
   font-size: var(--el-type-caption);
-  color: var(--el-text-muted);
+  color: var(--el-text-body);
 }
 .el-page .el-cta { margin: 0 var(--el-space-2) var(--el-space-2) 0; }
 
@@ -971,7 +973,7 @@ h1 { letter-spacing: 0.01em; }
 }
 .el-cta--secondary:hover,
 .el-cta--secondary:focus-visible {
-  background: color-mix(in srgb, var(--el-os-electric-blue) 10%, transparent);
+  background: color-mix(in srgb, var(--el-accent) 10%, transparent);
   color: var(--el-accent);
 }
 
@@ -1008,8 +1010,11 @@ h1 { letter-spacing: 0.01em; }
   margin-top: var(--el-space-12);
   padding: var(--el-space-8);
   background: var(--el-bg-footer);
-  border-top: 2px solid var(--el-higher-ground-clay);
+  border-top: 2px solid var(--el-card-border);
   border-radius: var(--el-radius);
   text-align: center;
 }
+/* Clay is a premium-upsell accent (C4): Agent Insider subscribe callouts only,
+   never default chrome. Marketing gate B4, 2026-10-28. */
+.el-callout--premium { border-top-color: var(--el-higher-ground-clay); }
 .el-page .el-callout h2 { margin-top: 0; }
